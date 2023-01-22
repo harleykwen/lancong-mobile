@@ -1,6 +1,7 @@
-import { Center, Text } from 'native-base'
+import { Center } from 'native-base'
 import React, { useEffect } from 'react'
 import { Image } from 'react-native'
+import { getAuthToken, removeAuthToken } from '../../apis/config'
 import { LOGO_GREEN } from '../../assets'
 
 interface ISplash {
@@ -11,8 +12,13 @@ const Splash = (props: ISplash) => {
     const { navigation } = props
 
     useEffect(() => {
-        setTimeout(() => {
-            navigation.replace('login')
+        setTimeout( async () => {
+            const token: any = await getAuthToken()
+            if (token) {
+                navigation.replace('main')
+            } else {
+                navigation.replace('login')
+            }
         }, 3000)
     }, [])
 

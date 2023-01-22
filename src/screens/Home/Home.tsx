@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import * as Icon from "react-native-unicons"
 import { 
     Box,
@@ -11,6 +11,7 @@ import {
     Text, 
     VStack,
 } from 'native-base'
+import { getUserData } from '../../apis/config'
 
 interface IHome {
     navigation: any
@@ -18,6 +19,18 @@ interface IHome {
 
 const Home = (props: IHome) => {
     const { navigation } = props
+
+    const [user, setUser] = useState<any>(null)
+    
+    async function handleGetUserData() {
+        const user = await getUserData()
+        console.log(user)
+        setUser(user)
+    }
+
+    useEffect(() => {
+        handleGetUserData()
+    }, [])
 
     return (
         <Flex backgroundColor='white' flex={1}>
@@ -39,7 +52,7 @@ const Home = (props: IHome) => {
                 <HStack space={'10px'}>
                     <Center flex={1} padding={'5px'} backgroundColor={'white'} rounded={'md'}>
                         <Icon.User color="black" />
-                        <Text fontSize='12px'>KING</Text>
+                        <Text fontSize='12px'>{user?.name??''}</Text>
                     </Center>
                     <Center flex={1} padding={'5px'} backgroundColor={'white'} rounded={'md'}>
                         <Icon.Wallet color="black" />

@@ -21,6 +21,7 @@ import TripTypeDetail from '../screens/TripTypeDetail/TripTypeDetail'
 import CompleteData from '../screens/CompleteData/CompleteData'
 import Payment from '../screens/Payment/Payment'
 import PaymentMethod from '../screens/PaymentMethod/PaymentMethod'
+import Otp from '../screens/Otp/Otp'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -48,7 +49,7 @@ function MyTabs() {
             <Tab.Screen name={'Booking'} component={Booking} options={{ tabBarIcon: Icon.Book }} />
             <Tab.Screen name={'History'} component={History} options={{ tabBarIcon: Icon.History }} />
             <Tab.Screen name={'Chat'} component={Chat} options={{ tabBarIcon: Icon.Chat }} />
-            <Tab.Screen name={'Profile'} component={Profile} options={{ tabBarIcon: Icon.UserCircle }} />
+            <Tab.Screen name={'Profile'} component={Profile} options={{ headerShown: false, tabBarIcon: Icon.UserCircle }} />
         </Tab.Navigator>
     )
 }
@@ -60,6 +61,7 @@ const Router = () => {
                 <Stack.Screen name={'splash'} component={Splash} />
                 <Stack.Screen name={'login'} component={Login} />
                 <Stack.Screen name={'register'} component={Register} />
+                <Stack.Screen name={'otp'} component={Otp} />
                 <Stack.Screen name={'main'} component={MyTabs} />
             </Stack.Navigator>
         </NavigationContainer>

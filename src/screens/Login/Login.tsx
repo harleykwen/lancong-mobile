@@ -1,14 +1,23 @@
 import React, { useState } from 'react'
-import { Box, Button, Center, FormControl, Icon, Input, Stack, Text } from 'native-base'
-import { Alert, Image } from 'react-native'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { LOGO_GREEN } from '../../assets'
-import * as Unicons from "react-native-unicons"
 import { loginApi } from '../../apis/auth'
 import { useMutation } from 'react-query'
 import { getModel } from 'react-native-device-info'
-import { TextInput, Button as PaperButton } from 'react-native-paper'
-import { View } from 'react-native'
+import { Alert, Image } from 'react-native'
 import { saveAuthToken, saveUserData } from '../../apis/config'
+import { 
+    Button, 
+    FormControl, 
+    Heading, 
+    Icon, 
+    Input, 
+    Pressable, 
+    Stack, 
+    Text, 
+} from 'native-base'
 
 interface ILogin {
     navigation: any
@@ -16,8 +25,10 @@ interface ILogin {
 
 const Login = (props: ILogin) => {
     const { navigation } = props
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
+
+    const [email, setEmail] = useState<string>('')
+    const [password, setPassword] = useState<string>('')
+    const [showPassword, setShowPassword] = useState<boolean>(false)
 
     async function handleLogin() {
         return await loginApi({ email, password, device_name: getModel() })
@@ -38,91 +49,121 @@ const Login = (props: ILogin) => {
     }
 
     return (
-        <Center height={'100%'} padding={'10px'} backgroundColor='white'>
-            <Image source={LOGO_GREEN} style={{ width: 70, height: 91.32 }} />
-            <FormControl marginTop='72px'>
-                <Stack space={5}>
-                    <Stack>
-                        <Input 
-                            leftElement={<Icon 
-                            as={Unicons.Envelope} 
-                            color={'gray.400'} 
-                            marginLeft='10px' />} 
-                            variant={'outline'} 
-                            p={2} 
-                            placeholder={'Email'} 
-                            value={email}
-                            onChangeText={(e: any) => setEmail(e)}
-                        />
-                    </Stack>
-                    <Stack>
-                        <Input 
-                            leftElement={<Icon 
-                            as={Unicons.Lock} 
-                            color={'gray.400'} 
-                            marginLeft='10px' />} 
-                            type={'password'} 
-                            variant={'outline'} 
-                            p={2} 
-                            placeholder={'Password'}
-                            value={password}
-                            onChangeText={(e: any) => setPassword(e)}
-                        />
-                    </Stack>
-                    <Stack>
-                        <Button 
-                            colorScheme={'success'} 
-                            isDisabled={login.isLoading || !email || password.length < 6}
-                            isLoading={login.isLoading}
-                            onPress={() => login.mutate()}
-                        >
-                            Log In
-                        </Button>
-                    </Stack>
-                    <Stack alignItems={'center'} direction={'row'} space={'10px'}>
-                        <Box height={'2px'} width={'45%'} backgroundColor={'#c0c0c0'}></Box>
-                        <Text color={'#c0c0c0'}>Or</Text>
-                        <Box height={'2px'} width={'45%'} backgroundColor={'#c0c0c0'}></Box>
-                    </Stack>
-                    <Stack>
-                        <Button 
-                            onPress={handleClickSignUp} 
-                            colorScheme={'yellow'}
-                        >
-                            Sign Up
-                        </Button>
+        <Stack 
+            flex='1'
+            padding='10px' 
+            backgroundColor='white'
+            justifyContent='center'
+            space='50px'
+        >
+            <Stack 
+                width='100%' 
+                direction='row' 
+                justifyContent='space-between' 
+                alignItems='center'
+            >
+                <Stack>
+                    <Heading>Masuk</Heading>
+                    <Stack direction='row' space='5px'>
+                        <Text color='gray.400'>Belum punya akun?</Text>
+                        <Pressable onPress={handleClickSignUp}>
+                            <Text color='xprimary.40' fontWeight='semibold'>Yuk daftar!</Text>
+                        </Pressable>
                     </Stack>
                 </Stack>
-            </FormControl>
-        </Center>
-        // <View style={{ flex: 1, backgroundColor: 'white', padding: 10, justifyContent: 'center',  }}>
-        //     <TextInput
-        //         label='Email'
-        //         left={<TextInput.Icon icon='email' />}
-        //         mode='outlined'
-        //     />
-        //     <TextInput
-        //         label='Password'
-        //         secureTextEntry
-        //         right={<TextInput.Icon icon='eye' />}
-        //         left={<TextInput.Icon icon='lock' />}
-        //         mode='outlined'
-        //     />
-        //     <PaperButton 
-        //         mode="contained" 
-        //         disabled={login.isLoading || !email || password.length < 6}
-        //         loading={login.isLoading}
-        //         onPress={() => login.mutate()}
-        //     >
-        //         Log in
-        //     </PaperButton>
-        //     <PaperButton 
-        //         mode="contained" 
-        //         onPress={handleClickSignUp}
-        //     >
-        //         Sign up
-        //     </PaperButton>
-        // </View>
+                <Image source={LOGO_GREEN} style={{ width: 35, height: 45.6 }} />
+            </Stack>
+
+            <Stack width='100%' space='10px'>
+                <FormControl>
+                    <FormControl.Label color='gray.400'>Email</FormControl.Label>
+                    <Input 
+                        leftElement={
+                            <Icon 
+                                as={MaterialIcons} 
+                                name='mail-outline'
+                                color='gray.400' 
+                                marginLeft='10px' 
+                                size='6'
+                            />
+                        } 
+                        placeholder='Email' 
+                        value={email}
+                        onChangeText={(e: any) => setEmail(e)}
+                        
+                        p={2} 
+                        borderColor='gray.400'
+                        _focus={{
+                            backgroundColor: 'white',
+                            borderColor: 'gray.400',
+                        }}
+                    />
+                </FormControl>
+                <FormControl>
+                    <FormControl.Label color='gray.400'>Kata Sandi</FormControl.Label>
+                    <Input 
+                        leftElement={
+                            <Icon 
+                                as={MaterialIcons} 
+                                name='lock-outline'
+                                color='gray.400' 
+                                marginLeft='10px' 
+                                size='6'
+                            />
+                        } 
+                        rightElement={
+                            <Pressable onPress={() => setShowPassword(!showPassword)}>
+                                <Icon
+                                    as={MaterialCommunityIcons}
+                                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
+                                    marginRight='10px'
+                                    size='6'
+                                    color='gray.400'
+                                />
+                            </Pressable>
+                        }
+                        type='password' 
+                        variant='outline' 
+                        placeholder='Password'
+                        value={password}
+                        onChangeText={(e: any) => setPassword(e)}
+                        secureTextEntry={!showPassword}
+                        
+                        p={2} 
+                        borderColor='gray.400'
+                        _focus={{
+                            backgroundColor: 'white',
+                            borderColor: 'gray.400',
+                        }}
+                    />
+                </FormControl>
+            </Stack>
+            
+            <Stack width='100%' space='10px'>
+                <Button 
+                    colorScheme={'success'} 
+                    isDisabled={login.isLoading || !email || password.length < 6}
+                    isLoading={login.isLoading}
+                    onPress={() => login.mutate()}
+                    width='full'
+                >
+                    Masuk
+                </Button>
+                <Button 
+                    colorScheme='white'
+                    width='full'
+                    variant='ghost'
+                    color='gray.400'
+                    leftIcon={<Icon
+                        as={FontAwesome}
+                        name='google'
+                        color='gray.400'
+                    />}
+                >
+                    Masuk dengan Google
+                </Button>
+            </Stack>
+        </Stack>
     )
 }
 

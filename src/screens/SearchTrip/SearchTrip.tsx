@@ -64,6 +64,7 @@ const SearchTrip = (props: ISearchTrip) => {
                             <Select.Item label="Bandung" value="Bandung" />
                             <Select.Item label="Yogyakarta" value="Yogyakarta" />
                             <Select.Item label="Bali" value="Bali" />
+                            <Select.Item label="Bogor" value="Bogor" />
                         </Select>
                     </VStack>
                 </HStack>
@@ -117,6 +118,9 @@ const SearchTrip = (props: ISearchTrip) => {
                     marginTop='20px' 
                     colorScheme='success'
                     onPress={() => {
+                        console.log({
+                            type, destination, dateStart, dateEnd, participant
+                        })
                         navigation.push('list-trip', { type, destination, dateStart, dateEnd, participant })
                     }}
                 >
@@ -133,7 +137,7 @@ const SearchTrip = (props: ISearchTrip) => {
                     setIsDatePickerStartVisible(false)
                 }}
                 onCancel={() => setIsDatePickerStartVisible(false)}
-                minimumDate={today}
+                // minimumDate={today}
             />
 
             <DateTimePickerModal
@@ -144,7 +148,7 @@ const SearchTrip = (props: ISearchTrip) => {
                     setIsDatePickerEndVisible(false)
                 }}
                 onCancel={() => setIsDatePickerEndVisible(false)}
-                minimumDate={add(dateStart, { days: 1 })}
+                // minimumDate={add(dateStart, { days: 1 })}
             />
         </Flex>
     )

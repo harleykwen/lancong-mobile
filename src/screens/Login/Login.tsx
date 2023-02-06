@@ -6,21 +6,42 @@ import { LOGO_GREEN } from '../../assets'
 import { loginApi } from '../../apis/auth'
 import { useMutation } from 'react-query'
 import { getModel } from 'react-native-device-info'
-import { Alert, Image } from 'react-native'
+import { Image } from 'react-native'
 import { saveAuthToken, saveUserData } from '../../apis/config'
 import { 
+    Alert,
     Button, 
     FormControl, 
     Heading, 
+    HStack, 
     Icon, 
     Input, 
     Pressable, 
     Stack, 
-    Text, 
+    Text,
+    VStack, 
 } from 'native-base'
 
 interface ILogin {
     navigation: any
+}
+
+interface IResponseLoginSuccess {
+    user: {
+        _id: string,
+        name: string,
+        email: string,
+        address: string,
+        phone: string,
+        avatar: {
+            name: string,
+            url: string,
+        }
+    },
+    tokenable: {
+        token: string,
+        expires_at: number
+    }
 }
 
 const Login = (props: ILogin) => {
@@ -30,23 +51,16 @@ const Login = (props: ILogin) => {
     const [password, setPassword] = useState<string>('')
     const [showPassword, setShowPassword] = useState<boolean>(false)
 
-    async function handleLogin() {
+    const login: any = useMutation(async () => {
         return await loginApi({ email, password, device_name: getModel() })
-    }
-
-    const login = useMutation(handleLogin, {
-        onError: (error: any) => Alert.alert(error),
-        onSuccess: async (response: any) => {
-            console.log(response)
+    },
+    {
+        onSuccess: async (response: IResponseLoginSuccess) => {
             await saveAuthToken(response?.tokenable?.token)
             await saveUserData(response?.user)
             navigation.replace('main')
         },
     })
-
-    function handleClickSignUp() {
-        navigation.push('register')
-    }
 
     return (
         <Stack 
@@ -66,7 +80,7 @@ const Login = (props: ILogin) => {
                     <Heading>Masuk</Heading>
                     <Stack direction='row' space='5px'>
                         <Text color='gray.400'>Belum punya akun?</Text>
-                        <Pressable onPress={handleClickSignUp}>
+                        <Pressable onPress={() => navigation.push('register')}>
                             <Text color='xprimary.40' fontWeight='semibold'>Yuk daftar!</Text>
                         </Pressable>
                     </Stack>
@@ -90,7 +104,6 @@ const Login = (props: ILogin) => {
                         placeholder='Email' 
                         value={email}
                         onChangeText={(e: any) => setEmail(e)}
-                        
                         p={2} 
                         borderColor='gray.400'
                         _focus={{
@@ -128,7 +141,6 @@ const Login = (props: ILogin) => {
                         value={password}
                         onChangeText={(e: any) => setPassword(e)}
                         secureTextEntry={!showPassword}
-                        
                         p={2} 
                         borderColor='gray.400'
                         _focus={{
@@ -137,6 +149,39 @@ const Login = (props: ILogin) => {
                         }}
                     />
                 </FormControl>
+                {login?.isError &&
+                    <Alert 
+                        width='100%' 
+                        variant='subtle' 
+                        colorScheme='success' 
+                        status='error'
+                        marginTop='5px'
+                    >
+                        <VStack 
+                            space={2} 
+                            flexShrink={1} 
+                            width='100%'
+                        >
+                            <HStack 
+                                flexShrink={1} 
+                                space={2} 
+                                alignItems='center' 
+                                justifyContent='space-between'
+                            >
+                                <HStack 
+                                    space={2} 
+                                    flexShrink={1} 
+                                    alignItems='center'
+                                >
+                                    <Alert.Icon />
+                                    <Text color='coolGray.800'>
+                                        {login?.error}
+                                    </Text>
+                                </HStack>
+                            </HStack>
+                        </VStack>
+                    </Alert>
+                }
             </Stack>
             
             <Stack width='100%' space='10px'>

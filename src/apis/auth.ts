@@ -72,10 +72,8 @@ export async function loginApi(props: ILogin) {
         const response = await xhr.post('/user/auth/login', payload)
 
         if (response.data.error) throw response.data.message
-        console.log(response.data.data)
         return response.data.data
     } catch (error: any) {
-        console.log(error)
         throw error?.response?.data?.message??'Error login'
     }
 }

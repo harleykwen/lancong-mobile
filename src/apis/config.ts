@@ -32,7 +32,7 @@ async function removeAuthToken() {
     }
 }
 
-async function saveUserData(data: string) {
+async function saveUserData(data: object) {
     try {
         await AsyncStorage.setItem('@user_data', JSON.stringify(data))
     } catch (error) {

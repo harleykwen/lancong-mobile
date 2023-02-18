@@ -80,9 +80,17 @@ const Home = (props: IHome) => {
                     <Text fontSize='12px'>Trip</Text>
                 </VStack>
                 <VStack space={'5px'} justifyContent={'center'} alignItems={'center'} flex={1}>
-                    <Center height={'50px'} width={'50px'} rounded={'full'} backgroundColor={'#e2c403'}>
+                    <Pressable 
+                        alignItems='center' 
+                        justifyContent='center' 
+                        height={'50px'} 
+                        width={'50px'} 
+                        rounded={'full'} 
+                        backgroundColor={'#e2c403'}
+                        onPress={() => navigation.push('search-hotel')}
+                    >
                         <Icon.Building color="white" />
-                    </Center>
+                    </Pressable>
                     <Text fontSize='12px'>Hotel</Text>
                 </VStack>
                 <VStack space={'5px'} justifyContent={'center'} alignItems={'center'} flex={1}>

@@ -66,5 +66,8 @@
       "json",
       "node"
     ]
+  },
+  "resolutions": {
+    "react-devtools-core": "~4.25.0"
   }
 }

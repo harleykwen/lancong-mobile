@@ -22,6 +22,7 @@ import CompleteData from '../screens/CompleteData/CompleteData'
 import Payment from '../screens/Payment/Payment'
 import PaymentMethod from '../screens/PaymentMethod/PaymentMethod'
 import Otp from '../screens/Otp/Otp'
+import { SearchHotelScreen } from '../screens/HotelStack'
 
 const Tab = createBottomTabNavigator()
 const Stack = createNativeStackNavigator()
@@ -38,6 +39,9 @@ function TripStack() {
             <Stack.Screen name={'complete-data'} component={CompleteData} />
             <Stack.Screen name={'payment'} component={Payment} />
             <Stack.Screen name={'payment-method'} component={PaymentMethod} />
+
+            {/* HOTEL STACK */}
+            <Stack.Screen name='search-hotel' component={SearchHotelScreen} />
         </Stack.Navigator>
     )
 }

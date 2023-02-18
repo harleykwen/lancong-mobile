@@ -1,23 +1,22 @@
 import React, { useState } from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import { Dimensions } from 'react-native'
 import ActionSheetRoomAndGuest, { IFormActionSheetRoomAndGuest } from './components/ActionSheetRoomAndGuest'
 import { add, format, startOfToday } from 'date-fns'
 import { 
-    Actionsheet, 
     Button, 
     Flex, 
     Icon, 
     Image, 
-    Input, 
     Pressable, 
     ScrollView, 
     Select, 
     Stack, 
     Text 
 } from 'native-base'
+import ActionSheetSearchDestination from './components/ActionSheetSearchDestination'
 
 export interface IFormSearchHotel {
     location: string
@@ -58,6 +57,10 @@ const SearchHotelScreen = () => {
         marginLeft: '8px',
         fontSize: '16px',
         marginTop: '2px',
+    }
+
+    function handleDestinationActionSheet(): void {
+        return setDestinationActionSheet(false)
     }
 
     function handleShowRoomAndGuestActionSheet(): void {
@@ -133,7 +136,7 @@ const SearchHotelScreen = () => {
                         {...baseStylePressedComponent} 
                         onPress={handleShowRoomAndGuestActionSheet}
                         flex={1}
-                        justifyContent='center'
+                        justifyContent='flex-start'
                         borderTopLeftRadius='8px'
                         borderBottomLeftRadius='8px'
                     >
@@ -167,13 +170,13 @@ const SearchHotelScreen = () => {
                         {...baseStylePressedComponent}
                         onPress={handleShowRoomAndGuestActionSheet}
                         flex={1}
-                        justifyContent='center'
+                        justifyContent='flex-end'
                         borderTopRightRadius='8px'
                         borderBottomRightRadius='8px'
                     >
                         <Icon 
-                            as={MaterialIcons} 
-                            name='group' 
+                            as={FontAwesome} 
+                            name='child' 
                             color='gray.400' 
                             size='lg' 
                         />
@@ -200,41 +203,10 @@ const SearchHotelScreen = () => {
             </Stack>
 
             {/* search location action sheet */}
-            <Actionsheet 
-                isOpen={destinationActionSheet} 
-                onClose={() => setDestinationActionSheet(false)}
-            >
-                <Actionsheet.Content alignItems='flex-start' padding='0px'>
-                    <Flex padding='16px' width='100%' height={Dimensions.get('window').height}>
-                        <Stack direction='column' space='20px'>
-                            <Stack direction='row' alignItems='center' space='10px'>
-                                <Icon as={MaterialIcons} name='close' size='xl' color='black' onPress={() => setDestinationActionSheet(false)} />
-                                <Text marginTop='1px' fontSize='18px' fontFamily='Poppins-SemiBold'>Mau nginep dimana nih?</Text>
-                            </Stack>
-                            <Input 
-                                borderWidth='0px' 
-                                backgroundColor='gray.200' 
-                                rounded='full' 
-                                fontSize='12px'
-                                fontFamily='Poppins-Regular'
-                                InputLeftElement={<Icon as={MaterialIcons} name='search' color='gray.400' size='lg' marginLeft='0.5rem' />}
-                                InputRightElement={
-                                    <Pressable>
-                                        <Icon as={Ionicons} name='close-circle' color='gray.400' size='md' marginRight='0.65rem' />
-                                    </Pressable>
-                                }
-                            />
-                            {/* <Flex height={Dimensions.get('window').height - 301}>
-                                <ScrollView showsVerticalScrollIndicator={false}>
-                                    {[...Array(100)].map((_, index) => {
-                                        return <Text>halo {index}</Text>
-                                    })}
-                                </ScrollView>
-                            </Flex> */}
-                        </Stack>
-                    </Flex>
-                </Actionsheet.Content>
-            </Actionsheet>
+            <ActionSheetSearchDestination
+                isOpen={destinationActionSheet}
+                onClose={handleDestinationActionSheet}
+            />
 
             {/* room and guest action sheet */}
             <ActionSheetRoomAndGuest 

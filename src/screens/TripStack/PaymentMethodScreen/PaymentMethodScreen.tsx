@@ -16,8 +16,11 @@ import
 } from 'native-base'
 import { 
     LOGO_BCA, 
+    LOGO_BJB, 
     LOGO_BNI, 
     LOGO_BRI, 
+    LOGO_BSI, 
+    LOGO_CIMB, 
     LOGO_MANDIRI, 
     LOGO_PERMATA, 
 } from '../../../assets'
@@ -55,7 +58,12 @@ const PaymentMethodScreen = (props: IPaymentMethodScreen) => {
                 return LOGO_PERMATA
             case 'BRI':
                 return LOGO_BRI
-
+            case 'CIMB':
+                return LOGO_CIMB
+            case 'BJB':
+                return LOGO_BJB
+            case 'BSI':
+                return LOGO_BSI
         }
     }
 

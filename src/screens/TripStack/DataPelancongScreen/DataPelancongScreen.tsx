@@ -3,7 +3,7 @@ import PickPelancongItem from './components/PickPelancongItem'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Header } from '../../../components'
-import { useQuery } from 'react-query'
+import { useQuery, useQueryClient } from 'react-query'
 import { getPelancongApi } from '../../../apis/pelancong.api'
 import 
 { 
@@ -24,6 +24,7 @@ interface IDataPelancongScreen {
 
 const DataPelancongScreen = (props: IDataPelancongScreen) => {
     const { navigation, route } = props
+    const queryClient = useQueryClient()
     const { 
         pelancong,
         setPelancong,
@@ -55,7 +56,6 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                     value={search}
                     onChangeText={(e: any) => {
                         setSearch(e)
-                        console.log(listPelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(e?.toLowerCase())))
                     }}
                     InputRightElement={
                         <Pressable onPress={() => setSearch('')}>
@@ -202,7 +202,7 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                     onPress={() => navigation.navigate('Akun', { 
                         screen: 'add-data-pelancong',
                         params: {
-                            callbackSuccess: null
+                            callbackSuccess: () => queryClient?.invalidateQueries('get-pelancong')
                         },
                     })}
                 >

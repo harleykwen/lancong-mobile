@@ -89,7 +89,7 @@ const Login = (props: ILogin) => {
             </Stack>
 
             <Stack width='100%' space='10px'>
-                <FormControl>
+                {/* <FormControl>
                     <FormControl.Label color='gray.400'>Email</FormControl.Label>
                     <Input 
                         leftElement={
@@ -111,8 +111,9 @@ const Login = (props: ILogin) => {
                             borderColor: 'gray.400',
                         }}
                     />
-                </FormControl>
-                <FormControl>
+                </FormControl> */}
+
+                {/* <FormControl>
                     <FormControl.Label color='gray.400'>Kata Sandi</FormControl.Label>
                     <Input 
                         leftElement={
@@ -148,8 +149,9 @@ const Login = (props: ILogin) => {
                             borderColor: 'gray.400',
                         }}
                     />
-                </FormControl>
-                {login?.isError &&
+                </FormControl> */}
+
+                {/* {login?.isError &&
                     <Alert 
                         width='100%' 
                         variant='subtle' 
@@ -180,8 +182,60 @@ const Login = (props: ILogin) => {
                                 </HStack>
                             </HStack>
                         </VStack>
-                    </Alert>
-                }
+                    </Alert> 
+                }*/}
+
+                <Input 
+                    height='50px'
+                    backgroundColor='gray.100'
+                    paddingX='16px'
+                    paddingY='8px'
+                    flexDirection='row'
+                    alignItems='center'
+                    placeholder='Email'
+                    placeholderTextColor='gray.400'
+                    fontFamily='Poppins-Regular'
+                    fontSize='12px'
+                    color='gray.600'
+                    _focus={{
+                        borderColor: 'none'
+                    }}
+                    InputLeftElement={
+                        <Icon as={MaterialIcons} name='email' color='gray.400' size='lg' marginLeft='16px' />
+                    }
+                    fontStyle={email ? 'normal' : 'italic'}
+                    value={email}
+                    onChangeText={(e: any) => setEmail(e)}
+                />
+
+                <Input 
+                    height='50px'
+                    backgroundColor='gray.100'
+                    paddingX='16px'
+                    paddingY='8px'
+                    flexDirection='row'
+                    alignItems='center'
+                    placeholder='Kata sandi'
+                    placeholderTextColor='gray.400'
+                    fontFamily='Poppins-Regular'
+                    fontSize='12px'
+                    color='gray.600'
+                    _focus={{
+                        borderColor: 'none'
+                    }}
+                    InputLeftElement={
+                        <Icon as={MaterialIcons} name='lock' color='gray.400' size='lg' marginLeft='16px' />
+                    }
+                    InputRightElement={
+                        <Pressable onPress={() => setShowPassword(!showPassword)}>
+                            <Icon as={MaterialCommunityIcons} name={showPassword ? 'eye-off' : 'eye'} color='gray.400' size='lg' marginRight='16px' />
+                        </Pressable>
+                    }
+                    secureTextEntry={!showPassword}
+                    fontStyle={password ? 'normal' : 'italic'}
+                    value={password}
+                    onChangeText={(e: any) => setPassword(e)}
+                />
             </Stack>
             
             <Stack width='100%' space='10px'>

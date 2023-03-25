@@ -14,12 +14,20 @@ const Header = (props: IHeader) => {
     return (
         <Center height='50px' width='100%' backgroundColor='#038103'>
             {title
-                ?   <Text fontSize='16px' color='white' fontWeight='semibold'>{title}</Text>
+                ?   <Text 
+                        fontSize='16px' 
+                        color='white' 
+                        fontFamily='Poppins-SemiBold'
+                    >{title}</Text>
                 :   null
             }
             
             {subtitle
-                ?   <Text fontSize='12px' color='white'>{subtitle}</Text>
+                ?   <Text 
+                        fontSize='12px' 
+                        color='white'
+                        fontFamily='Poppins-SemiBold'
+                    >{subtitle}</Text>
                 :   null
             }
             

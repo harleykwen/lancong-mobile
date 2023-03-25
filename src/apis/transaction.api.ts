@@ -1,63 +1,50 @@
 import { getAuthToken, xhr } from "./config"
 
-interface IGetTripList {
-    type: string
-    destination: string
+interface ICreateTransactionTripApi {
+    trip_id: string
+    package_id: string
     group: string
-    trip_start: number
-    participant: string
 }
 
-interface IGetTripTypeList {
-    id: any
+interface IGetTransactionDetail {
+    id?: string
 }
 
-export async function getTripListApi(props: IGetTripList) {
+export async function createTransactionTripApi(payload: ICreateTransactionTripApi) {
     try {
-        const payload = {...props}
-        const response = await xhr.get('/user/trip', {
-            params: {
-                ...payload,
-            },
+        const response = await xhr.post('/user/trip/order/create-transaction', payload, {
             headers: {
                 'Authorization': 'Bearer ' + await getAuthToken(),
                 'Accept': '*/*',
             }
         })
-
         if (response.data.error) throw response.data.message
         return response.data.data
     } catch (error: any) {
         console.log(error)
-        throw error?.response?.data?.message??'Error get trip list'
+        throw error?.response?.data?.message??'Error create transaction'
     }
 }
 
-export async function getTripTypeListApi(props: IGetTripTypeList) {
+export async function getTransactionListApi() {
     try {
-        const payload = {...props}
-        const response = await xhr.get('/user/trip/get', {
-            params: {
-                ...payload,
-            },
+        const response = await xhr.get('/user/transaction', {
             headers: {
                 'Authorization': 'Bearer ' + await getAuthToken(),
                 'Accept': '*/*',
             }
         })
-
-        console.log(response)
         if (response.data.error) throw response.data.message
         return response.data.data
     } catch (error: any) {
         console.log(error)
-        throw error?.response?.data?.message??'Error get trip type list'
+        throw error?.response?.data?.message??'Error get list transaction'
     }
 }
 
-export async function getTripTypesApi() {
+export async function getTransactionDetailApi(payload: IGetTransactionDetail) {
     try {
-        const response = await xhr.get('/master/trip/types', {
+        const response = await xhr.get(`/user/transaction/${payload?.id}`, {
             headers: {
                 'Authorization': 'Bearer ' + await getAuthToken(),
                 'Accept': '*/*',
@@ -67,6 +54,6 @@ export async function getTripTypesApi() {
         return response.data.data
     } catch (error: any) {
         console.log(error)
-        throw error?.response?.data?.message??'Error get trip types'
+        throw error?.response?.data?.message??'Error get transaction detail'
     }
 }

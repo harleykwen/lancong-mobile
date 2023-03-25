@@ -24,7 +24,6 @@ const Home = (props: IHome) => {
     
     async function handleGetUserData() {
         const user = await getUserData()
-        console.log(user)
         setUser(user)
     }
 

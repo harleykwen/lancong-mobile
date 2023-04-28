@@ -1,16 +1,32 @@
 import React, { useState } from 'react'
+import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { getListVaApi } from '../../../apis/payment.api'
+import { useQuery } from 'react-query'
 import { Header, LInput } from '../../../components'
 import { 
     Button, 
     Center, 
     Flex, 
     HStack, 
+    Icon, 
+    Image, 
+    Pressable, 
     ScrollView, 
     Select, 
     Stack, 
     Text, 
     VStack 
 } from 'native-base'
+import { 
+    LOGO_BCA, 
+    LOGO_BJB, 
+    LOGO_BNI, 
+    LOGO_BRI, 
+    LOGO_BSI, 
+    LOGO_CIMB, 
+    LOGO_MANDIRI, 
+    LOGO_PERMATA, 
+} from '../../../assets'
 
 interface IPayment {
     navigation: any
@@ -47,9 +63,33 @@ const PaymentTypeScreen = (props: IPayment) => {
     }
 
     const [paymentType, setPaymentType] = useState('')
+    const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
+
+    const vas = useQuery('list-va', getListVaApi)
+
+    function generateIconBank(data: any) {
+        switch(data?.code) {
+            case 'BCA':
+                return LOGO_BCA
+            case 'BNI':
+                return LOGO_BNI
+            case 'MANDIRI':
+                return LOGO_MANDIRI
+            case 'PERMATA':
+                return LOGO_PERMATA
+            case 'BRI':
+                return LOGO_BRI
+            case 'CIMB':
+                return LOGO_CIMB
+            case 'BJB':
+                return LOGO_BJB
+            case 'BSI':
+                return LOGO_BSI
+        }
+    }
 
     return (
-        <Flex flex='1'>
+        <Flex flex='1' backgroundColor='white'>
             <Header
                 title='Pembayaran'
                 subtitle='1. Lengkap Data   -   2. Pembayaran'
@@ -64,7 +104,11 @@ const PaymentTypeScreen = (props: IPayment) => {
                         dropdownIcon={<></>} 
                         width='full'
                         selectedValue={paymentType} 
-                        onValueChange={itemValue => setPaymentType(itemValue)}
+                        onValueChange={itemValue => {
+                            setPaymentType(itemValue)
+                            setSelectedPaymentMethod('')
+                        }}
+                        InputRightElement={<Icon as={MaterialIcons} name='chevron-right' color='gray.400' size='lg' marginRight='15px' />}
                         {...baseStylePressedComponent}
                         {...baseStylePressedTextComponent}
                     >
@@ -155,6 +199,58 @@ const PaymentTypeScreen = (props: IPayment) => {
                                     )
                                 })}
                             </VStack>
+                        </Stack>
+                    }
+
+                    {paymentType &&
+                        <Stack paddingBottom='70px' space='10px'>
+                            <Stack 
+                                backgroundColor='white' 
+                                // padding='10px' 
+                                // space='10px'
+                            >
+                                <Stack space='10px'>
+                                    <Text margin='10px' fontSize='15px' fontFamily='Poppins-SemiBold'>Bayar dengan:</Text>
+                                    <Text margin='10px' fontSize='15px' fontFamily='Poppins-SemiBold'>Virtual Account</Text>
+                                </Stack>
+                                {vas?.data?.map((va: any, index: number) => {
+                                    return (
+                                        <Pressable key={index} onPress={() => setSelectedPaymentMethod(va?.code)}>
+                                            <Stack
+                                                direction='row' 
+                                                alignItems='center'
+                                                justifyContent='space-between' 
+                                                padding='12px'
+                                                backgroundColor={selectedPaymentMethod === va?.code ? 'xprimary.50' : 'white'}
+                                            >
+                                                <Stack 
+                                                    direction='row' 
+                                                    alignItems='center' 
+                                                    space='10px'
+                                                >
+                                                    <Image 
+                                                        source={generateIconBank(va)} 
+                                                        width='50px' 
+                                                        height='35.71px' 
+                                                        alt={va?.name}
+                                                    />
+                                                    <Text 
+                                                        fontSize='13px' 
+                                                        fontFamily='Poppins-Medium'
+                                                        color={selectedPaymentMethod === va?.code ? 'white' : 'black'}
+                                                    >{va.name}</Text>
+                                                </Stack>
+                                                <Icon 
+                                                    as={MaterialIcons} 
+                                                    name='chevron-right' 
+                                                    color={selectedPaymentMethod === va?.code ? 'white' : 'gray.600'} 
+                                                    size='md' 
+                                                />
+                                            </Stack>
+                                        </Pressable>
+                                    )
+                                })}
+                            </Stack>
                         </Stack>
                     }
                 </VStack>

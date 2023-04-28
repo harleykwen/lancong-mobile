@@ -2,9 +2,20 @@ import React, { useState } from 'react'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
-import { Button, Flex, Icon, Image, Pressable, Stack, Text } from 'native-base'
 import { Header } from '../../../components'
+import { useMutation } from 'react-query'
+import { createTransactionTripApi } from '../../../apis/transaction.api'
 import { add, format } from 'date-fns'
+import { 
+    Button, 
+    Flex, 
+    Icon, 
+    Image, 
+    Pressable, 
+    Stack, 
+    Text, 
+} from 'native-base'
+import { create } from 'react-test-renderer'
 
 interface ICheckoutPackageScreen {
     navigation: any
@@ -39,6 +50,23 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
     const [startDate, setStartDate] = useState<any>(null)
     const [endDate, setEndDate] = useState<any>(null)
     const [textSelectedDate, setTextSelectedDate] = useState('')
+
+    const createTransaction = useMutation(createTransactionTripApi, {
+        onSuccess: (resp: any) => {
+            navigation.push('complete-data', { 
+                data: data,
+                group: group,
+                trip: trip,
+                checkoutData: {
+                    totalPelancong,
+                    startDate,
+                    endDate,
+                    textSelectedDate,
+                },
+                transaction: resp,
+            })
+        }
+    })
 
     function handleTotalPelancong(type: 'plus' | 'min') {
         setTotalPelancong((prev: any) => {
@@ -190,20 +218,19 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                     height='50px'
                     borderRadius='8px'
                     backgroundColor='xprimary.50'
+                    isLoading={createTransaction?.isLoading}
                     _pressed={{
                         backgroundColor: 'xprimary.40'
                     }}
-                    onPress={() => navigation.push('complete-data', { 
-                        data: data,
-                        group: group,
-                        trip: trip,
-                        checkoutData: {
-                            totalPelancong,
-                            startDate,
-                            endDate,
-                            textSelectedDate,
-                        }
-                    })}
+                    onPress={() => {
+                        createTransaction?.mutate({
+                            trip_id: trip?.id,
+                            package_id: data?.id,
+                            group,
+                            pax: totalPelancong,
+                            trip_start: new Date(startDate)?.getTime(),
+                        })
+                    }}
                 >
                     <Text
                         fontFamily='Poppins-SemiBold' 

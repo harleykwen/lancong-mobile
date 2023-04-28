@@ -3,8 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const xhr = axios.create({
     baseURL:
-        'https://api-dev.lancong.co.id' +
-        '/v1'
+        'https://api-dev.lancong.co.id/v1'
 })
 
 async function saveAuthToken(token: string) {

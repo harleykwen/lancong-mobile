@@ -1,8 +1,8 @@
 import React from 'react'
 import { Header } from '../../../components'
-import { useQuery } from 'react-query'
-import { getTransactionListApi } from '../../../apis/transaction.api'
-import { format } from 'date-fns'
+import { useMutation, useQuery } from 'react-query'
+import { getTransactionDetailApi, getTransactionListApi } from '../../../apis/transaction.api'
+import { add, format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { 
     Center,
@@ -23,6 +23,34 @@ const TransactionListScreen = (props: ITransactionListScreen) => {
     const { navigation } = props
 
     const transactions = useQuery('transaction-list', getTransactionListApi)
+    const transactionDetail = useMutation(getTransactionDetailApi, {
+        onSuccess: (resp: any) => {
+            let pelancong: any = null
+            if (resp?.order?.participants?.length > 0) {
+                pelancong = resp?.order?.participants
+                const pelancongLeft: number = resp?.order?.pax - resp?.order?.participants?.length
+                for (let i = 1; i <= pelancongLeft; i++) {
+                    pelancong?.push({})
+                }
+            }
+            navigation.navigate('Beranda', { 
+                screen: 'complete-data',
+                params: {
+                    data: {
+                        ...resp?.order[resp?.order?.group],
+                        special_requests: resp?.order?.special_requests,
+                    },
+                    group: resp?.order?.group,
+                    trip: resp?.order?.trip,
+                    checkoutData: {
+                        totalPelancong: pelancong??resp?.order?.pax,
+                        textSelectedDate: `${format(new Date(resp?.order[resp?.order?.group]?.trip_start), 'dd MMM')} - ${format(new Date(resp?.order[resp?.order?.group]?.trip_end), 'dd MMM')}`,
+                    },
+                    transaction: resp,
+                },
+            })
+        }
+    })
 
     // type status: 'INACTIVE' || 'ACTIVE' || 'PENDING'
 
@@ -66,7 +94,8 @@ const TransactionListScreen = (props: ITransactionListScreen) => {
                             <Pressable 
                                 key={index}
                                 onPress={() => {
-                                    navigation?.push('transaction-detail', { transaction })
+                                    transactionDetail?.mutate({ id: transaction?.id })
+                                    // navigation?.push('transaction-detail', { transaction })
                                 }}
                             >
                                 <Stack

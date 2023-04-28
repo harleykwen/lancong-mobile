@@ -19,28 +19,53 @@ interface ISpecialRequestScreen {
 const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRequestScreen) => {
     const { navigation, route } = props
     const {
-        data,
-        setData,
+        id,
+        specialRequests: data,
+        setSpecialRequests: setData,
+        participants,
+        updateTripTransaction,
     } = route?.params
 
     const [specialRequests, setSpecialRequests] = useState([...data?.map((data: any) => {
         return { ...data }
     })])
+    const [loading, setLoading] = useState(false)
+
+    // const updateTripTransaction = useMutation(updateTransactionTripApi, {
+    //     onSuccess: (resp) => {
+    //         console.log({resp})
+    //         setData(specialRequests?.map((data: any) => data))
+    //         navigation.goBack()
+    //     }
+    // })
 
     function handleCounter(index: number, type: 'minus' | 'plus') {
         const tempSpecialRequests = specialRequests
         if (type === 'minus') {
-            tempSpecialRequests[index].qty = tempSpecialRequests[index].qty - 1
+            tempSpecialRequests[index].amount = tempSpecialRequests[index].amount - 1
         } else {
-            tempSpecialRequests[index].qty = tempSpecialRequests[index].qty + 1
+            tempSpecialRequests[index].amount = tempSpecialRequests[index].amount + 1
         }
         return setSpecialRequests(() => {
             return [...tempSpecialRequests]
         })
     }
 
-    function handleApply() {
-        setData(specialRequests?.map((data: any) => data))
+    async function handleApply() {
+        setLoading(true)
+        let payloadSpecialRequest: any[] = []
+        specialRequests?.map((x: any) => {
+            return payloadSpecialRequest?.push({
+                id: x?.id,
+                amount: x?.amount,
+            })
+        })
+        await updateTripTransaction?.mutateAsync({
+            id,
+            participants,
+            special_requests: payloadSpecialRequest,
+        })
+        setLoading(false)
         navigation.goBack()
     }
 
@@ -57,7 +82,7 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
                     paddingBottom='80px'
                     space='15px'
                 >
-                    <Stack space='15px'>
+                    <Stack space='30px'>
                         {specialRequests?.map((data: any, index: number) => {
                             return (
                                 <Stack 
@@ -67,7 +92,9 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
                                 >
                                     <Stack>
                                         <Text fontFamily='Poppins-Medium' fontSize='13px'>{data?.type}</Text>
-                                        <Text fontFamily='Poppins-Regular' fontSize='11px'>Rp.{Number(data?.price * data?.qty)?.toLocaleString('id')}</Text>
+                                        <Text fontFamily='Poppins-Regular' fontSize='11px' color='gray.400'>Harga per pcs Rp.{Number(data?.price)?.toLocaleString('id')}</Text>
+                                        <Text fontFamily='Poppins-Regular' fontSize='11px' color='gray.400'>Lorem ipsum dolor sit amet</Text>
+                                        <Text fontFamily='Poppins-Regular' fontSize='11px' marginTop='10px'>Rp.{Number(data?.price * data?.amount)?.toLocaleString('id')}</Text>
                                     </Stack>
                                     <Stack 
                                         direction='row' 
@@ -80,9 +107,9 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
                                                 as={SimpleLineIcons} 
                                                 name='minus' 
                                                 size='sm' 
-                                                color={data?.qty == 0 ? 'gray.400' : 'xprimary.50' }
+                                                color={data?.amount == 0 ? 'gray.400' : 'xprimary.50' }
                                                 onPress={() => {
-                                                    if (data?.qty == 0) return
+                                                    if (data?.amount == 0) return
                                                     else return handleCounter(index, 'minus')
                                                 }}
                                             />
@@ -92,7 +119,7 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
                                             fontSize='13px'
                                             width='25px'
                                             textAlign='center'
-                                        >{data?.qty}</Text>
+                                        >{data?.amount}</Text>
                                         <Pressable>
                                             <Icon 
                                                 as={SimpleLineIcons} 
@@ -143,6 +170,7 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
                         colorScheme="success" 
                         borderRadius='8px' 
                         onPress={handleApply}
+                        isLoading={loading}
                     >
                         <Text
                             fontFamily='Poppins-SemiBold' 

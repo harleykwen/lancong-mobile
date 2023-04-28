@@ -93,7 +93,7 @@ function MyTabs() {
         <Tab.Navigator screenOptions={{tabBarActiveTintColor: '#038103'}}>
             <Tab.Screen name={'Beranda'} component={TripStack} options={{ headerShown: false, tabBarIcon: Icon.Home }} />
             <Tab.Screen name={'Transaksi'} component={TransactionStack} options={{ headerShown: false, tabBarIcon: Icon.History }} />
-            <Tab.Screen name={'Pesan'} component={Chat} options={{ tabBarIcon: Icon.Chat }} />
+            <Tab.Screen name={'Pesan'} component={SearchHotelScreen} options={{ tabBarIcon: Icon.Chat }} />
             <Tab.Screen name={'Akun'} component={ProfileStack} options={{ headerShown: false, tabBarIcon: Icon.UserCircle }} />
         </Tab.Navigator>
     )

@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { Header } from '../../../components'
+import { useMutation } from 'react-query'
+import { updateTransactionTripApi } from '../../../apis/transaction.api'
 import { 
     Button,
     Flex, 
@@ -43,18 +45,41 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
         group, 
         trip,
         checkoutData, 
+        transaction,
     } = route?.params
 
     const [specialRequests, setSpecialRequests] = useState([...data?.special_requests?.map((data: any) => {
         return {
             ...data,
-            qty: 0,
+            amount: data?.amount??0,
         }
     })])
 
-    const [pelancong, setPelancong] = useState([...Array(checkoutData?.totalPelancong)?.map((_, index) => {
-        return { id: index + 1 }
-    })])
+    console.log({ totalPelancong: checkoutData?.totalPelancong })
+
+    const [pelancong, setPelancong] = useState<any>(
+        typeof(checkoutData?.totalPelancong) === 'number'
+            ?   [...Array(checkoutData?.totalPelancong)?.map(() => {
+                    return {}
+                })]
+            :   [...checkoutData?.totalPelancong]
+    )
+
+    const updateTripTransaction = useMutation(updateTransactionTripApi, {
+        onSuccess: (resp: any) => {
+            if (resp?.order?.special_requests?.length === 0) return
+            setSpecialRequests((prev: any) => {
+                return [...resp?.order?.special_requests]
+            })
+            if (resp?.order?.participants?.length === 0) return
+            // let tempPelancong = [...resp?.order?.participants]
+            let tempPelancong = [...Array(resp?.order?.pax)]?.map(() => {})
+            resp?.order?.participants?.map((data: any, index: number) => tempPelancong[index] = data)
+            setPelancong(() => {
+                return [...tempPelancong]
+            })
+        }
+    })
 
     function onSelectPelancong(index: number, data: any) {
         const tempPelancong = pelancong
@@ -97,7 +122,7 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                         </Stack>
                         <Stack direction='row'>
                             <Text fontFamily='Poppins-Light' fontSize='11px'>Total pelancong: </Text>
-                            <Text fontFamily='Poppins-Medium' fontSize='11px'>{checkoutData?.totalPelancong} orang</Text>
+                            <Text fontFamily='Poppins-Medium' fontSize='11px'>{typeof(checkoutData?.totalPelancong) === 'number' ? checkoutData?.totalPelancong : checkoutData?.totalPelancong?.length} orang</Text>
                         </Stack>
                         <Stack direction='row'>
                             <Text fontFamily='Poppins-Light' fontSize='11px'>Waktu melancong: </Text>
@@ -120,6 +145,9 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                                         setPelancong,
                                         index,
                                         onSelectPelancong,
+                                        updateTripTransaction,
+                                        specialRequests,
+                                        transactionId: transaction?.id,
                                     })}
                                 >
                                     <Icon 
@@ -129,9 +157,8 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                                         size='lg' 
                                     />
                                     <Text {...baseStylePressedTextComponent}>
-                                        {/* Pelancong {index + 1} */}
                                         {
-                                            p !== undefined
+                                            p?.id
                                                 ?   p?.name
                                                 :   `Pelancong ${index + 1}`
                                         }
@@ -153,7 +180,18 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                     <Pressable
                         {...baseStylePressedComponent}  
                         borderRadius='8px'
-                        onPress={() => navigation.push('special-request', { data: specialRequests, setData: setSpecialRequests })}
+                        onPress={() => {
+                            navigation.push(
+                                'special-request', 
+                                { 
+                                    id: transaction?.id,
+                                    specialRequests: specialRequests, 
+                                    setSpecialRequests: setSpecialRequests, 
+                                    participants: pelancong?.filter((x: any) => x?.id)?.map((x: any) => x?.id),
+                                    updateTripTransaction,
+                                },
+                            )
+                        }}
                     >
                         <Icon 
                             as={MaterialIcons} 
@@ -173,16 +211,17 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                         />
                     </Pressable>
                     {
-                        specialRequests?.find((x: any) => x?.qty) !== undefined &&
+                        specialRequests?.find((x: any) => x?.amount) !== undefined &&
                         <Stack direction='row'>
+                            {/* sr price from updateTripTransaction?.data?.order?.sr_price */}
                             <Text fontSize='11px' fontFamily='Poppins-Regular'>Total permintaan khusus: </Text>
                             <Text fontSize='11px' fontFamily='Poppins-Medium'>Rp. {' '}
                                 {
                                     Number(
                                         specialRequests
-                                        ?.filter((x: any) => x?.qty != 0)
-                                        ?.reduce((accumulator, { price, qty }) => {
-                                            return accumulator + (qty * price)
+                                        ?.filter((x: any) => x?.amount != 0)
+                                        ?.reduce((accumulator, { price, amount }) => {
+                                            return accumulator + (amount * price)
                                           }, 0)
                                     )?.toLocaleString('id')
                                 }
@@ -213,12 +252,12 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                     >Rp. {' '}
                         {
                             (
-                                Number(data?.price * checkoutData?.totalPelancong) +
+                                Number(data?.price * typeof(checkoutData?.totalPelancong) === 'number' ? checkoutData?.totalPelancong : checkoutData?.totalPelancong?.length) +
                                 Number(
                                     specialRequests
-                                    ?.filter((x: any) => x?.qty != 0)
-                                    ?.reduce((accumulator, { price, qty }) => {
-                                        return accumulator + (qty * price)
+                                    ?.filter((x: any) => x?.amount != 0)
+                                    ?.reduce((accumulator, { price, amount }) => {
+                                        return accumulator + (amount * price)
                                       }, 0)
                                 )
                             )

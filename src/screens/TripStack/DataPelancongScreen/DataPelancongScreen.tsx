@@ -5,14 +5,15 @@ import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Header } from '../../../components'
 import { useQuery, useQueryClient } from 'react-query'
 import { getPelancongApi } from '../../../apis/pelancong.api'
-import 
-{ 
+import { 
     Button,
     Flex, 
     Icon, 
     Input, 
+    Modal, 
     Pressable, 
     ScrollView, 
+    Spinner, 
     Stack, 
     Text, 
 } from 'native-base'
@@ -30,11 +31,29 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
         setPelancong,
         index, 
         onSelectPelancong,
+        updateTripTransaction,
+        specialRequests,
+        transactionId,
     } = route?.params
 
     const [search, setSearch] = useState<string>('')
+    const [loading, setLoading] = useState(false)
 
     const listPelancong = useQuery('get-pelancong', getPelancongApi)
+
+    async function handleAddPelancong(index: any, data: any) {
+        setLoading(true)
+        let currentPelancong = pelancong?.map((x: any) => x?.id)
+        currentPelancong[index] = data?.id
+        let payloadPelancong = currentPelancong?.filter((x: any) => x !== null && x !== undefined)
+        await updateTripTransaction?.mutateAsync({
+            id: transactionId,
+            participants: payloadPelancong,
+            special_requests: specialRequests,
+        })
+        setLoading(false)
+        navigation.goBack()
+    }
 
     return (
         <Flex flex='1' backgroundColor='white'>
@@ -113,7 +132,7 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                                         <PickPelancongItem 
                                             key={i} 
                                             data={p} 
-                                            onSelectPelancong={onSelectPelancong}
+                                            onSelectPelancong={handleAddPelancong}
                                             index={index}
                                         />
                                     )
@@ -137,7 +156,7 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                                             <PickPelancongItem 
                                                 key={i} 
                                                 data={p} 
-                                                onSelectPelancong={onSelectPelancong}
+                                                onSelectPelancong={handleAddPelancong}
                                                 index={index}
                                             />
                                         )
@@ -213,6 +232,26 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                     >Tambah Data Pelancong</Text>
                 </Button>
             </Stack>
+
+            <Modal isOpen={loading} avoidKeyboard size="sm">
+                <Modal.Content>
+                    <Modal.Body>
+                        <Stack 
+                            direction='row' 
+                            alignItems='center' 
+                            justifyContent='center'
+                            space='10px'
+                        >
+                            <Spinner color='xprimary.50' size='sm' />
+                            <Text
+                                fontFamily='Poppins-Regular' 
+                                fontSize='13px'
+                                color='xprimary.50'
+                            >Menambahkan pelancong ...</Text>
+                        </Stack>
+                    </Modal.Body>
+                </Modal.Content>
+            </Modal>
         </Flex>
     )
 }

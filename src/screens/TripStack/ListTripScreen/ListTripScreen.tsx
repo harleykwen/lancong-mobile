@@ -109,6 +109,7 @@ const ListTripScreen = (props: IListTripScreen) => {
                 <FlatList
                     keyExtractor={(trip: any) => trip.id}
                     data={tripList?.data}
+                    // columnWrapperStyle={{ flex: 1, maxWidth: '50%' }}
                     padding='5px'
                     numColumns={2}
                     marginBottom='10px'

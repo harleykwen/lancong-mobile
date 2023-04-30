@@ -5,11 +5,13 @@ import {
     Button, 
     Flex, 
     Icon, 
+    Image, 
     Pressable, 
     ScrollView, 
     Stack, 
     Text, 
 } from 'native-base'
+import { IC_ARROW_BACK } from '../../../assets'
 
 interface ISpecialRequestScreen {
     navigation?: any
@@ -71,14 +73,30 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
 
     return (
         <Flex flex='1' backgroundColor='white'>
-            <Header
-                title='Permintaan Khusus'
-                onPressBack={() => navigation.goBack()}
-            />
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Special Request</Text>
+            </Stack>
             <ScrollView>
                 <Stack 
                     width='full' 
-                    padding='15px'
+                    padding='24px'
                     paddingBottom='80px'
                     space='15px'
                 >
@@ -107,7 +125,7 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
                                                 as={SimpleLineIcons} 
                                                 name='minus' 
                                                 size='sm' 
-                                                color={data?.amount == 0 ? 'gray.400' : 'xprimary.50' }
+                                                color={data?.amount == 0 ? 'gray.400' : 'lancPrimaryLight' }
                                                 onPress={() => {
                                                     if (data?.amount == 0) return
                                                     else return handleCounter(index, 'minus')
@@ -125,7 +143,7 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
                                                 as={SimpleLineIcons} 
                                                 name='plus' 
                                                 size='sm' 
-                                                color='xprimary.50' 
+                                                color='lancPrimaryLight' 
                                                 onPress={() => handleCounter(index, 'plus')}
                                             />
                                         </Pressable>
@@ -152,31 +170,18 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
             >
                 <Flex flex='1'>
                     <Button 
-                        colorScheme="success" 
-                        variant='outline' 
-                        borderRadius='8px'
-                        borderColor='xprimary.50'
+                        variant='lancOutline'
                         onPress={() => navigation.goBack()}
                     >
-                        <Text
-                            fontFamily='Poppins-SemiBold' 
-                            fontSize='15px'
-                            color='xprimary.50'
-                        >Batal</Text>
+                        Batal
                     </Button>
                 </Flex>
                 <Flex flex='1'>
                     <Button 
-                        colorScheme="success" 
-                        borderRadius='8px' 
                         onPress={handleApply}
                         isLoading={loading}
                     >
-                        <Text
-                            fontFamily='Poppins-SemiBold' 
-                            fontSize='15px'
-                            color='white'
-                        >Terapkan</Text>
+                        Terapkan
                     </Button>
                 </Flex>
             </Stack>

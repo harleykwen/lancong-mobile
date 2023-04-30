@@ -24,6 +24,8 @@ const IC_LOCATION_ON = require('./ic_location_on.png')
 const IC_TRANSFER_WITH_A_STATION = require('./ic_transfer_with_a_station.png')
 const IC_CALENDAR_MONTH = require('./ic_calendar_month.png')
 const IC_GROUP = require('./ic_group.png')
+const IC_ARROW_BACK = require('./ic_arrow_back.png')
+const IC_LANGUAGE = require('./ic_language.png')
 
 export {
     IC_EMAIL,
@@ -52,4 +54,6 @@ export {
     IC_TRANSFER_WITH_A_STATION,
     IC_CALENDAR_MONTH,
     IC_GROUP,
+    IC_ARROW_BACK,
+    IC_LANGUAGE,
 }

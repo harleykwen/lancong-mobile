@@ -10,9 +10,9 @@ import {
     IC_USER, 
 } from '../../assets'
 import MainHomeNavigator from './MainHomeNavigator'
-import History from '../../screens/History/History'
 import Chat from '../../screens/Chat/Chat'
-import Profile from '../../screens/Profile/Profile'
+import { ProfileScreen } from '../../screens/ProfileStack'
+import { TransactionListScreen } from '../../screens/TransactionStack'
 
 const MainNavigator: React.FC = () => {
     const Tab = createBottomTabNavigator()
@@ -31,7 +31,7 @@ const MainNavigator: React.FC = () => {
             />
             <Tab.Screen 
                 name={ROUTE_NAME.MAIN_TRANSACTION} 
-                component={History} 
+                component={TransactionListScreen} 
                 options={{ tabBarLabel: `${t('common:bottom_tabs_transaction')}`, tabBarIcon: IC_RECEIPT_LOG }}
             />
             <Tab.Screen 
@@ -41,7 +41,7 @@ const MainNavigator: React.FC = () => {
             />
             <Tab.Screen 
                 name={ROUTE_NAME.MAIN_PROFILE} 
-                component={Profile} 
+                component={ProfileScreen} 
                 options={{ tabBarLabel: `${t('common:bottom_tabs_account')}`, tabBarIcon: IC_USER }}
             />
         </Tab.Navigator>

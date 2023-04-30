@@ -83,7 +83,7 @@ const PackageTripCard = (props: IPackageTripCard) => {
                                 <Icon 
                                     as={MaterialIcons} 
                                     name='airline-seat-recline-normal' 
-                                    color='xprimary.50' 
+                                    color='lancPrimaryLight' 
                                     size='sm' 
                                 />
                                 <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.quota - data?.current_participant}</Text>
@@ -93,7 +93,7 @@ const PackageTripCard = (props: IPackageTripCard) => {
                                 <Icon 
                                     as={Ionicons} 
                                     name='calendar' 
-                                    color='xprimary.50' 
+                                    color='lancPrimaryLight' 
                                     size='sm' 
                                 />
                                 <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> {format(new Date(data?.trip_start), 'dd MMM')} - {format(new Date(data?.trip_end), 'dd MMM')}</Text>
@@ -108,7 +108,7 @@ const PackageTripCard = (props: IPackageTripCard) => {
                                 <Icon 
                                     as={Ionicons} 
                                     name='calendar' 
-                                    color='xprimary.50' 
+                                    color='lancPrimaryLight' 
                                     size='sm' 
                                 />
                                 <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> {format(new Date(data?.availability?.open), 'dd MMM')} - {format(new Date(data?.availability?.close), 'dd MMM')}</Text>
@@ -117,7 +117,7 @@ const PackageTripCard = (props: IPackageTripCard) => {
                                 <Icon 
                                     as={MaterialIcons} 
                                     name='reduce-capacity' 
-                                    color='xprimary.50' 
+                                    color='lancPrimaryLight' 
                                     size='sm' 
                                 />
                                 <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.person?.min}</Text>
@@ -129,7 +129,7 @@ const PackageTripCard = (props: IPackageTripCard) => {
                                 <Icon 
                                     as={MaterialIcons} 
                                     name='local-police' 
-                                    color='xprimary.50' 
+                                    color='lancPrimaryLight' 
                                     size='sm' 
                                 />
                                 <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.team_on_duty}</Text>
@@ -142,7 +142,7 @@ const PackageTripCard = (props: IPackageTripCard) => {
                         <Icon 
                             as={MaterialIcons} 
                             name='location-on' 
-                            color='xprimary.50' 
+                            color='lancPrimaryLight' 
                             size='sm' 
                         />
                         <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> titik bertemu di</Text>

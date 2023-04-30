@@ -1,5 +1,7 @@
 import React from 'react'
+import PackageTripCard from './PackageTripCard'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { ROUTE_NAME } from '../../../../router'
 import { 
     Actionsheet,
     Flex, 
@@ -10,7 +12,6 @@ import {
     Text,
     useDisclose, 
 } from 'native-base'
-import PackageTripCard from './PackageTripCard'
 
 interface ITripCard {
     data: any
@@ -40,7 +41,7 @@ const TripCard = (props: ITripCard) => {
                 borderColor='gray.200'
             >
                 <Pressable 
-                    onPress={() => navigation.push('detail-trip', { 
+                    onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_TRIP_DETAIL, { 
                         data: data,
                         group: group,
                     })}
@@ -98,12 +99,12 @@ const TripCard = (props: ITripCard) => {
                     <Text 
                         fontSize='11px' 
                         fontFamily='Poppins-SemiBold'
-                        color='xprimary.50'
+                        color='lancPrimaryLight'
                     >Lihat Paket</Text>
                     <Icon 
                         as={MaterialIcons} 
                         name='keyboard-arrow-up' 
-                        color='xprimary.50' 
+                        color='lancPrimaryLight' 
                         size='sm' 
                     />
                 </Pressable>

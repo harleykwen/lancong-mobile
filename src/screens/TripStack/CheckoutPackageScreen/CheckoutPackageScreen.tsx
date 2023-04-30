@@ -2,9 +2,10 @@ import React, { useState } from 'react'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
-import { Header } from '../../../components'
+import { IC_ARROW_BACK } from '../../../assets'
 import { useMutation } from 'react-query'
-import { createTransactionTripApi } from '../../../apis/transaction.api'
+import { tripCreateTransactionApi } from '../../../apis/trip'
+import { ROUTE_NAME } from '../../../router'
 import { add, format } from 'date-fns'
 import { 
     Button, 
@@ -15,7 +16,6 @@ import {
     Stack, 
     Text, 
 } from 'native-base'
-import { create } from 'react-test-renderer'
 
 interface ICheckoutPackageScreen {
     navigation: any
@@ -51,9 +51,9 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
     const [endDate, setEndDate] = useState<any>(null)
     const [textSelectedDate, setTextSelectedDate] = useState('')
 
-    const createTransaction = useMutation(createTransactionTripApi, {
+    const createTransaction = useMutation(tripCreateTransactionApi, {
         onSuccess: (resp: any) => {
-            navigation.push('complete-data', { 
+            navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA, { 
                 data: data,
                 group: group,
                 trip: trip,
@@ -76,10 +76,26 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
 
     return (
         <Flex flex='1' backgroundColor='white'>
-            <Header
-                title={`${trip?.name} - ${data?.duration?.day}D${data?.duration?.night}N`}
-                onPressBack={() => navigation.goBack()}
-            />
+            <Stack
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3'
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>{`${trip?.name} - ${data?.duration?.day}D${data?.duration?.night}N`}</Text>
+            </Stack>
 
             <Stack padding='10px' space='10px'>
                 <Pressable 
@@ -154,10 +170,10 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                                 color={group === 'public'
                                     ?   totalPelancong === 1
                                         ?   'gray.400'
-                                        :   'xprimary.50'
+                                        :   'lancPrimaryLight'
                                     :   totalPelancong === data?.person?.min
                                         ?   'gray.400'
-                                        :   'xprimary.50'
+                                        :   'lancPrimaryLight'
                                 }
 
                             />
@@ -179,14 +195,13 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                                 as={SimpleLineIcons} 
                                 name='plus' 
                                 size='xl' 
-                                // color={value >= max ? 'gray.400' : 'xprimary.50' }
                                 color={group === 'public'
                                     ?   totalPelancong === data?.quota - data?.current_participant
                                         ?   'gray.400'
-                                        :   'xprimary.50'
+                                        :   'lancPrimaryLight'
                                     :   totalPelancong === data?.person?.max
                                         ?   'gray.400'
-                                        :   'xprimary.50'
+                                        :   'lancPrimaryLight'
                                 }
                             />
                         </Pressable>
@@ -209,19 +224,13 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                 <Stack>
                     <Text fontFamily='Poppins-Light' fontSize='11px'>Total</Text>
                     <Text 
-                        color='xprimary.50' 
+                        color='lancPrimaryLight' 
                         fontFamily='Poppins-Medium' 
                         fontSize='13px'
                     >Rp. {(data?.price * totalPelancong)?.toLocaleString('id')}</Text>
                 </Stack>
-                <Button 
-                    height='50px'
-                    borderRadius='8px'
-                    backgroundColor='xprimary.50'
-                    isLoading={createTransaction?.isLoading}
-                    _pressed={{
-                        backgroundColor: 'xprimary.40'
-                    }}
+                <Button
+                    width='125px' 
                     onPress={() => {
                         createTransaction?.mutate({
                             trip_id: trip?.id,
@@ -232,11 +241,7 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                         })
                     }}
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
-                        color='white'
-                    >Lanjutkan</Text>
+                    Lanjutkan
                 </Button>
             </Stack>
 

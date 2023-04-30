@@ -4,7 +4,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import { Header } from '../../../components'
 import { useQuery, useQueryClient } from 'react-query'
-import { getPelancongApi } from '../../../apis/pelancong.api'
+import { getPelancongApi } from '../../../apis/pelancong'
 import { 
     Button,
     Flex, 
@@ -61,21 +61,22 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                 title='Pilih Pelancong'
                 onPressBack={() => navigation.goBack()}
             />
-            <Stack padding='16px'>
+            <Stack padding='24px'>
                 <Input 
-                    height='50px'
-                    borderWidth='0px' 
-                    backgroundColor='gray.100' 
-                    rounded='full' 
-                    fontSize='14px'
-                    fontFamily='Poppins-Regular'
-                    paddingY='8px'
                     placeholder='Cari pelancong ...'
-                    InputLeftElement={<Icon as={MaterialIcons} name='search' color='gray.400' size='lg' marginLeft='16px' />}
                     value={search}
                     onChangeText={(e: any) => {
                         setSearch(e)
                     }}
+                    InputLeftElement={
+                        <Icon 
+                            as={MaterialIcons} 
+                            name='search' 
+                            color='gray.400' 
+                            size='lg' 
+                            marginLeft='16px' 
+                        />
+                    }
                     InputRightElement={
                         <Pressable onPress={() => setSearch('')}>
                             <Icon 
@@ -90,14 +91,14 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                 />
             </Stack>
 
-            <ScrollView>
+            <ScrollView marginTop='-24px'>
                 <Stack flex='1' paddingBottom='70px'>
-                    {listPelancong?.data?.length === 0 &&
+                    {listPelancong?.data?.data?.length === 0 &&
                         <Flex 
                             flex='1' 
                             justifyContent='center' 
                             alignItems='center'
-                            padding='16px'
+                            padding='24px'
                         >
                             <Stack 
                                 direction='row' 
@@ -120,13 +121,13 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                         </Flex>
                     }
 
-                    {!search && listPelancong?.data?.length !== 0 &&
+                    {!search && listPelancong?.data?.data?.length !== 0 &&
                         <Stack 
                             backgroundColor='white' 
-                            padding='16px' 
+                            padding='24px' 
                             space='8px'
                         >
-                            {listPelancong?.data?.map((p: any, i: number) => {
+                            {listPelancong?.data?.data?.map((p: any, i: number) => {
                                 if (pelancong?.find((x: any) => x?.id === p?.id) === undefined) {
                                     return (
                                         <PickPelancongItem 
@@ -143,14 +144,14 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
 
                     {
                         search && 
-                        listPelancong?.data?.length !== 0 && 
-                        listPelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length !== 0 && 
+                        listPelancong?.data?.data?.length !== 0 && 
+                        listPelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length !== 0 && 
                             <Stack 
                                 backgroundColor='white' 
-                                padding='16px' 
+                                padding='24px' 
                                 space='8px'
                             >
-                                {listPelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.map((p: any, i: number) => {
+                                {listPelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.map((p: any, i: number) => {
                                     if (pelancong?.find((x: any) => x?.id === p?.id) === undefined) {
                                         return (
                                             <PickPelancongItem 
@@ -167,13 +168,13 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
 
                     {
                         search && 
-                        listPelancong?.data?.length !== 0 && 
-                        listPelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length === 0 && 
+                        listPelancong?.data?.data?.length !== 0 && 
+                        listPelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length === 0 && 
                         <Flex 
                             flex='1' 
                             justifyContent='center' 
                             alignItems='center'
-                            padding='16px'
+                            padding='24px'
                         >
                             <Stack 
                                 direction='row' 

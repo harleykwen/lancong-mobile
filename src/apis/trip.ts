@@ -1,72 +1,93 @@
-import { getAuthToken, xhr } from "./config"
+import API_URL from './apiUrl'
+import { http } from './http'
+import { AxiosResponse } from 'axios'
 
-interface IGetTripList {
+interface ITripSearchApi {
     type: string
     destination: string
     group: string
-    trip_start: number
+    trip_start: any
     participant: string
 }
 
-interface IGetTripTypeList {
-    id: any
+interface ITripCreateTransactionApi {
+    trip_id: string
+    package_id: string
+    group: string
+    pax: number
+    trip_start: number
 }
 
-export async function getTripListApi(props: IGetTripList) {
-    try {
-        const payload = {...props}
-        const response = await xhr.get('/user/trip', {
-            params: {
-                ...payload,
-            },
-            headers: {
-                'Authorization': 'Bearer ' + await getAuthToken(),
-                'Accept': '*/*',
-            }
-        })
+interface IUpdateTransactionTripApi {
+    id: string
+    participants?: string[]
+    special_requests?: any[]
+}
 
-        if (response.data.error) throw response.data.message
-        return response.data.data
+interface ITripCheckout {
+    transaction_id: string
+    bank_code: string
+}
+
+export async function tripTypesApi() {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRIP.TYPES)
+        if (response?.data?.error) throw response
+        return response?.data
     } catch (error: any) {
-        console.log(error)
-        throw error?.response?.data?.message??'Error get trip list'
+        throw error?.data?.message??'Get trip types error'
     }
 }
 
-export async function getTripTypeListApi(props: IGetTripTypeList) {
+export async function tripOptionsApi() {
     try {
-        const payload = {...props}
-        const response = await xhr.get('/user/trip/get', {
-            params: {
-                ...payload,
-            },
-            headers: {
-                'Authorization': 'Bearer ' + await getAuthToken(),
-                'Accept': '*/*',
-            }
-        })
-
-        console.log(response)
-        if (response.data.error) throw response.data.message
-        return response.data.data
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRIP.OPTIONS)
+        if (response?.data?.error) throw response
+        return response?.data
     } catch (error: any) {
-        console.log(error)
-        throw error?.response?.data?.message??'Error get trip type list'
+        throw error?.data?.message??'Get trip options error'
     }
 }
 
-export async function getTripTypesApi() {
+export async function tripSearchApi(props: ITripSearchApi) {
     try {
-        const response = await xhr.get('/master/trip/types', {
-            headers: {
-                'Authorization': 'Bearer ' + await getAuthToken(),
-                'Accept': '*/*',
-            }
-        })
-        if (response.data.error) throw response.data.message
-        return response.data.data
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRIP.SEARCH, { params: props })
+        if (response?.data?.error) throw response
+        return response?.data
     } catch (error: any) {
-        console.log(error)
-        throw error?.response?.data?.message??'Error get trip types'
+        throw error?.data?.message??'Search trip error'
+    }
+}
+
+export async function tripCreateTransactionApi(props: ITripCreateTransactionApi) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).post(API_URL.TRIP.CREATE_TRANSACTION, props)
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Create trip transaction error'
+    }
+}
+
+export async function updateTransactionTripApi(payload: IUpdateTransactionTripApi) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).put(API_URL.TRIP.UPDATE_TRANSACTION?.replace(':transactionId', payload?.id), {
+            participants: payload?.participants,
+            special_requests: payload?.special_requests,
+        })
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Update trip transaction error'
+    }
+}
+
+export async function tripCheckoutApi(payload: ITripCheckout) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).post(API_URL.TRIP.CHECKOUT, payload)
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Checkout trip error'
     }
 }

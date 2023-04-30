@@ -1,8 +1,9 @@
 import React, { useState } from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { getListVaApi } from '../../../apis/payment.api'
-import { useQuery } from 'react-query'
-import { Header, LInput } from '../../../components'
+import { bankListApi } from '../../../apis/va'
+import { tripCheckoutApi } from '../../../apis/trip'
+import { useMutation, useQuery } from 'react-query'
+import { LInput } from '../../../components'
 import { 
     Button, 
     Center, 
@@ -18,6 +19,8 @@ import {
     VStack 
 } from 'native-base'
 import { 
+    IC_ARROW_BACK,
+    IC_ARROW_DROP_DOWN,
     LOGO_BCA, 
     LOGO_BJB, 
     LOGO_BNI, 
@@ -42,30 +45,24 @@ const PaymentTypeScreen = (props: IPayment) => {
         pelancong,
         checkoutData, 
         specialRequests,
+        transaction,
     } = route?.params
 
-    const baseStylePressedComponent: object = {
-        height:'50px',
-        backgroundColor:'gray.200',
-        paddingX:'16px',
-        paddingY:'8px',
-        flexDirection:'row',
-        alignItems:'center',
-        _pressed:{
-            backgroundColor: 'gray.300'
-        }
-    }
-
-    const baseStylePressedTextComponent: object = {
-        fontFamily: 'Poppins-Medium',
-        fontSize: '13px',
-        marginTop: '2px',
-    }
+    console.log({
+        data, 
+        group, 
+        trip,
+        pelancong,
+        checkoutData, 
+        specialRequests,
+        transaction,
+    })
 
     const [paymentType, setPaymentType] = useState('')
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
 
-    const vas = useQuery('list-va', getListVaApi)
+    const vas = useQuery('list-va', bankListApi)
+    const checkout = useMutation(tripCheckoutApi)
 
     function generateIconBank(data: any) {
         switch(data?.code) {
@@ -88,29 +85,76 @@ const PaymentTypeScreen = (props: IPayment) => {
         }
     }
 
+    function calculateTotalPrice() {
+        let price: any
+        if (typeof(checkoutData.totalPelancong) === 'number') {
+            price = data?.price * checkoutData?.totalPelancong
+        } else {
+            price = data?.price * checkoutData?.totalPelancong?.length
+        }
+
+        const totalPriceSpecialRequest: any = specialRequests
+            ?.filter((x: any) => x?.amount != 0)
+            ?.reduce((accumulator: any, { price, amount }: any) => {
+                return accumulator + (amount * price)
+            }, 0)
+
+        return Number(price + totalPriceSpecialRequest)?.toLocaleString('id')
+    }
+
     return (
         <Flex flex='1' backgroundColor='white'>
-            <Header
-                title='Pembayaran'
-                subtitle='1. Lengkap Data   -   2. Pembayaran'
-                onPressBack={() => navigation.goBack()}
-            />
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Tipe Pembayaran</Text>
+            </Stack>
 
             <ScrollView>
-                <VStack space='10px' padding='10px'>
+                <VStack space='10px' padding='24px'>
                     <Select 
                         placeholder="Pilih skema pembayaran"  
-                        mt={1} 
-                        dropdownIcon={<></>} 
-                        width='full'
                         selectedValue={paymentType} 
                         onValueChange={itemValue => {
                             setPaymentType(itemValue)
                             setSelectedPaymentMethod('')
                         }}
-                        InputRightElement={<Icon as={MaterialIcons} name='chevron-right' color='gray.400' size='lg' marginRight='15px' />}
-                        {...baseStylePressedComponent}
-                        {...baseStylePressedTextComponent}
+                        dropdownIcon={
+                            <Stack
+                                direction='row'
+                                width='full'
+                                position='absolute'
+                                top='0'
+                                bottom='0'
+                                alignItems='center'
+                                justifyContent='space-between'
+                            >
+                                <Stack></Stack>
+                                <Image
+                                    alt='IC_ARROW_DROPDOWN'
+                                    source={IC_ARROW_DROP_DOWN}
+                                    width='32px'
+                                    height='32px'
+                                    marginRight='16px'
+                                    tintColor='lancSurfaceLight'
+                                />
+                            </Stack>
+                        } 
                     >
                         <Select.Item label="Cicilan" value="cicilan" />
                         <Select.Item label="Pembayaran Penuh" value="non-cicilan" />
@@ -213,7 +257,7 @@ const PaymentTypeScreen = (props: IPayment) => {
                                     <Text margin='10px' fontSize='15px' fontFamily='Poppins-SemiBold'>Bayar dengan:</Text>
                                     <Text margin='10px' fontSize='15px' fontFamily='Poppins-SemiBold'>Virtual Account</Text>
                                 </Stack>
-                                {vas?.data?.map((va: any, index: number) => {
+                                {vas?.data?.data?.map((va: any, index: number) => {
                                     return (
                                         <Pressable key={index} onPress={() => setSelectedPaymentMethod(va?.code)}>
                                             <Stack
@@ -221,7 +265,7 @@ const PaymentTypeScreen = (props: IPayment) => {
                                                 alignItems='center'
                                                 justifyContent='space-between' 
                                                 padding='12px'
-                                                backgroundColor={selectedPaymentMethod === va?.code ? 'xprimary.50' : 'white'}
+                                                backgroundColor={selectedPaymentMethod === va?.code ? 'lancPrimaryLight' : 'white'}
                                             >
                                                 <Stack 
                                                     direction='row' 
@@ -271,42 +315,22 @@ const PaymentTypeScreen = (props: IPayment) => {
                 <Stack>
                     <Text fontFamily='Poppins-Light' fontSize='11px'>Total</Text>
                     <Text 
-                        color='xprimary.50' 
-                        fontFamily='Poppins-Medium' 
+                        color='lancPrimaryLight' 
+                        fontFamily='Poppins-SemiBold' 
                         fontSize='13px'
                     >
-                        Rp. {' '}
-                        {
-                            (
-                                Number(data?.price * checkoutData?.totalPelancong) +
-                                Number(
-                                    specialRequests
-                                    ?.filter((x: any) => x?.qty != 0)
-                                    ?.reduce((accumulator: number, { price, qty }: any ) => {
-                                        return accumulator + (qty * price)
-                                      }, 0)
-                                )
-                            )
-                                ?.toLocaleString('id')
-                        }
+                        Rp. {calculateTotalPrice()}
                     </Text>
                 </Stack>
                 <Button 
-                    height='50px'
-                    borderRadius='8px'
-                    backgroundColor='xprimary.50'
-                    _pressed={{
-                        backgroundColor: 'xprimary.40'
+                    width='150px'
+                    isLoading={checkout?.isLoading}
+                    onPress={() => {
+                        checkout.mutate({
+                            transaction_id: transaction?.id,
+                            bank_code: selectedPaymentMethod,
+                        })
                     }}
-                    onPress={() => navigation.push('payment-method', { 
-                        data: data,
-                        group: group,
-                        trip: trip,
-                        pelancong,
-                        checkoutData,
-                        paymentType,
-                        specialRequests,
-                    })}
                 >
                     <Text
                         fontFamily='Poppins-SemiBold' 

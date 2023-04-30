@@ -48,7 +48,16 @@ export default {
     signup_otp_input_error_message: 'Kode OTP harus 6 digit',
 
     // PROFILE SCREEN
+    profile_add_pelancong_data: 'Daftar Pelancong',
+    profile_change_language: 'Ganti Bahasa',
     profile_logout: 'Keluar',
+
+    // LIST PELANCONG SCREEN
+    list_pelancong_title: 'Daftar Pelancong',
+    list_pelancong_input_search_placeholder: 'Cari pelancong ...',
+    list_pelancong_button_add_pelancong: 'Tambah Pelancong Baru',
+    list_pelancong_empty: 'Tidak ada Pelancong',
+    list_pelancong_search_not_found: 'Pelancong dengan kata kunci {{key}} tidak ditemukan',
 
     // TRIP SEARCH SCREEN
     trip_search_title: 'Cari Trip',

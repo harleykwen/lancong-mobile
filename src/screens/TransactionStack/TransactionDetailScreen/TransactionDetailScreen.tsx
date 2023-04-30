@@ -1,10 +1,17 @@
 import React from 'react'
-import { Flex, ScrollView, Stack, Text } from 'native-base'
-import { Header } from '../../../components'
 import { useQuery } from 'react-query'
-import { getTransactionDetailApi } from '../../../apis/transaction.api'
+import { getTransactionDetailApi } from '../../../apis/transaction'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
+import { IC_ARROW_BACK } from '../../../assets'
+import { 
+    Flex, 
+    Image, 
+    Pressable, 
+    ScrollView, 
+    Stack, 
+    Text, 
+} from 'native-base'
 
 interface ITransactionDetailScreen {
     navigation?: any
@@ -19,10 +26,26 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
     
     return (
         <Flex flex='1' backgroundColor='gray.100'>
-            <Header
-                title='Detail Transaksi'
-                onPressBack={() => navigation.goBack()}
-            />
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Detail Transaksi</Text>
+            </Stack>
 
             {transactionData?.data &&
                 <ScrollView>
@@ -32,6 +55,7 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                             paddingX='10px'
                             paddingY='20px' 
                             space='5px'
+                            marginTop='10px'
                         >
                             <Stack 
                                 direction='row' 
@@ -47,7 +71,7 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                                     fontSize='13px' 
                                     fontFamily='Poppins-Regular' 
                                     color='black'
-                                >{format(new Date(transactionData?.data?.created_at), 'dd MMMM yyyy', { locale: id })}</Text>
+                                >{format(new Date(transactionData?.data?.data?.created_at), 'dd MMMM yyyy', { locale: id })}</Text>
                             </Stack>
                             <Stack 
                                 direction='row' 
@@ -64,7 +88,7 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                                     fontFamily='Poppins-Regular' 
                                     color='black'
                                     textTransform='capitalize'
-                                >{transactionData?.data?.transaction_type}</Text>
+                                >{transactionData?.data?.data?.transaction_type}</Text>
                             </Stack>
                         </Stack>
 
@@ -89,7 +113,7 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                                     fontFamily='Poppins-Regular' 
                                     color='black'
                                     textTransform='capitalize'
-                                >{transactionData?.data?.order?.group}</Text>
+                                >{transactionData?.data?.data?.order?.group}</Text>
                             </Stack>
                             <Stack 
                                 direction='row' 
@@ -106,7 +130,7 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                                     fontFamily='Poppins-Regular' 
                                     color='black'
                                     textTransform='capitalize'
-                                >{transactionData?.data?.order?.trip?.name}</Text>
+                                >{transactionData?.data?.data?.order?.trip?.name}</Text>
                             </Stack>
                         </Stack>
 
@@ -131,7 +155,7 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                                     fontFamily='Poppins-Regular' 
                                     color='black'
                                     textTransform='capitalize'
-                                >{transactionData?.data?.order?.payment?.bank_code} {transactionData?.data?.order?.payment_method?.replace('_', ' ')}</Text>
+                                >{transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.bank_code} {transactionData?.data?.data?.order?.payment_method?.replace('_', ' ')}</Text>
                             </Stack>
                             <Stack 
                                 direction='row' 
@@ -147,7 +171,24 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                                     fontSize='13px' 
                                     fontFamily='Poppins-Regular' 
                                     color='black'
-                                >Rp. {transactionData?.data?.order?.payment?.expected_amount?.toLocaleString('id')}</Text>
+                                >Rp. {transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.expected_amount?.toLocaleString('id')}</Text>
+                            </Stack>
+                            <Stack 
+                                direction='row' 
+                                alignItems='center' 
+                                justifyContent='space-between'
+                            >
+                                <Text 
+                                    fontSize='13px' 
+                                    fontFamily='Poppins-Regular' 
+                                    color='gray.600'
+                                >Nomor Pembayaran</Text>
+                                <Text 
+                                    fontSize='13px' 
+                                    fontFamily='Poppins-Regular' 
+                                    color='black'
+                                    textTransform='capitalize'
+                                >{transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.account_number}</Text>
                             </Stack>
                         </Stack>
                     </Stack>

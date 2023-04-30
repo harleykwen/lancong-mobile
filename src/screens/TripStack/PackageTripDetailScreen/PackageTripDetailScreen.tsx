@@ -16,11 +16,15 @@ import {
     FlatList, 
     Flex, 
     Icon, 
+    Image, 
+    Pressable, 
     ScrollView, 
     Stack, 
     Text, 
 } from 'native-base'
-import { createTransactionTripApi } from '../../../apis/transaction.api'
+import { createTransactionTripApi } from '../../../apis/transaction'
+import { IC_ARROW_BACK } from '../../../assets'
+import { ROUTE_NAME } from '../../../router'
 
 interface IPackageTripDetailScreen {
     navigation: any
@@ -62,13 +66,29 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
 
     return (
         <Flex flex='1' backgroundColor='white'>
-            <Header
-                title={`${trip?.name} - ${data?.duration?.day}D${data?.duration?.night}N`}
-                onPressBack={() => navigation.goBack()}
-            />
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>{`${trip?.name} - ${data?.duration?.day}D${data?.duration?.night}N`}</Text>
+            </Stack>
             <Flex flex='1' paddingBottom='70px'>
-                <ScrollView>
-                    <Stack padding='10px' space='20px'>
+                <ScrollView showsVerticalScrollIndicator={false}>
+                    <Stack padding='24px' space='20px'>
                         <Stack>
                             <Text 
                                 fontFamily='Poppins-Medium' 
@@ -114,7 +134,7 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                                                 borderBottomLeftRadius='0px'
                                                 borderBottomRightRadius='full'
                                                 borderTopRightRadius='full'
-                                                backgroundColor='xprimary.50'
+                                                backgroundColor='lancPrimaryLight'
                                                 width='100px'
                                                 marginLeft='-10px'
                                             >
@@ -205,42 +225,29 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                 left='0px'
                 right='0px'
                 shadow='5'
+                width='100%'
+                flex='1'
             >
                 <Stack>
                     <Text fontFamily='Poppins-Light' fontSize='11px'>Harga per orang</Text>
                     <Text 
-                        color='xprimary.50' 
+                        color='lancPrimaryLight' 
                         fontFamily='Poppins-Medium' 
                         fontSize='13px'
                     >Rp. {data?.price?.toLocaleString('id')}</Text>
                 </Stack>
                 <Button 
-                    height='50px'
                     width='125px'
-                    borderRadius='8px'
-                    backgroundColor='xprimary.50'
                     isLoading={createTransaction?.isLoading}
-                    _pressed={{
-                        backgroundColor: 'xprimary.40'
-                    }}
                     onPress={() => {
-                        // createTransaction?.mutate({
-                        //     trip_id: trip?.id,
-                        //     package_id: data?.id,
-                        //     group,
-                        // })
-                        navigation.push('trip-package-checkout', { 
+                        navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_PACKAGE_CHECKOUT, { 
                             data: data,
                             group: group,
                             trip: trip
                         })
                     }}
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
-                        color='white'
-                    >Pilih Paket</Text>
+                    Pilih Paket
                 </Button>
             </Stack>
         </Flex>

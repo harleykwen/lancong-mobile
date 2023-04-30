@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { Header } from '../../../components'
 import { useMutation } from 'react-query'
-import { updateTransactionTripApi } from '../../../apis/transaction.api'
+import { updateTransactionTripApi } from '../../../apis/trip'
+import { IC_ARROW_BACK } from '../../../assets'
+import { ROUTE_NAME } from '../../../router'
 import { 
     Button,
     Flex, 
@@ -55,8 +56,6 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
         }
     })])
 
-    console.log({ totalPelancong: checkoutData?.totalPelancong })
-
     const [pelancong, setPelancong] = useState<any>(
         typeof(checkoutData?.totalPelancong) === 'number'
             ?   [...Array(checkoutData?.totalPelancong)?.map(() => {
@@ -67,17 +66,19 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
 
     const updateTripTransaction = useMutation(updateTransactionTripApi, {
         onSuccess: (resp: any) => {
-            if (resp?.order?.special_requests?.length === 0) return
-            setSpecialRequests((prev: any) => {
-                return [...resp?.order?.special_requests]
-            })
-            if (resp?.order?.participants?.length === 0) return
-            // let tempPelancong = [...resp?.order?.participants]
-            let tempPelancong = [...Array(resp?.order?.pax)]?.map(() => {})
-            resp?.order?.participants?.map((data: any, index: number) => tempPelancong[index] = data)
-            setPelancong(() => {
-                return [...tempPelancong]
-            })
+            if (resp?.data?.order?.participants?.length !== 0) {
+                let tempPelancong = [...Array(resp?.data?.order?.pax)]?.map(() => {})
+                resp?.data?.order?.participants?.map((data: any, index: number) => tempPelancong[index] = data)
+                setPelancong(() => {
+                    return [...tempPelancong]
+                })
+            }
+
+            if (resp?.data?.order?.participants?.length !== 0) {
+                setSpecialRequests((prev: any) => {
+                    return [...resp?.data?.order?.special_requests]
+                })
+            }
         }
     })
 
@@ -90,15 +91,47 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
         navigation?.goBack()
     }
 
+    function calculateTotalPrice() {
+        let price: any
+        if (typeof(checkoutData.totalPelancong) === 'number') {
+            price = data?.price * checkoutData?.totalPelancong
+        } else {
+            price = data?.price * checkoutData?.totalPelancong?.length
+        }
+
+        const totalPriceSpecialRequest = specialRequests
+            ?.filter((x: any) => x?.amount != 0)
+            ?.reduce((accumulator, { price, amount }) => {
+                return accumulator + (amount * price)
+            }, 0)
+
+        return Number(price + totalPriceSpecialRequest)?.toLocaleString('id')
+    }
+
     return (
         <Flex flex='1' backgroundColor='white'>
-            <Header
-                title='Lengkapi Data'
-                subtitle='1. Lengkap Data   -   2. Pembayaran'
-                onPressBack={() => navigation.goBack()}
-            />
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Lengkapi Data</Text>
+            </Stack>
 
-            <Stack padding='10px' space='24px'>
+            <Stack padding='24px' space='24px'>
                 <Stack 
                     direction='row' 
                     padding='10px' 
@@ -140,7 +173,7 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                                     key={index}
                                     {...baseStylePressedComponent}  
                                     borderRadius='8px'
-                                    onPress={() => navigation?.push('data-pelancong', {
+                                    onPress={() => navigation?.push(ROUTE_NAME.TRIP_NAVIGATOR_PELANCONG_DATA, {
                                         pelancong,
                                         setPelancong,
                                         index,
@@ -182,7 +215,7 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                         borderRadius='8px'
                         onPress={() => {
                             navigation.push(
-                                'special-request', 
+                                ROUTE_NAME.TRIP_NAVIGATOR_SPECIAL_REQUEST, 
                                 { 
                                     id: transaction?.id,
                                     specialRequests: specialRequests, 
@@ -246,46 +279,25 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                 <Stack>
                     <Text fontFamily='Poppins-Light' fontSize='11px'>Total</Text>
                     <Text 
-                        color='xprimary.50' 
+                        color='lancPrimaryLight' 
                         fontFamily='Poppins-Medium' 
                         fontSize='13px'
-                    >Rp. {' '}
-                        {
-                            (
-                                Number(data?.price * typeof(checkoutData?.totalPelancong) === 'number' ? checkoutData?.totalPelancong : checkoutData?.totalPelancong?.length) +
-                                Number(
-                                    specialRequests
-                                    ?.filter((x: any) => x?.amount != 0)
-                                    ?.reduce((accumulator, { price, amount }) => {
-                                        return accumulator + (amount * price)
-                                      }, 0)
-                                )
-                            )
-                                ?.toLocaleString('id')
-                        }
+                    >Rp. {calculateTotalPrice()}
                     </Text>
                 </Stack>
                 <Button 
-                    height='50px'
-                    borderRadius='8px'
-                    backgroundColor='xprimary.50'
-                    _pressed={{
-                        backgroundColor: 'xprimary.40'
-                    }}
-                    onPress={() => navigation.push('payment-type', {
+                    width='150px'
+                    onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_PAYMENT_TYPE, {
                         data: data,
                         group: group,
                         trip: trip,
                         pelancong,
                         checkoutData,
                         specialRequests,
+                        transaction,
                     })}
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
-                        color='white'
-                    >Konfirmasi</Text>
+                    Konfirmasi
                 </Button>
             </Stack>
         </Flex>

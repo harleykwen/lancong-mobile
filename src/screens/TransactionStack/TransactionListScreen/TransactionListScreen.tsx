@@ -1,9 +1,9 @@
-import React from 'react'
-import { Header } from '../../../components'
-import { useMutation, useQuery } from 'react-query'
-import { getTransactionDetailApi, getTransactionListApi } from '../../../apis/transaction.api'
-import { add, format } from 'date-fns'
+import React, { useEffect } from 'react'
 import { id } from 'date-fns/locale'
+import { format } from 'date-fns'
+import { ROUTE_NAME } from '../../../router'
+import { useMutation, useQuery } from 'react-query'
+import { getTransactionDetailApi, getTransactionListApi } from '../../../apis/transaction'
 import { 
     Center,
     Divider,
@@ -14,6 +14,7 @@ import {
     Stack, 
     Text,
 } from 'native-base'
+import { useIsFocused } from '@react-navigation/native'
 
 interface ITransactionListScreen {
     navigation?: any
@@ -21,75 +22,105 @@ interface ITransactionListScreen {
 
 const TransactionListScreen = (props: ITransactionListScreen) => {
     const { navigation } = props
+    const isFocused = useIsFocused()
 
     const transactions = useQuery('transaction-list', getTransactionListApi)
     const transactionDetail = useMutation(getTransactionDetailApi, {
         onSuccess: (resp: any) => {
-            let pelancong: any = null
-            if (resp?.order?.participants?.length > 0) {
-                pelancong = resp?.order?.participants
-                const pelancongLeft: number = resp?.order?.pax - resp?.order?.participants?.length
-                for (let i = 1; i <= pelancongLeft; i++) {
-                    pelancong?.push({})
+            if (resp?.data?.order?.status === 'DRAFT') {
+                let pelancong: any = null
+                if (resp?.data?.order?.participants?.length > 0) {
+                    pelancong = resp?.data?.order?.participants
+                    const pelancongLeft: number = resp?.data?.order?.pax - resp?.data?.order?.participants?.length
+                    for (let i = 1; i <= pelancongLeft; i++) {
+                        pelancong?.push({})
+                    }
                 }
+                navigation.navigate(ROUTE_NAME.TRIP_NAVIGATOR, { 
+                    screen: ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA,
+                    params: {
+                        data: {
+                            ...resp?.data?.order[resp?.data?.order?.group],
+                            special_requests: resp?.data?.order?.special_requests?.length !== 0 ? resp?.data?.order?.special_requests : resp?.data?.order[resp?.data?.order?.group]?.special_requests,
+                        },
+                        group: resp?.data?.order?.group,
+                        trip: resp?.data?.order?.trip,
+                        checkoutData: {
+                            totalPelancong: pelancong??resp?.data?.order?.pax,
+                            textSelectedDate: `${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_start), 'dd MMM')} - ${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_end), 'dd MMM')}`,
+                        },
+                        transaction: resp?.data,
+                    },
+                })
+            } else {
+                navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR, { 
+                    screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
+                    params: {
+                        transaction: resp?.data,
+                    },
+                })
             }
-            navigation.navigate('Beranda', { 
-                screen: 'complete-data',
-                params: {
-                    data: {
-                        ...resp?.order[resp?.order?.group],
-                        special_requests: resp?.order?.special_requests,
-                    },
-                    group: resp?.order?.group,
-                    trip: resp?.order?.trip,
-                    checkoutData: {
-                        totalPelancong: pelancong??resp?.order?.pax,
-                        textSelectedDate: `${format(new Date(resp?.order[resp?.order?.group]?.trip_start), 'dd MMM')} - ${format(new Date(resp?.order[resp?.order?.group]?.trip_end), 'dd MMM')}`,
-                    },
-                    transaction: resp,
-                },
-            })
         }
     })
 
     // type status: 'INACTIVE' || 'ACTIVE' || 'PENDING'
 
     function generateStatusTransaction(data: any) {
-        if (data?.order?.payment?.is_paid) {
+        if (data?.order?.status === 'DRAFT') {
+            return 'Draft'
+        } else if (data?.order?.status === 'PROCEED' && data?.order[data?.order?.payment_method]?.is_paid) {
             return 'Berhasil'
-        } else if (!data?.order?.payment?.id_paid && data?.order?.payment?.status === 'INACTIVE') {
+        } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.id_paid && data?.order[data?.order?.payment_method]?.status === 'INACTIVE') {
             return 'Kadaluarsa'
-        } else if (!data?.order?.payment?.id_paid && data?.order?.payment?.status === 'ACTIVE') {
+        } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.id_paid && data?.order[data?.order?.payment_method]?.status === 'ACTIVE') {
             return 'Menunggu Pembayaran'
         }
     }
 
     function generateBackgroundColorStatusTransaction(data: any) {
-        if (data?.order?.payment?.is_paid) {
-            return 'green.100'
-        } else if (!data?.order?.payment?.is_paid && data?.order?.payment?.status === 'INACTIVE') {
-            return 'red.100'
-        } else if (!data?.order?.payment?.is_paid && data?.order?.payment?.status === 'ACTIVE') {
-            return 'yellow.100'
+        if (data?.order?.status === 'DRAFT') {
+            return 'gray.300'
+        } else if (data?.order?.status === 'PROCEED' && data?.order[data?.order?.payment_method]?.is_paid) {
+            return 'green.300'
+        } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'INACTIVE') {
+            return 'red.300'
+        } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'ACTIVE') {
+            return 'yellow.300'
         }
     }
 
     function generateTextColorStatusTransaction(data: any) {
-        if (data?.order?.payment?.is_paid) {
+        if (data?.order?.status === 'DRAFT') {
+            return 'gray.600'
+        } else if (data?.order?.status === 'PROCEED' && data?.order[data?.order?.payment_method]?.is_paid) {
             return 'green.600'
-        } else if (!data?.order?.payment?.id_paid && data?.order?.payment?.status === 'INACTIVE') {
+        } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'INACTIVE') {
             return 'red.600'
-        } else if (!data?.order?.payment?.id_paid && data?.order?.payment?.status === 'ACTIVE') {
+        } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'ACTIVE') {
             return 'yellow.600'
         }
     }
 
+    useEffect(() => {
+        transactions?.refetch()
+    }, [isFocused])
+
     return (
         <Flex flex='1' backgroundColor='gray.100'>
-            <Header title='Daftar Transaksi'/>
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Daftar Transaksi</Text>
+            </Stack>
             <ScrollView>
-                <Stack padding='10px' space='10px'>
-                    {transactions?.data?.map((transaction: any, index: number) => {
+                <Stack padding='24px' space='10px'>
+                    {transactions?.data?.data?.map((transaction: any, index: number) => {
                         return (
                             <Pressable 
                                 key={index}

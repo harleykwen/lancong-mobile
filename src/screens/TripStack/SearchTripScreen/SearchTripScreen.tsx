@@ -1,20 +1,26 @@
 import React, { useState } from 'react'
-import * as Unicons from "react-native-unicons"
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import { useQuery } from 'react-query'
-import { getTripTypesApi } from '../../../apis/trip'
+import { ROUTE_NAME } from '../../../router'
+import { tripTypesApi } from '../../../apis/trip'
 import { format, startOfToday } from 'date-fns'
 import { 
-    Button, 
-    Center, 
+    IC_ARROW_BACK, 
+    IC_ARROW_DROP_DOWN, 
+    IC_CALENDAR_MONTH, 
+    IC_GROUP, 
+    IC_HIKING, 
+    IC_LOCATION_ON, 
+    IC_TRANSFER_WITH_A_STATION, 
+} from '../../../assets'
+import { 
+    Button,  
     Flex, 
-    HStack, 
-    Icon, 
+    Image, 
     Input, 
     Pressable, 
     Select, 
+    Stack, 
     Text, 
     VStack 
 } from 'native-base'
@@ -35,143 +41,192 @@ const SearchTripScreen = (props: ISearchTripScreen) => {
     const [tripStart, setTripStart] = useState<any>(null)
     const [participant, setParticipant] = useState('')
 
-    const tripTypes = useQuery('trip-types', getTripTypesApi)
+    const tripTypes = useQuery('trip-types', tripTypesApi)
 
     return (
         <Flex backgroundColor='white' flex={1}>
-            <Center height='50px' width='100%' backgroundColor='#038103'>
-                <Text fontSize='16px' color='white' fontFamily='Poppins-SemiBold'>Trip</Text>
-                <Pressable position='absolute' left='10px' onPress={() => navigation.goBack()}>
-                    <Icon as={Unicons.ArrowLeft} color='white' />
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
                 </Pressable>
-            </Center>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Cari Trip</Text>
+            </Stack>
 
-            <VStack padding='20px' space='10px'>
+            <VStack padding='24px' space='10px'>
                 <Select
-                    dropdownIcon={<></>} 
-                    height='50px'
-                    backgroundColor='white'
-                    paddingX='16px'
-                    paddingY='8px'
-                    flexDirection='row'
-                    alignItems='center'
                     placeholder='Tipe Destinasi'
-                    placeholderTextColor='gray.400'
-                    fontFamily='Poppins-Regular'
-                    fontSize='15px'
-                    color='gray.600'
-                    fontStyle={group ? 'normal' : 'italic'}
-                    width='full'
                     selectedValue={type}
                     onValueChange={(e: any) => setType(e)}
-                    InputLeftElement={<Icon as={FontAwesome5} name='place-of-worship' color='gray.400' size='lg' marginLeft='15px' />}
+                    paddingLeft='74px'
+                    dropdownIcon={
+                        <Stack
+                            direction='row'
+                            width='full'
+                            position='absolute'
+                            top='0'
+                            bottom='0'
+                            alignItems='center'
+                            justifyContent='space-between'
+                        >
+                            <Image
+                                alt='IC_HIKING'
+                                source={IC_HIKING}
+                                width='24px'
+                                height='24px'
+                                marginLeft='24px'
+                                tintColor='lancSurfaceLight'
+                            />
+                            <Image
+                                alt='IC_ARROW_DROPDOWN'
+                                source={IC_ARROW_DROP_DOWN}
+                                width='32px'
+                                height='32px'
+                                marginRight='16px'
+                                tintColor='lancSurfaceLight'
+                            />
+                        </Stack>
+                    } 
                 >
-                    {tripTypes?.data?.map((trip: any, index: number) => {
+                    {tripTypes?.data?.data?.map((trip: any, index: number) => {
                         return <Select.Item key={index} label={trip?.name} value={trip?.id} fontFamily='Poppins-Medium' />
                     })}
                 </Select>
                 
                 <Select
-                    dropdownIcon={<></>} 
-                    height='50px'
-                    backgroundColor='white'
-                    paddingX='16px'
-                    paddingY='8px'
-                    flexDirection='row'
-                    alignItems='center'
                     placeholder='Destinasi Lokasi'
-                    placeholderTextColor='gray.400'
-                    fontFamily='Poppins-Regular'
-                    fontSize='15px'
-                    color='gray.600'
-                    fontStyle={group ? 'normal' : 'italic'}
-                    width='full'
                     selectedValue={destination}
                     onValueChange={(e: any) => setDestination(e)}
-                    InputLeftElement={<Icon as={MaterialIcons} name='location-on' color='gray.400' size='lg' marginLeft='15px' />}
+                    paddingLeft='74px'
+                    dropdownIcon={
+                        <Stack
+                            direction='row'
+                            width='full'
+                            position='absolute'
+                            top='0'
+                            bottom='0'
+                            alignItems='center'
+                            justifyContent='space-between'
+                        >
+                            <Image
+                                alt='IC_LOCATION_ON'
+                                source={IC_LOCATION_ON}
+                                width='24px'
+                                height='24px'
+                                marginLeft='24px'
+                                tintColor='lancSurfaceLight'
+                            />
+                            <Image
+                                alt='IC_ARROW_DROPDOWN'
+                                source={IC_ARROW_DROP_DOWN}
+                                width='32px'
+                                height='32px'
+                                marginRight='16px'
+                                tintColor='lancSurfaceLight'
+                            />
+                        </Stack>
+                    } 
                 >
-                    <Select.Item fontFamily='Poppins-Medium' label="Jakarta" value="Jakarta" />
-                    <Select.Item fontFamily='Poppins-Medium' label="Bandung" value="Bandung" />
-                    <Select.Item fontFamily='Poppins-Medium' label="Yogyakarta" value="Yogyakarta" />
-                    <Select.Item fontFamily='Poppins-Medium' label="Bali" value="Bali" />
-                    <Select.Item fontFamily='Poppins-Medium' label="Bogor" value="Bogor" />
-                    <Select.Item fontFamily='Poppins-Medium' label="Bekasi" value="Bekasi" />
+                    <Select.Item label="Jakarta" value="Jakarta" />
+                    <Select.Item label="Bandung" value="Bandung" />
+                    <Select.Item label="Yogyakarta" value="Yogyakarta" />
+                    <Select.Item label="Bali" value="Bali" />
+                    <Select.Item label="Bogor" value="Bogor" />
+                    <Select.Item label="Bekasi" value="Bekasi" />
                 </Select>
 
                 <Select
-                    dropdownIcon={<></>} 
-                    height='50px'
-                    backgroundColor='white'
-                    paddingX='16px'
-                    paddingY='8px'
-                    flexDirection='row'
-                    alignItems='center'
-                    placeholder='Grup'
-                    placeholderTextColor='gray.400'
-                    fontFamily='Poppins-Regular'
-                    fontSize='15px'
-                    color='gray.600'
-                    fontStyle={group ? 'normal' : 'italic'}
-                    width='full'
+                    placeholder='Grup'                    
                     selectedValue={group}
                     onValueChange={(e: any) => setGroup(e)}
-                    InputLeftElement={<Icon as={MaterialIcons} name='public' color='gray.400' size='lg' marginLeft='15px' />}
+                    paddingLeft='74px'
+                    dropdownIcon={
+                        <Stack
+                            direction='row'
+                            width='full'
+                            position='absolute'
+                            top='0'
+                            bottom='0'
+                            alignItems='center'
+                            justifyContent='space-between'
+                        >
+                            <Image
+                                alt='IC_TRANSFER_WITH_A_STATION'
+                                source={IC_TRANSFER_WITH_A_STATION}
+                                width='24px'
+                                height='24px'
+                                marginLeft='24px'
+                                tintColor='lancSurfaceLight'
+                            />
+                            <Image
+                                alt='IC_ARROW_DROPDOWN'
+                                source={IC_ARROW_DROP_DOWN}
+                                width='32px'
+                                height='32px'
+                                marginRight='16px'
+                                tintColor='lancSurfaceLight'
+                            />
+                        </Stack>
+                    } 
                 >
-                    <Select.Item fontFamily='Poppins-Medium' label="Public" value="public" />
-                    <Select.Item fontFamily='Poppins-Medium' label="Private" value="private" />
+                    <Select.Item label="Public" value="public" />
+                    <Select.Item label="Private" value="private" />
                 </Select>
 
-                <Pressable
-                    height='50px'
-                    backgroundColor='white'
-                    paddingX='16px'
-                    paddingY='8px'
-                    flexDirection='row'
-                    alignItems='center'
-                    borderWidth='1px'
-                    borderRadius='4px'
-                    borderColor='gray.300'
-                    onPress={() => setIsDatePickerStartVisible(true)}
-                >
-                    <Icon as={MaterialIcons} name='calendar-today' color='gray.400' size='lg' />
-                    <Text
-                        fontFamily='Poppins-Regular' 
-                        fontSize='15px'
-                        color={tripStart ? 'gray.600' : 'gray.400'}
-                        fontStyle={tripStart ? 'normal' : 'italic'}
-                        marginLeft='15px'
-                    >{tripStart ? format(new Date(tripStart), 'dd MMMM yyyy') : 'Tanggal Berangkat'}</Text>
+                <Pressable onPress={() => setIsDatePickerStartVisible(true)}>
+                    <Input
+                        isReadOnly
+                        placeholder='Tanggal Berangkat'
+                        value={tripStart ? format(new Date(tripStart), 'dd MMMM yyyy') : ''}
+                        onChangeText={(e: any) => setParticipant(e)}
+                        InputLeftElement={
+                            <Image
+                                alt='IC_CALENDAR_MONTH'
+                                source={IC_CALENDAR_MONTH}
+                                width='24px'
+                                height='24px'
+                                marginLeft='24px'
+                                tintColor='lancSurfaceLight'
+                            />
+                        }
+                    />
                 </Pressable>
 
-                <Input 
-                    height='50px'
-                    backgroundColor='white'
-                    paddingX='16px'
-                    paddingY='8px'
-                    flexDirection='row'
-                    alignItems='center'
+                <Input
                     placeholder='Jumlah Pelancong'
-                    placeholderTextColor='gray.400'
-                    fontFamily='Poppins-Regular'
-                    fontSize='15px'
-                    color='gray.600'
                     keyboardType='numeric'
-                    fontStyle={participant ? 'normal' : 'italic'}
                     value={participant}
                     onChangeText={(e: any) => setParticipant(e)}
-                    InputLeftElement={<Icon as={MaterialIcons} name='groups' color='gray.400' size='lg' marginLeft='15px' />}
+                    InputLeftElement={
+                        <Image
+                            alt='IC_GROUP'
+                            source={IC_GROUP}
+                            width='24px'
+                            height='24px'
+                            marginLeft='24px'
+                            tintColor='lancSurfaceLight'
+                        />
+                    }
                 />
 
                 <Button 
-                    height='50px'
-                    borderRadius='8px'
-                    backgroundColor='xprimary.50'
-                    marginTop='10px'
-                    _pressed={{
-                        backgroundColor: 'xprimary.40'
-                    }}
+                    marginTop='14px'
+                    isDisabled={!type || !destination || !group || !tripStart || !participant}
                     onPress={() => {
-                        navigation.push('list-trip', {
+                        navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_LIST_STRIP, {
                             type,
                             destination,
                             group,
@@ -180,23 +235,19 @@ const SearchTripScreen = (props: ISearchTripScreen) => {
                         })
                     }}
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
-                        color='white'
-                    >Cari Trip</Text>
+                    Cari Trip
                 </Button>
             </VStack>
 
             <DateTimePickerModal
                 isVisible={isDatePickerStartVisible}
                 mode="date"
+                minimumDate={today}
+                onCancel={() => setIsDatePickerStartVisible(false)}
                 onConfirm={(e: any) => {
                     setTripStart(e)
                     setIsDatePickerStartVisible(false)
                 }}
-                onCancel={() => setIsDatePickerStartVisible(false)}
-                // minimumDate={today}
             />
         </Flex>
     )

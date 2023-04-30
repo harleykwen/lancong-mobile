@@ -12,6 +12,7 @@ import {
     VStack,
 } from 'native-base'
 import { getUserData } from '../../apis/config'
+import { ROUTE_NAME } from '../../router'
 
 interface IHome {
     navigation: any
@@ -72,7 +73,7 @@ const Home = (props: IHome) => {
                         width={'50px'} 
                         rounded={'full'} 
                         backgroundColor={'#131391'}
-                        onPress={() => navigation.push('search-trip')}
+                        onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR)}
                     >
                         <Icon.Map color="white" />
                     </Pressable>

@@ -6,6 +6,7 @@ import {
     Button,
     Flex, 
     Icon, 
+    Image, 
     Input, 
     Pressable, 
     ScrollView, 
@@ -15,7 +16,8 @@ import {
 } from 'native-base'
 import { format } from 'date-fns'
 import { useMutation } from 'react-query'
-import { AddPelancongApi } from '../../../apis/pelancong.api'
+import { AddPelancongApi } from '../../../apis/pelancong'
+import { IC_ARROW_BACK, IC_ARROW_DROP_DOWN, IC_CALENDAR_MONTH } from '../../../assets'
 
 interface IAddPelancongScreen {
     navigation: any
@@ -49,15 +51,31 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
 
     return (
         <Flex flex='1' backgroundColor='white'>
-            <Header
-                title='Tambah Data Pelancong'
-                onPressBack={() => navigation.goBack()}
-            />
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Tambah Data Pelancong</Text>
+            </Stack>
             
-            <ScrollView>
+            <ScrollView showsVerticalScrollIndicator={false}>
                 <Stack space='8px' backgroundColor='gray.100'>
                     <Stack 
-                        padding='16px' 
+                        padding='24px' 
                         space='16px' 
                         backgroundColor='white'
                     >
@@ -67,78 +85,40 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                             color='gray.600'
                         >Informasi Pelancong</Text>
                         <Input 
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
                             placeholder='nama'
-                            placeholderTextColor='gray.400'
-                            fontFamily='Poppins-Regular'
-                            fontSize='15px'
-                            color='gray.600'
-                            fontStyle={name ? 'normal' : 'italic'}
                             value={name}
                             onChangeText={(e: any) => setName(e)}
                         />
                         <Input 
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
                             placeholder='email'
-                            placeholderTextColor='gray.400'
-                            fontFamily='Poppins-Regular'
-                            fontSize='15px'
-                            color='gray.600'
-                            fontStyle={email ? 'normal' : 'italic'}
                             value={email}
                             onChangeText={(e: any) => setEmail(e)}
                         />
                         <Input 
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
                             placeholder='no. telepon'
-                            placeholderTextColor='gray.400'
-                            fontFamily='Poppins-Regular'
-                            fontSize='15px'
-                            color='gray.600'
-                            keyboardType='numeric'
-                            fontStyle={phone ? 'normal' : 'italic'}
                             value={phone}
                             onChangeText={(e: any) => setPhone(e)}
                         />
-                        <Pressable
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
-                            justifyContent='space-between'
-                            borderWidth='1px'
-                            borderRadius='4px'
-                            borderColor='gray.300'
-                            onPress={() => setShowDatePickerBirthdate(true)}
-                        >
-                            <Text
-                                fontFamily='Poppins-Regular' 
-                                fontSize='15px'
-                                color={birthdate ? 'gray.600' : 'gray.400'}
-                                fontStyle={birthdate ? 'normal' : 'italic'}
-                            >{birthdate ? format(new Date(birthdate), 'dd MMMM yyyy') : 'tanggal lahir'}</Text>
-                            <Icon as={MaterialIcons} name='calendar-today' color='gray.400' size='lg' />
+                        <Pressable onPress={() => setShowDatePickerBirthdate(true)}>
+                            <Input 
+                                placeholder='tanggal lahir'
+                                value={birthdate ? format(new Date(birthdate), 'dd MMMM yyyy') : ''}
+                                isReadOnly
+                                InputRightElement={
+                                    <Image
+                                        marginRight='16px'
+                                        alt='IC_CALENDAR_MONTH'
+                                        source={IC_CALENDAR_MONTH}
+                                        width='24px'
+                                        height='24px'
+                                        tintColor='lancSurfaceLight'
+                                    />
+                                }
+                            />
                         </Pressable>
                     </Stack>
                     <Stack 
-                        padding='16px' 
+                        padding='24px' 
                         space='16px' 
                         backgroundColor='white'
                     >
@@ -148,45 +128,41 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                             color='gray.600'
                         >Informasi Kewarganegaraan</Text>
                         <Select
-                            dropdownIcon={<></>} 
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
                             placeholder='kewarganegaraan'
-                            placeholderTextColor='gray.400'
-                            fontFamily='Poppins-Regular'
-                            fontSize='15px'
-                            color='gray.600'
-                            fontStyle={citizenship ? 'normal' : 'italic'}
-                            width='full'
                             selectedValue={citizenship}
                             onValueChange={(e: any) => setCitizenship(e)}
+                            dropdownIcon={
+                                <Stack
+                                    direction='row'
+                                    width='full'
+                                    position='absolute'
+                                    top='0'
+                                    bottom='0'
+                                    alignItems='center'
+                                    justifyContent='space-between'
+                                >
+                                    <Stack></Stack>
+                                    <Image
+                                        alt='IC_ARROW_DROPDOWN'
+                                        source={IC_ARROW_DROP_DOWN}
+                                        width='32px'
+                                        height='32px'
+                                        marginRight='16px'
+                                        tintColor='lancSurfaceLight'
+                                    />
+                                </Stack>
+                            } 
                         >
                             <Select.Item fontFamily='Poppins-Medium' label="Indonesia" value="Indonesia" />
                         </Select>
                         <Input 
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
                             placeholder='no. KTP'
-                            placeholderTextColor='gray.400'
-                            fontFamily='Poppins-Regular'
-                            fontSize='15px'
-                            color='gray.600'
-                            keyboardType='numeric'
-                            fontStyle={id_number ? 'normal' : 'italic'}
                             value={id_number}
                             onChangeText={(e: any) => setId_number(e)}
                         />
                     </Stack>
                     <Stack 
-                        padding='16px' 
+                        padding='24px' 
                         space='16px' 
                         backgroundColor='white'
                     >
@@ -196,79 +172,52 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                             color='gray.600'
                         >Informasi Passport</Text>
                         <Input 
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
                             placeholder='no. passport'
-                            placeholderTextColor='gray.400'
-                            fontFamily='Poppins-Regular'
-                            fontSize='15px'
-                            color='gray.600'
-                            keyboardType='numeric'
-                            fontStyle={passport_number ? 'normal' : 'italic'}
                             value={passport_number}
                             onChangeText={(e: any) => setPassport_number(e)}
                         />
-                        <Pressable
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
-                            justifyContent='space-between'
-                            borderWidth='1px'
-                            borderRadius='4px'
-                            borderColor='gray.300'
-                            onPress={() => setShowDatePickerPublicationDate(true)}
-                        >
-                            <Text
-                                fontFamily='Poppins-Regular' 
-                                fontSize='15px'
-                                color={publication_date ? 'gray.600' : 'gray.400'}
-                                fontStyle={publication_date ? 'normal' : 'italic'}
-                            >{publication_date ? format(new Date(publication_date), 'dd MMMM yyyy') : 'tanggal penerbitan'}</Text>
-                            <Icon as={MaterialIcons} name='calendar-today' color='gray.400' size='lg' />
+                        <Pressable onPress={() => setShowDatePickerPublicationDate(true)}>
+                            <Input 
+                                placeholder='tanggal penerbitan'
+                                value={publication_date ? format(new Date(publication_date), 'dd MMMM yyyy') : ''}
+                                isReadOnly
+                                InputRightElement={
+                                    <Image
+                                        marginRight='16px'
+                                        alt='IC_CALENDAR_MONTH'
+                                        source={IC_CALENDAR_MONTH}
+                                        width='24px'
+                                        height='24px'
+                                        tintColor='lancSurfaceLight'
+                                    />
+                                }
+                            />
                         </Pressable>
-                        <Pressable
-                            height='50px'
-                            backgroundColor='white'
-                            paddingX='16px'
-                            paddingY='8px'
-                            flexDirection='row'
-                            alignItems='center'
-                            justifyContent='space-between'
-                            borderWidth='1px'
-                            borderRadius='4px'
-                            borderColor='gray.300'
-                            onPress={() => setShowDatePickerExpirationDate(true)}
-                        >
-                            <Text
-                                fontFamily='Poppins-Regular' 
-                                fontSize='15px'
-                                color={expiration_date ? 'gray.600' : 'gray.400'}
-                                fontStyle={expiration_date ? 'normal' : 'italic'}
-                            >{expiration_date ? format(new Date(expiration_date), 'dd MMMM yyyy') : 'tanggal kadaluarsa'}</Text>
-                            <Icon as={MaterialIcons} name='calendar-today' color='gray.400' size='lg' />
+                        <Pressable onPress={() => setShowDatePickerExpirationDate(true)}>
+                            <Input 
+                                placeholder='tanggal kadaluarsa'
+                                value={expiration_date ? format(new Date(expiration_date), 'dd MMMM yyyy') : ''}
+                                isReadOnly
+                                InputRightElement={
+                                    <Image
+                                        marginRight='16px'
+                                        alt='IC_CALENDAR_MONTH'
+                                        source={IC_CALENDAR_MONTH}
+                                        width='24px'
+                                        height='24px'
+                                        tintColor='lancSurfaceLight'
+                                    />
+                                }
+                            />
                         </Pressable>
                     </Stack>
                     <Stack 
-                        padding='16px' 
+                        padding='24px' 
                         space='16px' 
                         backgroundColor='white'
                     >
                         <Button 
-                            height='50px'
-                            borderRadius='8px'
-                            backgroundColor='xprimary.50'
-                            width='full'
                             isLoading={addPelancong?.isLoading}
-                            _pressed={{
-                                backgroundColor: 'xprimary.40'
-                            }}
                             onPress={() => {
                                 addPelancong?.mutate({
                                     name,
@@ -287,11 +236,7 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                                 })
                             }}
                         >
-                            <Text
-                                fontFamily='Poppins-SemiBold' 
-                                fontSize='15px'
-                                color='white'
-                            >Simpan</Text>
+                            Simpan
                         </Button>
                     </Stack>
                 </Stack>

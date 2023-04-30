@@ -12,6 +12,20 @@ const API_URL = {
         TYPES: '/master/trip/types',
         OPTIONS: '/master/trip/options',
         SEARCH: '/user/trip',
+        CREATE_TRANSACTION: '/user/trip/transaction/create',
+        UPDATE_TRANSACTION: '/user/trip/transaction/:transactionId/update',
+        CHECKOUT: '/user/trip/transaction/virtual-account/checkout',
+    },
+    PELANCONG: {
+        CREATE: '/user/pelancong/create',
+        GET_ALL: '/user/pelancong',
+    },
+    TRANSACTION: {
+        GET_ALL: '/user/transaction',
+        DETAIL: '/user/transaction/:transactionId',
+    },
+    VA: {
+        BANK_LIST: '/user/payment/virtual-account/banks',
     },
 }
 

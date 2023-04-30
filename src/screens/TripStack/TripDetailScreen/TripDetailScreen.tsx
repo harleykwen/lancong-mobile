@@ -14,6 +14,7 @@ import {
     Text, 
     VStack 
 } from 'native-base'
+import { ROUTE_NAME } from '../../../router'
 
 interface ITripDetailScreen {
     route: any
@@ -68,9 +69,8 @@ const TripDetailScreen = (props: ITripDetailScreen) => {
                     <Text 
                         marginTop='15px' 
                         fontSize='14px' 
-                        fontWeight='bold' 
                         marginLeft='10px'
-                        fontFamily='Poppins-Bold'
+                        fontFamily='Poppins-SemiBold'
                     >{data?.name}</Text>
                     <HStack 
                         padding='5px' 
@@ -100,7 +100,7 @@ const TripDetailScreen = (props: ITripDetailScreen) => {
                                     trip={data}
                                     data={packageTrip}
                                     group={group}
-                                    onPress={() => navigation.push('trip-package-detail', { 
+                                    onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_PACKAGE_DETAIL, { 
                                         data: packageTrip,
                                         group: group,
                                         trip: data,

@@ -48,7 +48,16 @@ export default {
     signup_otp_input_error_message: 'OTP code must be 6 digit',
 
     // PROFILE SCREEN
+    profile_add_pelancong_data: 'List Pelancong',
+    profile_change_language: 'Change Language',
     profile_logout: 'Logout',
+
+    // LIST PELANCONG SCREEN
+    list_pelancong_title: 'List Pelancong',
+    list_pelancong_input_search_placeholder: 'Search pelancong ...',
+    list_pelancong_button_add_pelancong: 'Add New Pelancong',
+    list_pelancong_empty: 'Empty Pelancong',
+    list_pelancong_search_not_found: 'Pelancong with key {{key}} not found',
 
     // TRIP SEARCH SCREEN
     trip_search_title: 'Search Trip',

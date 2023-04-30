@@ -1,19 +1,22 @@
 import React, { useState } from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
-import { Header } from '../../../components'
-import { getPelancongApi } from '../../../apis/pelancong.api'
+import PelancongItem from './components/PelancongItem'
+import { ROUTE_NAME } from '../../../router'
+import { IC_ARROW_BACK } from '../../../assets'
+import { useTranslation } from 'react-i18next'
+import { getPelancongApi } from '../../../apis/pelancong'
 import { useQuery, useQueryClient } from 'react-query'
 import { 
     Button,
     Flex, 
     Icon, 
+    Image, 
     Input, 
     Pressable, 
     Stack,
     Text, 
 } from 'native-base'
-import PelancongItem from './components/PelancongItem'
 
 interface IPelancongDataScreen {
     navigation: any
@@ -22,6 +25,7 @@ interface IPelancongDataScreen {
 const PelancongDataScreen = (props: IPelancongDataScreen) => {
     const { navigation } = props
     const queryClient = useQueryClient()
+    const {t } = useTranslation()
 
     const [search, setSearch] = useState<string>('')
 
@@ -29,11 +33,27 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
 
     return (
         <Flex flex='1' backgroundColor='white' paddingBottom='100px'>
-            <Header
-                title='Data Pelancong'
-                onPressBack={() => navigation.goBack()}
-            />
-            <Stack padding='16px'>
+            <Stack 
+                paddingY='16px'
+                paddingX='24px'
+                shadow='3' 
+                backgroundColor='lancBackgroundLight'
+                direction='row'
+                alignItems='center'
+                space='16px'
+            >
+                <Pressable onPress={() => navigation?.goBack()}>
+                    <Image
+                        alt='IC_ARROW_BACK'
+                        source={IC_ARROW_BACK}
+                        width='24px'
+                        height='24px'
+                        tintColor='lancOnBackgroundLight'
+                    />
+                </Pressable>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>{t('common:list_pelancong_title')}</Text>
+            </Stack>
+            <Stack padding='24px'>
                 <Input 
                     height='50px'
                     borderWidth='0px' 
@@ -42,12 +62,12 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                     fontSize='14px'
                     fontFamily='Poppins-Regular'
                     paddingY='8px'
-                    placeholder='Cari pelancong ...'
+                    placeholder={`${t('common:list_pelancong_input_search_placeholder')}`}
                     InputLeftElement={<Icon as={MaterialIcons} name='search' color='gray.400' size='lg' marginLeft='16px' />}
                     value={search}
                     onChangeText={(e: any) => {
                         setSearch(e)
-                        console.log(pelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(e?.toLowerCase())))
+                        console.log(pelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(e?.toLowerCase())))
                     }}
                     InputRightElement={
                         <Pressable onPress={() => setSearch('')}>
@@ -63,12 +83,13 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                 />
             </Stack>
 
-            {pelancong?.data?.length === 0 &&
+            {pelancong?.data?.data?.length === 0 &&
                 <Flex 
                     flex='1' 
                     justifyContent='center' 
                     alignItems='center'
-                    padding='16px'
+                    padding='24px'
+                    marginTop='-24px'
                 >
                     <Stack 
                         direction='row' 
@@ -86,18 +107,19 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                             fontSize='11px'
                             color='gray.600'
                             textAlign='center'
-                        >Belum ada pelancong</Text>
+                        >{t('common:list_pelancong_empty')}</Text>
                     </Stack>
                 </Flex>
             }
 
-            {!search && pelancong?.data?.length !== 0 &&
+            {!search && pelancong?.data?.data?.length !== 0 &&
                 <Stack 
                     backgroundColor='white' 
-                    padding='16px' 
+                    padding='24px'
+                    marginTop='-24px' 
                     space='8px'
                 >
-                    {pelancong?.data?.map((pelancong: any, index: number) => {
+                    {pelancong?.data?.data?.map((pelancong: any, index: number) => {
                         return <PelancongItem data={pelancong} key={index} />
                     })}
                 </Stack>
@@ -105,14 +127,15 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
 
             {
                 search && 
-                pelancong?.data?.length !== 0 && 
-                pelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length !== 0 && 
+                pelancong?.data?.data?.length !== 0 && 
+                pelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length !== 0 && 
                     <Stack 
                         backgroundColor='white' 
-                        padding='16px' 
+                        padding='24px'
+                        marginTop='-24px' 
                         space='8px'
                     >
-                        {pelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.map((pelancong: any, index: number) => {
+                        {pelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.map((pelancong: any, index: number) => {
                             return <PelancongItem data={pelancong} key={index} />
                         })}
                     </Stack>
@@ -120,13 +143,14 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
 
             {
                 search && 
-                pelancong?.data?.length !== 0 && 
-                pelancong?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length === 0 && 
+                pelancong?.data?.data?.length !== 0 && 
+                pelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.length === 0 && 
                 <Flex 
                     flex='1' 
                     justifyContent='center' 
                     alignItems='center'
-                    padding='16px'
+                    padding='24px'
+                    marginTop='-24px'
                 >
                     <Stack 
                         direction='row' 
@@ -144,7 +168,7 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                             fontSize='11px'
                             color='gray.600'
                             textAlign='center'
-                        >Pelancong dengan kata kunci {search} tidak ditemukan</Text>
+                        >{t('common:list_pelancong_search_not_found', { key: search })}</Text>
                     </Stack>
                 </Flex>
             }
@@ -152,7 +176,7 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
             <Stack 
                 direction='row' 
                 justifyContent='space-between'
-                padding='16px'
+                padding='24px'
                 backgroundColor='white'
                 alignItems='center'
                 position='absolute'
@@ -162,24 +186,13 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                 shadow='5'
             >
                 <Button 
-                    height='50px'
-                    borderRadius='8px'
-                    backgroundColor='xprimary.50'
-                    width='full'
-                    _pressed={{
-                        backgroundColor: 'xprimary.40'
-                    }}
-                    onPress={() => navigation.push('add-data-pelancong', {
+                    onPress={() => navigation.push(ROUTE_NAME.PROFILE_NAVIGATOR_ADD_PELANCONG_DATA, {
                         callbackSuccess: function() {
                             queryClient?.invalidateQueries('get-pelancong')
                         }
                     })}
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
-                        color='white'
-                    >Tambah Data Pelancong</Text>
+                    {t('common:list_pelancong_button_add_pelancong')}
                 </Button>
             </Stack>
         </Flex>

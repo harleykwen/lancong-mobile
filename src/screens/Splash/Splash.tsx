@@ -1,31 +1,48 @@
-import { Center } from 'native-base'
 import React, { useEffect } from 'react'
-import { Image } from 'react-native'
-import { getAuthToken, removeAuthToken } from '../../apis/config'
 import { LOGO_GREEN } from '../../assets'
+import { ROUTE_NAME } from '../../router'
+import { ASYNC_STORAGE_NAME, asyncStorageGetitem } from '../../asyncStorage'
+import { 
+    Center, 
+    Image, 
+    View, 
+    StatusBar, 
+} from 'native-base'
 
 interface ISplash {
-    navigation: any
+    navigation?: any
 }
 
-const Splash = (props: ISplash) => {
+const Splash: React.FC<ISplash> = (props: ISplash) => {
     const { navigation } = props
 
+    async function handleRedirect() {
+        const authToken = await asyncStorageGetitem(ASYNC_STORAGE_NAME.AUTH_TOKEN)
+        if (authToken) {
+            navigation.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_HOME })
+        } else {
+            navigation.replace(ROUTE_NAME.AUTH_NAVIGATOR, { screen: ROUTE_NAME.AUTH_SIGN_IN })
+        }
+    }
+
     useEffect(() => {
-        setTimeout( async () => {
-            const token: any = await getAuthToken()
-            if (token) {
-                navigation.replace('main')
-            } else {
-                navigation.replace('login')
-            }
+        setTimeout(() => {
+            handleRedirect()
         }, 3000)
     }, [])
 
     return (
-        <Center backgroundColor={'white'} height={'100%'}>
-            <Image source={LOGO_GREEN} style={{ width: 70, height: 91.32 }} />
-        </Center>
+        <View flex={1}>
+            <StatusBar backgroundColor='white' />
+            <Center flex={1} backgroundColor='white'>
+                <Image
+                    source={LOGO_GREEN}
+                    width='150px'
+                    height='150px'
+                    alt='LOGO_GREEN'
+                />
+            </Center>
+        </View>
     )
 }
 

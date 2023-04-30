@@ -1,18 +1,18 @@
 import React from 'react'
-import Router from './src/router/Router'
+import './src/locales/translation'
 import { theme } from './src/theme'
-import { StatusBar } from 'react-native'
+import { Router } from './src/router'
 import { NativeBaseProvider } from 'native-base'
 import { QueryClientProvider, QueryClient } from 'react-query'
 
-const queryClient = new QueryClient()
-console.log({THEME: theme})
+const client = new QueryClient()
 
-const App = () => {
+console.log({theme})
+
+const App: React.FC = () => {
     return (
-        <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={client}>
             <NativeBaseProvider theme={theme}>
-                <StatusBar backgroundColor={'#038103'} />
                 <Router />
             </NativeBaseProvider>
         </QueryClientProvider>

@@ -1,267 +1,263 @@
 import React, { useState } from 'react'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { LOGO_GREEN } from '../../assets'
-import { loginApi } from '../../apis/auth'
+import { ROUTE_NAME } from '../../router'
+import { useTranslation } from 'react-i18next'
 import { useMutation } from 'react-query'
-import { getModel } from 'react-native-device-info'
-import { Image } from 'react-native'
-import { saveAuthToken, saveUserData } from '../../apis/config'
+import { loginApi } from '../../apis/auth'
+import { ASYNC_STORAGE_NAME, asyncStorageSaveitem } from '../../asyncStorage'
 import { 
-    Alert,
-    Button, 
-    FormControl, 
-    Heading, 
-    HStack, 
-    Icon, 
-    Input, 
-    Pressable, 
-    Stack, 
+    IC_EMAIL, 
+    IC_ERROR, 
+    IC_GOOGLE, 
+    IC_LOCK, 
+    IC_VISIBILITY_OFF, 
+    IC_VISIBILITY_ON, 
+} from '../../assets'
+import {
+    Button,
+    Stack,
+    FormControl,
+    Input,
+    Image,
+    useColorModeValue,
+    Pressable,
     Text,
-    VStack, 
+    Divider,
+    Alert,
 } from 'native-base'
+import { ButtonLanguage } from '../../components'
 
 interface ILogin {
-    navigation: any
+    navigation?: any
 }
 
-interface IResponseLoginSuccess {
-    user: {
-        _id: string,
-        name: string,
-        email: string,
-        address: string,
-        phone: string,
-        avatar: {
-            name: string,
-            url: string,
-        }
-    },
-    tokenable: {
-        token: string,
-        expires_at: number
-    }
-}
-
-const Login = (props: ILogin) => {
+const Login: React.FC<ILogin> = (props: ILogin) => {
     const { navigation } = props
 
-    const [email, setEmail] = useState<string>('')
-    const [password, setPassword] = useState<string>('')
-    const [showPassword, setShowPassword] = useState<boolean>(false)
+    const { t } = useTranslation()
 
-    const login: any = useMutation(async () => {
-        return await loginApi({ email, password, device_name: getModel() })
-    },
-    {
-        onSuccess: async (response: IResponseLoginSuccess) => {
-            await saveAuthToken(response?.tokenable?.token)
-            await saveUserData(response?.user)
-            navigation.replace('main')
-        },
+    const defaultValidation: any = {
+        email: false,
+        password: false,
+    }
+
+    const [email, setEmail] = useState<string>('test6@gmail.co')
+    const [password, setPassword] = useState<string>('tes123')
+
+    const [securePassword, setSecurePassword] = useState<boolean>(true)
+
+    const [isFormValid, setIsFormValid] = useState<any>(defaultValidation)
+
+    const login = useMutation(loginApi, {
+        onSuccess: (resp: any) => {
+            asyncStorageSaveitem(ASYNC_STORAGE_NAME.AUTH_TOKEN, resp?.data?.tokenable?.token)
+            asyncStorageSaveitem(ASYNC_STORAGE_NAME.AUTH_SECRET, resp?.data?.tokenable?.secret)
+            navigation?.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_HOME})
+        }
     })
+
+    function revalidateForm(name: string) {
+        setIsFormValid((prev: any) => {
+            return {
+                ...prev,
+                [name]: false
+            }
+        })
+    }
+
+    function handleClickLogin() {
+        login?.reset()
+        let validation: any = {
+            email: email ? false : true,
+            password: password ? false : true
+        }
+        setIsFormValid((prev: any) => {
+            return {
+                ...prev,
+                ...validation,
+            }
+        })
+
+        if (email && password) {
+            login?.mutate({
+                email,
+                password,
+                device_name: 'iPhone 14 Pro Max'
+            })
+        }
+    }
 
     return (
         <Stack 
-            flex='1'
-            padding='10px' 
-            backgroundColor='white'
-            justifyContent='center'
-            space='50px'
+            flex={1} 
+            backgroundColor={useColorModeValue('lancBackgroundLight', 'lancBackgroundDark')} 
+            padding='24px'
+            space='16px'
         >
-            <Stack 
-                width='100%' 
-                direction='row' 
-                justifyContent='space-between' 
-                alignItems='center'
-            >
-                <Stack>
-                    <Heading>Masuk</Heading>
-                    <Stack direction='row' space='5px'>
-                        <Text color='gray.400'>Belum punya akun?</Text>
-                        <Pressable onPress={() => navigation.push('register')}>
-                            <Text color='xprimary.40' fontWeight='semibold'>Yuk daftar!</Text>
-                        </Pressable>
-                    </Stack>
+            <Stack direction='row' justifyContent='space-between'>
+                <Text fontFamily='Poppins-SemiBold' fontSize='24px'>{t('common:signin_title')}</Text>
+                <Stack space='8px' direction='row'>
+                    <ButtonLanguage />
                 </Stack>
-                <Image source={LOGO_GREEN} style={{ width: 35, height: 45.6 }} />
             </Stack>
-
-            <Stack width='100%' space='10px'>
-                {/* <FormControl>
-                    <FormControl.Label color='gray.400'>Email</FormControl.Label>
+            <FormControl marginTop='16px' isInvalid={isFormValid?.email}>
+                <Stack>
+                    <FormControl.Label>{t('common:signin_input_email_label')}</FormControl.Label>
                     <Input 
-                        leftElement={
-                            <Icon 
-                                as={MaterialIcons} 
-                                name='mail-outline'
-                                color='gray.400' 
-                                marginLeft='10px' 
-                                size='6'
-                            />
-                        } 
-                        placeholder='Email' 
-                        value={email}
-                        onChangeText={(e: any) => setEmail(e)}
-                        p={2} 
-                        borderColor='gray.400'
-                        _focus={{
-                            backgroundColor: 'white',
-                            borderColor: 'gray.400',
+                        value={email} 
+                        placeholder={`${t('common:signin_input_email_placeholder')}`}
+                        onChangeText={(e) => {
+                            setEmail(e)
+                            revalidateForm('email')
                         }}
-                    />
-                </FormControl> */}
-
-                {/* <FormControl>
-                    <FormControl.Label color='gray.400'>Kata Sandi</FormControl.Label>
-                    <Input 
-                        leftElement={
-                            <Icon 
-                                as={MaterialIcons} 
-                                name='lock-outline'
-                                color='gray.400' 
-                                marginLeft='10px' 
-                                size='6'
+                        InputLeftElement={
+                            <Image 
+                                alt='IC_EMAIL'
+                                source={IC_EMAIL} 
+                                width='24px' 
+                                height='24px' 
+                                marginLeft='24px' 
+                                marginRight='-8px'
+                                tintColor={useColorModeValue('lancSurfaceLight', 'lancSurfaceDark')}
                             />
-                        } 
-                        rightElement={
-                            <Pressable onPress={() => setShowPassword(!showPassword)}>
-                                <Icon
-                                    as={MaterialCommunityIcons}
-                                    name={showPassword ? 'eye-off-outline' : 'eye-outline'}
-                                    marginRight='10px'
-                                    size='6'
-                                    color='gray.400'
-                                />
-                            </Pressable>
                         }
-                        type='password' 
-                        variant='outline' 
-                        placeholder='Password'
-                        value={password}
-                        onChangeText={(e: any) => setPassword(e)}
-                        secureTextEntry={!showPassword}
-                        p={2} 
-                        borderColor='gray.400'
-                        _focus={{
-                            backgroundColor: 'white',
-                            borderColor: 'gray.400',
-                        }}
+                        isDisabled={login?.isLoading}
                     />
-                </FormControl> */}
+                    <FormControl.ErrorMessage >
+                        {t('common:signin_input_email_error_message')}
+                    </FormControl.ErrorMessage >
+                </Stack>
+            </FormControl>
+            <FormControl isInvalid={isFormValid?.password}>
+                <Stack>
+                    <FormControl.Label>{t('common:signin_input_password_label')}</FormControl.Label>
+                    <Input 
+                        value={password} 
+                        placeholder={`${t('common:signin_input_password_placeholder')}`}
+                        type='password' 
+                        secureTextEntry={securePassword}
+                        onChangeText={(e) => {
+                            setPassword(e)
+                            revalidateForm('password')
+                        }}
+                        InputLeftElement={
+                            <Image 
+                                alt='IC_LOCK'
+                                source={IC_LOCK} 
+                                width='24px' 
+                                height='24px' 
+                                marginLeft='24px' 
+                                marginRight='-8px'
+                                tintColor={useColorModeValue('lancSurfaceLight', 'lancSurfaceDark')}
+                            />
+                        }
+                        InputRightElement={
+                            <Stack>
+                                {
+                                    securePassword &&
+                                    <Pressable onPress={() => setSecurePassword(!securePassword)}>
+                                        <Image
+                                            alt='IC_VISIBILITY_ON'
+                                            source={IC_VISIBILITY_ON}
+                                            width='24px'
+                                            height='24px'
+                                            marginRight='24px'
+                                            marginLeft='-8px'
+                                            tintColor={useColorModeValue('lancSurfaceLight', 'lancSurfaceDark')}
+                                        />
+                                    </Pressable>
+                                }
+                                {
+                                    !securePassword &&
+                                    <Pressable onPress={() => setSecurePassword(!securePassword)}>
+                                        <Image
+                                            alt='IC_VISIBILITY_OFF'
+                                            source={IC_VISIBILITY_OFF}
+                                            width='24px'
+                                            height='24px'
+                                            marginRight='24px'
+                                            marginLeft='-8px'
+                                            tintColor={useColorModeValue('lancSurfaceLight', 'lancSurfaceDark')}
+                                        />
+                                    </Pressable>
+                                }
+                            </Stack>
+                        }
+                        isDisabled={login?.isLoading}
+                    />
+                    <FormControl.ErrorMessage >
+                        {t('common:signin_input_password_error_message')}
+                    </FormControl.ErrorMessage >
+                </Stack>
+            </FormControl>
 
-                {/* {login?.isError &&
-                    <Alert 
-                        width='100%' 
-                        variant='subtle' 
-                        colorScheme='success' 
-                        status='error'
-                        marginTop='5px'
-                    >
-                        <VStack 
-                            space={2} 
-                            flexShrink={1} 
-                            width='100%'
-                        >
-                            <HStack 
-                                flexShrink={1} 
-                                space={2} 
-                                alignItems='center' 
-                                justifyContent='space-between'
-                            >
-                                <HStack 
-                                    space={2} 
-                                    flexShrink={1} 
-                                    alignItems='center'
-                                >
-                                    <Alert.Icon />
-                                    <Text color='coolGray.800'>
-                                        {login?.error}
-                                    </Text>
-                                </HStack>
-                            </HStack>
-                        </VStack>
-                    </Alert> 
-                }*/}
+            <Alert 
+                display={login?.isError ? 'flex' : 'none'} 
+                alignItems='flex-start' 
+                marginTop='16px' 
+                variant='lancError'
+            >
+                <Stack direction='row' alignItems='center' space='8px'>
+                    <Image
+                        alt='IC_ERROR'
+                        source={IC_ERROR}
+                        width='24px'
+                        height='24px'
+                        tintColor={useColorModeValue('lancOnErrorContainerLight', 'lancOnErrorContainerDark')}
+                    />
+                    <Text 
+                        color={useColorModeValue('lancOnErrorContainerLight', 'lancOnErrorContainerDark')}
+                        fontFamily='Poppins-SemiBold'
+                    >{`${login?.error}`}</Text>
+                </Stack>
+            </Alert>
 
-                <Input 
-                    height='50px'
-                    backgroundColor='gray.100'
-                    paddingX='16px'
-                    paddingY='8px'
-                    flexDirection='row'
-                    alignItems='center'
-                    placeholder='Email'
-                    placeholderTextColor='gray.400'
-                    fontFamily='Poppins-Regular'
+            <Button 
+                marginTop='16px' 
+                onPress={handleClickLogin} 
+                isLoading={login?.isLoading}
+            >
+                {t('common:singin_button_signin')}
+            </Button>
+            <Button 
+                variant='lancText' 
+                onPress={() => navigation?.navigate(ROUTE_NAME?.AUTH_SIGN_UP)}
+                isDisabled={login?.isLoading}
+            >
+                {t('common:signin_button_register')}
+            </Button>
+
+            <Stack 
+                direction='row' 
+                space='8px' 
+                alignItems='center' 
+                marginTop='16px'
+            >
+                <Divider />
+                <Text 
                     fontSize='12px'
-                    color='gray.600'
-                    _focus={{
-                        borderColor: 'none'
-                    }}
-                    InputLeftElement={
-                        <Icon as={MaterialIcons} name='email' color='gray.400' size='lg' marginLeft='16px' />
-                    }
-                    fontStyle={email ? 'normal' : 'italic'}
-                    value={email}
-                    onChangeText={(e: any) => setEmail(e)}
-                />
+                    color={useColorModeValue('lancSurfaceLight', 'lancSurfaceDark')}
+                >{t('common:signin_divider_text')}</Text>
+                <Divider />
+            </Stack>
 
-                <Input 
-                    height='50px'
-                    backgroundColor='gray.100'
-                    paddingX='16px'
-                    paddingY='8px'
-                    flexDirection='row'
-                    alignItems='center'
-                    placeholder='Kata sandi'
-                    placeholderTextColor='gray.400'
-                    fontFamily='Poppins-Regular'
-                    fontSize='12px'
-                    color='gray.600'
-                    _focus={{
-                        borderColor: 'none'
-                    }}
-                    InputLeftElement={
-                        <Icon as={MaterialIcons} name='lock' color='gray.400' size='lg' marginLeft='16px' />
-                    }
-                    InputRightElement={
-                        <Pressable onPress={() => setShowPassword(!showPassword)}>
-                            <Icon as={MaterialCommunityIcons} name={showPassword ? 'eye-off' : 'eye'} color='gray.400' size='lg' marginRight='16px' />
-                        </Pressable>
-                    }
-                    secureTextEntry={!showPassword}
-                    fontStyle={password ? 'normal' : 'italic'}
-                    value={password}
-                    onChangeText={(e: any) => setPassword(e)}
-                />
-            </Stack>
-            
-            <Stack width='100%' space='10px'>
-                <Button 
-                    colorScheme={'success'} 
-                    isDisabled={login.isLoading || !email || password.length < 6}
-                    isLoading={login.isLoading}
-                    onPress={() => login.mutate()}
-                    width='full'
-                >
-                    Masuk
-                </Button>
-                <Button 
-                    colorScheme='white'
-                    width='full'
-                    variant='ghost'
-                    color='gray.400'
-                    leftIcon={<Icon
-                        as={FontAwesome}
-                        name='google'
-                        color='gray.400'
-                    />}
-                >
-                    Masuk dengan Google
-                </Button>
-            </Stack>
+            <Button 
+                marginTop='16px' 
+                colorScheme='lancNeutral' 
+                variant='lancGoogle'
+                shadow='1'
+                leftIcon={
+                    <Image 
+                        alt='IC_GOOGLE'
+                        source={IC_GOOGLE} 
+                        width='24px' 
+                        height='24px' 
+                        marginRight='16px'
+                    />
+                }
+                isDisabled={login?.isLoading}
+            >
+                {t('common:signin_button_google')}
+            </Button>
         </Stack>
     )
 }

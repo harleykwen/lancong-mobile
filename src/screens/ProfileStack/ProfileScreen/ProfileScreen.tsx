@@ -54,7 +54,7 @@ const ProfileScreen = (props: IProfileScreen) => {
             await asyncStorageDeleteitem(ASYNC_STORAGE_NAME.AUTH_TOKEN)
             await asyncStorageDeleteitem(ASYNC_STORAGE_NAME.AUTH_SECRET)
             navigation?.replace(ROUTE_NAME.AUTH_NAVIGATOR, {
-                screen: ROUTE_NAME.AUTH_SIGN_IN,
+                screen: ROUTE_NAME.AUTH_NAVIGATOR_SIGN_IN,
             })
         } 
     })

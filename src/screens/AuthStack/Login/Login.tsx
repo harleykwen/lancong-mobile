@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { ROUTE_NAME } from '../../router'
+import { ROUTE_NAME } from '../../../router'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from 'react-query'
-import { loginApi } from '../../apis/auth'
-import { ASYNC_STORAGE_NAME, asyncStorageSaveitem } from '../../asyncStorage'
+import { loginApi } from '../../../apis/auth'
+import { ASYNC_STORAGE_NAME, asyncStorageSaveitem } from '../../../asyncStorage'
 import { 
     IC_EMAIL, 
     IC_ERROR, 
@@ -11,7 +11,7 @@ import {
     IC_LOCK, 
     IC_VISIBILITY_OFF, 
     IC_VISIBILITY_ON, 
-} from '../../assets'
+} from '../../../assets'
 import {
     Button,
     Stack,
@@ -24,7 +24,7 @@ import {
     Divider,
     Alert,
 } from 'native-base'
-import { ButtonLanguage } from '../../components'
+import { ButtonLanguage } from '../../../components'
 
 interface ILogin {
     navigation?: any
@@ -51,7 +51,7 @@ const Login: React.FC<ILogin> = (props: ILogin) => {
         onSuccess: (resp: any) => {
             asyncStorageSaveitem(ASYNC_STORAGE_NAME.AUTH_TOKEN, resp?.data?.tokenable?.token)
             asyncStorageSaveitem(ASYNC_STORAGE_NAME.AUTH_SECRET, resp?.data?.tokenable?.secret)
-            navigation?.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_HOME})
+            navigation?.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_NAVIGATOR_HOME})
         }
     })
 
@@ -220,7 +220,7 @@ const Login: React.FC<ILogin> = (props: ILogin) => {
             </Button>
             <Button 
                 variant='lancText' 
-                onPress={() => navigation?.navigate(ROUTE_NAME?.AUTH_SIGN_UP)}
+                onPress={() => navigation?.navigate(ROUTE_NAME?.AUTH_NAVIGATOR_SIGN_UP)}
                 isDisabled={login?.isLoading}
             >
                 {t('common:signin_button_register')}

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
-import { LOGO_GREEN } from '../../assets'
-import { ROUTE_NAME } from '../../router'
-import { ASYNC_STORAGE_NAME, asyncStorageGetitem } from '../../asyncStorage'
+import { LOGO_GREEN } from '../../../assets'
+import { ROUTE_NAME } from '../../../router'
+import { ASYNC_STORAGE_NAME, asyncStorageGetitem } from '../../../asyncStorage'
 import { 
     Center, 
     Image, 
@@ -19,9 +19,9 @@ const Splash: React.FC<ISplash> = (props: ISplash) => {
     async function handleRedirect() {
         const authToken = await asyncStorageGetitem(ASYNC_STORAGE_NAME.AUTH_TOKEN)
         if (authToken) {
-            navigation.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_HOME })
+            navigation.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_NAVIGATOR_HOME })
         } else {
-            navigation.replace(ROUTE_NAME.AUTH_NAVIGATOR, { screen: ROUTE_NAME.AUTH_SIGN_IN })
+            navigation.replace(ROUTE_NAME.AUTH_NAVIGATOR, { screen: ROUTE_NAME.AUTH_NAVIGATOR_SIGN_IN })
         }
     }
 

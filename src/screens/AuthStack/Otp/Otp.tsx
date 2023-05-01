@@ -44,7 +44,7 @@ const Otp: React.FC<IOtp> = (props: IOtp) => {
         onSuccess: (resp: any) => {
             asyncStorageSaveitem(ASYNC_STORAGE_NAME.AUTH_TOKEN, resp?.data?.tokenable?.token)
             asyncStorageSaveitem(ASYNC_STORAGE_NAME.AUTH_SECRET, resp?.data?.tokenable?.secret)
-            navigation?.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_HOME})
+            navigation?.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_NAVIGATOR_HOME})
         }
     })
 

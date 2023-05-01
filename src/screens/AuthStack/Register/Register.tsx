@@ -65,7 +65,7 @@ const Register: React.FC<IRegister> = (props: IRegister) => {
 
     const requestOtp = useMutation(requestOtpApi, {
         onSuccess: (resp: any) => {
-            navigation?.navigate(ROUTE_NAME.AUTH_SIGN_UP_OTP, {
+            navigation?.navigate(ROUTE_NAME.AUTH_NAVIGATOR_SIGN_UP_OTP, {
                 otpParams: resp,
                 formRegisterParams: {
                     name,
@@ -448,7 +448,7 @@ const Register: React.FC<IRegister> = (props: IRegister) => {
                 </Button>
                 <Button 
                     variant='lancText' 
-                    onPress={() => navigation?.navigate(ROUTE_NAME?.AUTH_SIGN_IN)}
+                    onPress={() => navigation?.navigate(ROUTE_NAME?.AUTH_NAVIGATOR_SIGN_IN)}
                     isDisabled={requestOtp?.isLoading}
                 >
                     {t('common:signup_button_have_an_accound')}

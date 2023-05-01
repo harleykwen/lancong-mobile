@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { ButtonLanguage } from '../../components'
+import { ButtonLanguage } from '../../../components'
 import { useMutation } from 'react-query'
-import { IC_ERROR } from '../../assets'
-import { ROUTE_NAME } from '../../router'
-import { resendOtpApi, validateOtpApi } from '../../apis/register'
+import { IC_ERROR } from '../../../assets'
+import { ROUTE_NAME } from '../../../router'
+import { resendOtpApi, validateOtpApi } from '../../../apis/register'
 import { intervalToDuration, isPast } from 'date-fns'
-import { ASYNC_STORAGE_NAME, asyncStorageSaveitem } from '../../asyncStorage'
+import { ASYNC_STORAGE_NAME, asyncStorageSaveitem } from '../../../asyncStorage'
 import {
     Alert,
     Button,

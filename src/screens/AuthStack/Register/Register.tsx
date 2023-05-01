@@ -1,9 +1,9 @@
 import React, { useState } from 'react'
-import { ROUTE_NAME } from '../../router'
+import { ROUTE_NAME } from '../../../router'
 import { useTranslation } from 'react-i18next'
-import { ButtonLanguage } from '../../components'
+import { ButtonLanguage } from '../../../components'
 import { useMutation } from 'react-query'
-import { requestOtpApi } from '../../apis/register'
+import { requestOtpApi } from '../../../apis/register'
 import { 
     IC_EMAIL, 
     IC_ERROR, 
@@ -13,7 +13,7 @@ import {
     IC_USER, 
     IC_VISIBILITY_OFF, 
     IC_VISIBILITY_ON,
-} from '../../assets'
+} from '../../../assets'
 import { 
     Button,
     Stack,

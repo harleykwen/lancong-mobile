@@ -1,17 +1,20 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import ActionSheetLanguage from './components/ActionSheetLanguage'
 import { useQuery } from 'react-query'
 import { logoutApi } from '../../../apis/auth'
 import { ROUTE_NAME } from '../../../router'
 import { useTranslation } from 'react-i18next'
+import { profileApi } from '../../../apis/user'
 import { ASYNC_STORAGE_NAME, asyncStorageDeleteitem } from '../../../asyncStorage'
 import { 
     IC_CHEVRON_RIGHT, 
+    IC_EDIT, 
     IC_GROUP, 
     IC_LANGUAGE, 
     IC_LOGOUT, } 
 from '../../../assets'
 import { 
+    Avatar,
     Flex, 
     Image, 
     Pressable, 
@@ -48,6 +51,7 @@ const ProfileScreen = (props: IProfileScreen) => {
 
     const [isActionSheetLanguageVisible, setIsActionSheetLanguageVisible] = useState(false)
 
+    const profile = useQuery('profile', profileApi)
     const logout = useQuery('logout', logoutApi, { 
         enabled: false,
         onSuccess: async () => {
@@ -61,7 +65,47 @@ const ProfileScreen = (props: IProfileScreen) => {
 
     return (
         <Flex flex='1' backgroundColor='gray.100'>
-            <Stack space='10px'>
+            <Stack 
+                direction='row' 
+                backgroundColor='lancPrimaryLight' 
+                paddingX='16px' 
+                paddingY='24px'
+                space='16px'
+                alignItems='center'
+            >
+                <Avatar 
+                    bg="lancPrimaryLight"
+                    shadow='3' 
+                    mr="1" 
+                    source={{
+                        uri: profile.data.data.avatar
+                    }}
+                >
+                    H
+                </Avatar>
+                <Stack>
+                    <Text 
+                        color='lancBackgroundLight' 
+                        fontSize='14px' 
+                        fontFamily='Poppins-Regular'
+                    >{profile.data.data.name}</Text>
+                    <Text 
+                        color='lancBackgroundLight' 
+                        fontSize='14px' 
+                        fontFamily='Poppins-SemiBold'
+                    >{profile.data.data.email}</Text>
+                </Stack>
+                <Pressable marginLeft='auto'>
+                    <Image 
+                        alt='IC_EDIT'
+                        source={IC_EDIT} 
+                        width='24px' 
+                        height='24px' 
+                        tintColor='lancBackgroundLight'
+                    />
+                </Pressable>
+            </Stack>
+            <Stack space='10px' marginTop='10px'>
                 <Pressable
                     {...baseStylePressedComponent}  
                     borderRadius='8px'

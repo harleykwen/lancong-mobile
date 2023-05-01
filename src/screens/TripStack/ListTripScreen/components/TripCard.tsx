@@ -142,7 +142,7 @@ const TripCard = (props: ITripCard) => {
                                     trip={data}
                                     data={packageTrip} 
                                     group={group}
-                                    onPress={() => navigation.push('trip-package-detail', { 
+                                    onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_PACKAGE_DETAIL, { 
                                         data: packageTrip,
                                         group: group,
                                         trip: data

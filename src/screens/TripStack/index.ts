@@ -6,7 +6,6 @@ import CheckoutPackageScreen from './CheckoutPackageScreen/CheckoutPackageScreen
 import CompleteDataScreen from './CompleteDataScreen/CompleteDataScreen'
 import DataPelancongScreen from './DataPelancongScreen/DataPelancongScreen'
 import PaymentTypeScreen from './PaymentTypeScreen/PaymentTypeScreen'
-import PaymentMethodScreen from './PaymentMethodScreen/PaymentMethodScreen'
 import SpecialRequestScreen from './SpecialRequestScreen/SpecialRequestScreen'
 
 export {
@@ -18,6 +17,5 @@ export {
     CompleteDataScreen,
     DataPelancongScreen,
     PaymentTypeScreen,
-    PaymentMethodScreen,
     SpecialRequestScreen,
 }

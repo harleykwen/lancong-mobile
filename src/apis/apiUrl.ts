@@ -27,6 +27,12 @@ const API_URL = {
     VA: {
         BANK_LIST: '/user/payment/virtual-account/banks',
     },
+    MASTER: {
+        FACILITIES: '/master/trip/facilities'
+    },
+    USER: {
+        PROFILE: '/user/profile',
+    },
 }
 
 export default API_URL

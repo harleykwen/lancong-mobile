@@ -4,25 +4,20 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { useMutation, useQuery } from 'react-query'
-import { getFacilitiesApi } from '../../../apis/master.api'
-import { Header } from '../../../components'
-import { facilityIcon } from './facilityIcon'
+import { useQuery } from 'react-query'
+import { getFacilitiesApi } from '../../../apis/master'
 import { id } from 'date-fns/locale'
 import { format } from 'date-fns'
 import { 
     Button,
-    Center, 
-    FlatList, 
+    Center,  
     Flex, 
-    Icon, 
     Image, 
     Pressable, 
     ScrollView, 
     Stack, 
     Text, 
 } from 'native-base'
-import { createTransactionTripApi } from '../../../apis/transaction'
 import { IC_ARROW_BACK } from '../../../assets'
 import { ROUTE_NAME } from '../../../router'
 
@@ -54,15 +49,6 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
     }
 
     const facilities = useQuery('facilities', getFacilitiesApi)
-    const createTransaction = useMutation(createTransactionTripApi, {
-        onSuccess: () => {
-            navigation.push('trip-package-checkout', { 
-                data: data,
-                group: group,
-                trip: trip
-            })
-        }
-    })
 
     return (
         <Flex flex='1' backgroundColor='white'>
@@ -238,7 +224,6 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                 </Stack>
                 <Button 
                     width='125px'
-                    isLoading={createTransaction?.isLoading}
                     onPress={() => {
                         navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_PACKAGE_CHECKOUT, { 
                             data: data,

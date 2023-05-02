@@ -49,7 +49,7 @@ const TransactionListScreen = (props: ITransactionListScreen) => {
                             totalPelancong: pelancong??resp?.data?.order?.pax,
                             textSelectedDate: `${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_start), 'dd MMM')} - ${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_end), 'dd MMM')}`,
                         },
-                        transaction: resp?.data,
+                        transaction: resp,
                     },
                 })
             } else {

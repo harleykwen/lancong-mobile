@@ -30,6 +30,7 @@ import {
     LOGO_MANDIRI, 
     LOGO_PERMATA, 
 } from '../../../assets'
+import { ROUTE_NAME } from '../../../router'
 
 interface IPayment {
     navigation: any
@@ -48,21 +49,15 @@ const PaymentTypeScreen = (props: IPayment) => {
         transaction,
     } = route?.params
 
-    console.log({
-        data, 
-        group, 
-        trip,
-        pelancong,
-        checkoutData, 
-        specialRequests,
-        transaction,
-    })
-
     const [paymentType, setPaymentType] = useState('')
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
 
     const vas = useQuery('list-va', bankListApi)
-    const checkout = useMutation(tripCheckoutApi)
+    const checkout = useMutation(tripCheckoutApi, {
+        onSuccess: (resp) => {
+            navigation?.replace(ROUTE_NAME.TRIP_NAVIGATOR_CHECKOUT_COMPLETE, { transaction: resp })
+        }
+    })
 
     function generateIconBank(data: any) {
         switch(data?.code) {

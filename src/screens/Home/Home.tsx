@@ -73,7 +73,7 @@ const Home = (props: IHome) => {
                         width={'50px'} 
                         rounded={'full'} 
                         backgroundColor={'#131391'}
-                        onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR)}
+                        onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR, { screen: ROUTE_NAME.TRIP_NAVIGATOR_SEARCH_STRIP })}
                     >
                         <Icon.Map color="white" />
                     </Pressable>

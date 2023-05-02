@@ -17,7 +17,6 @@ export async function getTransactionListApi() {
 }
 
 export async function getTransactionDetailApi(payload: IGetTransactionDetail) {
-    console.log({payload})
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRANSACTION.DETAIL.replace(':transactionId', payload?.id))
         if (response?.data?.error) throw response

@@ -3,14 +3,15 @@ import { useQuery } from 'react-query'
 import { getTransactionDetailApi } from '../../../apis/transaction'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
-import { IC_ARROW_BACK } from '../../../assets'
+import { IC_ARROW_BACK, IC_CONTENT_COPY } from '../../../assets'
 import { 
     Flex, 
     Image, 
     Pressable, 
     ScrollView, 
     Stack, 
-    Text, 
+    Text,
+    useClipboard, 
 } from 'native-base'
 
 interface ITransactionDetailScreen {
@@ -21,6 +22,7 @@ interface ITransactionDetailScreen {
 const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
     const { navigation, route } = props
     const { transaction } = route?.params
+    const { value, onCopy } = useClipboard()
 
     const transactionData = useQuery(`transaction-${transaction?.id}`, () => getTransactionDetailApi({ id: transaction?.id }))
     
@@ -135,60 +137,101 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                         </Stack>
 
                         <Stack 
-                            backgroundColor='white' 
-                            paddingX='10px'
-                            paddingY='20px' 
-                            space='5px'
+                            padding='16px' 
+                            space='16px' 
+                            backgroundColor='lancBackgroundLight'
                         >
-                            <Stack 
-                                direction='row' 
-                                alignItems='center' 
-                                justifyContent='space-between'
-                            >
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='gray.600'
-                                >Metode Pembayaran</Text>
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='black'
-                                    textTransform='capitalize'
-                                >{transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.bank_code} {transactionData?.data?.data?.order?.payment_method?.replace('_', ' ')}</Text>
+                            <Stack direction='row' justifyContent='space-between'>
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Tanggal Transaksi</Text>
+                                    <Text fontFamily='Poppins-SemiBold'>{format(new Date(transactionData?.data?.data?.created_at), 'EEEE, dd MMMM yyyy HH:mm', { locale: id })} WIB</Text>
+                                </Stack>
                             </Stack>
-                            <Stack 
-                                direction='row' 
-                                alignItems='center' 
-                                justifyContent='space-between'
-                            >
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='gray.600'
-                                >Total Harga</Text>
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='black'
-                                >Rp. {transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.expected_amount?.toLocaleString('id')}</Text>
+                        </Stack>
+
+                        <Stack 
+                            padding='16px' 
+                            space='16px' 
+                            backgroundColor='lancBackgroundLight'
+                        >
+                            <Stack direction='row' justifyContent='space-between'>
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Batas Akhir Pembayaran</Text>
+                                    <Text fontFamily='Poppins-SemiBold'>{format(new Date(transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.expiration_date), 'EEEE, dd MMMM yyyy HH:mm', { locale: id })} WIB</Text>
+                                </Stack>
+                                <Pressable>
+
+                                </Pressable>
                             </Stack>
-                            <Stack 
-                                direction='row' 
-                                alignItems='center' 
+                            <Stack direction='row' justifyContent='space-between'>
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Metode Pembayaran</Text>
+                                    <Text fontFamily='Poppins-SemiBold'>{transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.bank_code} {transactionData?.data?.data?.order?.payment_method?.replace('_', ' ')}</Text>
+                                </Stack>
+                            </Stack>
+                            <Stack
+                                alignItems='center'
+                                direction='row'
                                 justifyContent='space-between'
                             >
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='gray.600'
-                                >Nomor Pembayaran</Text>
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='black'
-                                    textTransform='capitalize'
-                                >{transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.account_number}</Text>
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Total Pembayaran</Text>
+                                    <Text fontFamily='Poppins-SemiBold'>Rp. {transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.expected_amount?.toLocaleString('id')}</Text>
+                                </Stack>
+                                <Pressable
+                                    onPress={() => onCopy(`${transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.expected_amount}`)}
+                                >
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        space='4px'
+                                    >
+                                        <Text
+                                            color='lancPrimaryLight'
+                                            fontSize='12px'
+                                            fontFamily='Poppins-SemiBold'
+                                        >Salin</Text>
+                                        <Image
+                                            alt='IC_CONTENT_COPY'
+                                            source={IC_CONTENT_COPY}
+                                            width='24px'
+                                            height='24px'
+                                            tintColor='lancPrimaryLight'
+                                        />
+                                    </Stack>
+                                </Pressable>
+                            </Stack>
+                            <Stack
+                                alignItems='center'
+                                direction='row'
+                                justifyContent='space-between'
+                            >
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Nomor Virtual Account</Text>
+                                    <Text fontFamily='Poppins-SemiBold'>{transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.account_number}</Text>
+                                </Stack>
+                                <Pressable
+                                    onPress={() => onCopy(`${transactionData?.data?.data?.order[transactionData?.data?.data?.order?.payment_method]?.account_number}`)}
+                                >
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        space='4px'
+                                    >
+                                        <Text
+                                            color='lancPrimaryLight'
+                                            fontSize='12px'
+                                            fontFamily='Poppins-SemiBold'
+                                        >Salin</Text>
+                                        <Image
+                                            alt='IC_CONTENT_COPY'
+                                            source={IC_CONTENT_COPY}
+                                            width='24px'
+                                            height='24px'
+                                            tintColor='lancPrimaryLight'
+                                        />
+                                    </Stack>
+                                </Pressable>
                             </Stack>
                         </Stack>
                     </Stack>

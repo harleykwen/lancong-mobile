@@ -10,6 +10,7 @@ import {
     PaymentTypeScreen, 
     SearchTripScreen, 
     SpecialRequestScreen, 
+    TripCheckoutComplete, 
     TripDetailScreen, 
 } from '../../screens/TripStack'
 
@@ -65,6 +66,11 @@ const TripNavigator: React.FC = () => {
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 
                 name={ROUTE_NAME.TRIP_NAVIGATOR_PAYMENT_TYPE} 
                 component={PaymentTypeScreen} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.SlideFromRightIOS }} 
+                name={ROUTE_NAME.TRIP_NAVIGATOR_CHECKOUT_COMPLETE} 
+                component={TripCheckoutComplete} 
             />
         </Stack.Navigator>
     )

@@ -32,6 +32,7 @@ export const ROUTE_NAME = {
     TRIP_NAVIGATOR_SPECIAL_REQUEST: 'Trip-Navigator-Special-Request',
     TRIP_NAVIGATOR_PAYMENT_TYPE: 'Trip-Navigator-Payment-Type',
     TRIP_NAVIGATOR_TRANSACTION_DETAIL: 'Trip-Navigator-Transaction-Detail',
+    TRIP_NAVIGATOR_CHECKOUT_COMPLETE: 'Trip-Navigator-Checkout-Complete',
 
     // TRANSACTION NAVIGATOR
     TRANSACTION_NAVIGATOR_LIST: 'Transaction-Navigator-List',

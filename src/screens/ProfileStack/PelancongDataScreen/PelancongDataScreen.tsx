@@ -67,7 +67,6 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                     value={search}
                     onChangeText={(e: any) => {
                         setSearch(e)
-                        console.log(pelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(e?.toLowerCase())))
                     }}
                     InputRightElement={
                         <Pressable onPress={() => setSearch('')}>

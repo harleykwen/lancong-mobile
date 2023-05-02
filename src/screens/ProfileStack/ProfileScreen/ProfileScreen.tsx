@@ -78,7 +78,7 @@ const ProfileScreen = (props: IProfileScreen) => {
                     shadow='3' 
                     mr="1" 
                     source={{
-                        uri: profile.data.data.avatar
+                        uri: profile?.data?.data?.avatar
                     }}
                 >
                     H
@@ -88,12 +88,12 @@ const ProfileScreen = (props: IProfileScreen) => {
                         color='lancBackgroundLight' 
                         fontSize='14px' 
                         fontFamily='Poppins-Regular'
-                    >{profile.data.data.name}</Text>
+                    >{profile?.data?.data?.name}</Text>
                     <Text 
                         color='lancBackgroundLight' 
                         fontSize='14px' 
                         fontFamily='Poppins-SemiBold'
-                    >{profile.data.data.email}</Text>
+                    >{profile?.data?.data?.email}</Text>
                 </Stack>
                 <Pressable marginLeft='auto'>
                     <Image 

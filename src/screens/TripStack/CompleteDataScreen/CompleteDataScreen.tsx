@@ -180,7 +180,7 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                                         onSelectPelancong,
                                         updateTripTransaction,
                                         specialRequests,
-                                        transactionId: transaction?.id,
+                                        transactionId: transaction?.data?.id,
                                     })}
                                 >
                                     <Icon 
@@ -217,7 +217,7 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                             navigation.push(
                                 ROUTE_NAME.TRIP_NAVIGATOR_SPECIAL_REQUEST, 
                                 { 
-                                    id: transaction?.id,
+                                    id: transaction?.data?.id,
                                     specialRequests: specialRequests, 
                                     setSpecialRequests: setSpecialRequests, 
                                     participants: pelancong?.filter((x: any) => x?.id)?.map((x: any) => x?.id),
@@ -294,7 +294,7 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                         pelancong,
                         checkoutData,
                         specialRequests,
-                        transaction,
+                        transaction: transaction?.data,
                     })}
                 >
                     Konfirmasi

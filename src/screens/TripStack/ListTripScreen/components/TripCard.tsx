@@ -1,11 +1,12 @@
-import React from 'react'
+import React, { memo } from 'react'
 import PackageTripCard from './PackageTripCard'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
+import { Dimensions } from 'react-native'
 import { ROUTE_NAME } from '../../../../router'
+import { IC_ARROW_DROP_DOWN, IC_LOCATION_ON } from '../../../../assets'
 import { 
     Actionsheet,
+    Center,
     Flex, 
-    Icon, 
     Image, 
     Pressable, 
     Stack, 
@@ -33,82 +34,104 @@ const TripCard = (props: ITripCard) => {
     } = useDisclose()
 
     return (
-        <Flex flex={1} padding='5px'>
-            <Stack 
-                direction='column'
-                rounded='lg' 
-                borderWidth='1px' 
-                borderColor='gray.200'
+        <Flex flex={1} backgroundColor='white'>
+            <Pressable 
+                onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_TRIP_DETAIL, { 
+                    data: data,
+                    group: group,
+                })}
             >
-                <Pressable 
-                    onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_TRIP_DETAIL, { 
-                        data: data,
-                        group: group,
-                    })}
+                <Stack 
+                    direction='row'
+                    backgroundColor='white' 
+                    shadow='3' 
+                    rounded='lg'
+                    marginBottom='16px'
                 >
                     <Image 
                         source={{uri: data?.images[0]?.url}} 
                         alt={data?.images[0]?.url} 
-                        height='100px' 
+                        height='150px' 
+                        width='40%'
                         borderTopLeftRadius='lg'
-                        borderTopRightRadius='lg'
+                        borderBottomLeftRadius='lg'
                     />
                     <Stack 
-                        direction='column' 
-                        space='10px' 
-                        padding='10px'
+                        padding='8px' 
+                        backgroundColor='white' 
+                        borderTopRightRadius='lg'
+                        borderBottomRightRadius='lg'
+                        flex='1'
                     >
                         <Text 
-                            fontSize='13px' 
-                            fontFamily='Poppins-Medium' 
-                            noOfLines={1}
+                            fontFamily='Poppins-SemiBold' 
+                            fontSize='12px'
+                            numberOfLines={1}
+                            isTruncated={true}
+                            maxWidth={Dimensions.get('window').width * 60 / 100}
                         >{data?.name}</Text>
-                        <Stack>
-                            <Text fontSize='11px' fontFamily='Poppins-Light'>Mulai dari</Text>
-                            <Text 
-                                fontSize='15px' 
-                                fontFamily='Poppins-SemiBold' 
-                                noOfLines={1}
-                            >Rp. {Math.min(...data?.[group]?.map((packageTrip: any) => packageTrip.price))?.toLocaleString('id')}</Text>
-                        </Stack>
-                        <Stack direction='row'  alignItems='center'>
-                            <Icon 
-                                as={MaterialIcons} 
-                                name='location-pin' 
-                                color='xprimary.50' 
-                                size='sm' 
+                        <Center 
+                            width='50px' 
+                            backgroundColor='gray.100' 
+                            rounded='sm' 
+                            padding='1px'
+                            marginTop='4px'
+                        >
+                            <Text fontSize='10px' fontFamily='Poppins-SemiBold' color='gray.400'>Trip</Text>
+                        </Center>
+                        <Stack 
+                            direction='row' 
+                            alignItems='center' 
+                            marginTop='5px'
+                        >
+                            <Image
+                                alt='IC_LOCATION_ON'
+                                source={IC_LOCATION_ON}
+                                width='18px'
+                                height='18px'
+                                tintColor='gray.400'
+                                marginTop='-1px'
                             />
                             <Text 
-                                fontSize='11px' 
-                                fontFamily='Poppins-Light' 
-                                color='gray.500'
-                                numberOfLines={1}
+                                fontSize='10px' 
+                                color='gray.400' 
+                                fontFamily='Poppins-SemiBold'
                             >{data?.location?.text}</Text>
                         </Stack>
+                        <Stack 
+                            marginTop='auto' 
+                            direction='row' 
+                            justifyContent='space-between'
+                            alignItems='flex-end'
+                        >
+                            <Stack>
+                                <Text fontSize='10px'>Mulai Dari</Text>
+                                <Text 
+                                    fontSize='10px' 
+                                    fontFamily='Poppins-SemiBold' 
+                                    color='orange.400'
+                                >Rp. {Math.min(...data?.[group]?.map((packageTrip: any) => packageTrip.price))?.toLocaleString('id')}</Text>
+                            </Stack>
+                            <Pressable onPress={onOpen}>
+                                <Stack direction='row' alignItems='flex-end'>
+                                    <Text 
+                                        color='lancPrimaryLight' 
+                                        fontSize='10px' 
+                                        fontFamily='Poppins-SemiBold'
+                                    >Lihat Paket</Text>
+                                    <Image
+                                        alt='IC_ARROW_DROP_DOWN'
+                                        source={IC_ARROW_DROP_DOWN}
+                                        width='18px'
+                                        height='18px'
+                                        tintColor='lancPrimaryLight'
+                                    />
+                                </Stack>
+                            </Pressable>
+                        </Stack>
                     </Stack>
-                </Pressable>
-                <Pressable 
-                    flexDirection='row' 
-                    padding='10px' 
-                    justifyContent='space-between' 
-                    alignItems='center'
-                    borderTopColor='gray.200'
-                    borderTopWidth='1px'
-                    onPress={onOpen}
-                >
-                    <Text 
-                        fontSize='11px' 
-                        fontFamily='Poppins-SemiBold'
-                        color='lancPrimaryLight'
-                    >Lihat Paket</Text>
-                    <Icon 
-                        as={MaterialIcons} 
-                        name='keyboard-arrow-up' 
-                        color='lancPrimaryLight' 
-                        size='sm' 
-                    />
-                </Pressable>
-            </Stack>
+                </Stack>
+            </Pressable>
 
             <Actionsheet isOpen={isOpen} onClose={onClose}>
                 <Actionsheet.Content padding='16px' backgroundColor='white'>
@@ -119,19 +142,19 @@ const TripCard = (props: ITripCard) => {
                             alignItems='center'
                         >
                             <Stack direction='row'>
-                                <Text fontSize='13px' fontFamily='Poppins-Light'>Paket Trip</Text>
-                                <Text fontSize='13px' fontFamily='Poppins-Medium'> {data?.name}</Text>
+                                <Text fontSize='12px' fontFamily='Poppins-Regular'>Paket Trip</Text>
+                                <Text fontSize='12px' fontFamily='Poppins-SemiBold'> {data?.name}</Text>
                             </Stack>
                             <Stack direction='row'>
                                 <Text 
-                                    color='xprimary.50' 
-                                    fontSize='11px' 
-                                    fontFamily='Poppins-Medium'
+                                    color='lancPrimaryLight' 
+                                    fontSize='12px' 
+                                    fontFamily='Poppins-SemiBold'
                                 >{data?.[group]?.length}</Text>
                                 <Text 
-                                    color='xprimary.50' 
-                                    fontSize='11px' 
-                                    fontFamily='Poppins-Light'
+                                    color='lancPrimaryLight' 
+                                    fontSize='12px' 
+                                    fontFamily='Poppins-Regular'
                                 > Paket</Text>
                             </Stack>
                         </Stack>
@@ -157,4 +180,4 @@ const TripCard = (props: ITripCard) => {
     )
 }
 
-export default TripCard
+export default memo(TripCard)

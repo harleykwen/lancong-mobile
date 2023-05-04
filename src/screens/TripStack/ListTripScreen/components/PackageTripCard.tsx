@@ -1,9 +1,13 @@
-import React from 'react'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import React, { memo } from 'react'
 import { format } from 'date-fns'
 import { 
+    IC_AIRLINE_SEAT_RECLINE, 
+    IC_CALENDAR_MONTH, 
+    IC_LOCATION_ON, 
+} from '../../../../assets'
+import { 
     Icon, 
+    Image, 
     Pressable, 
     Stack, 
     Text 
@@ -38,41 +42,42 @@ const PackageTripCard = (props: IPackageTripCard) => {
                 <Stack justifyContent='space-between'>
                     <Stack marginBottom='10px'>
                         <Stack alignItems='center' direction='row'>
-                            <Text fontFamily='Poppins-Light' fontSize='13px'>Paket </Text>
-                            <Text fontFamily='Poppins-Medium' fontSize='13px'>{data?.duration?.day}D{data?.duration?.night}N</Text>
+                            <Text fontFamily='Poppins-Regular' fontSize='12px'>Paket </Text>
+                            <Text fontFamily='Poppins-SemiBold' fontSize='12px'>{data?.duration?.day}D{data?.duration?.night}N</Text>
                         </Stack>
                         <Stack direction='row'>
                             <Text 
-                                color='gray.500' 
-                                fontFamily='Poppins-Light' 
-                                fontSize='11px'
+                                color='gray.400' 
+                                fontFamily='Poppins-Regular' 
+                                fontSize='10px'
                             >(</Text>
                             <Text 
-                                color='gray.500' 
+                                color='gray.400' 
                                 fontFamily='Poppins-Medium' 
-                                fontSize='11px'
+                                fontSize='10px'
                             >{data?.duration?.day}</Text>
                             <Text 
-                                color='gray.500' 
-                                fontFamily='Poppins-Light' 
-                                fontSize='11px'
+                                color='gray.400' 
+                                fontFamily='Poppins-Regular' 
+                                fontSize='10px'
                             > hari</Text>
                             <Text 
-                                color='gray.500' 
+                                color='gray.400' 
                                 fontFamily='Poppins-Medium' 
-                                fontSize='11px'
+                                fontSize='10px'
                             > {data?.duration?.night}</Text>
                             <Text 
-                                color='gray.500' 
-                                fontFamily='Poppins-Light' 
-                                fontSize='11px'
+                                color='gray.400' 
+                                fontFamily='Poppins-Regular' 
+                                fontSize='10px'
                             > malam{')'}</Text>
                         </Stack>
                     </Stack>
                     <Text 
                         marginTop='auto' 
                         fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
+                        fontSize='14px'
+                        color='orange.400'
                     >Rp. {data?.price?.toLocaleString('id')}</Text>
                 </Stack>
                 <Stack justifyContent='center' space='5px'>
@@ -80,23 +85,37 @@ const PackageTripCard = (props: IPackageTripCard) => {
                     {group === 'public' &&
                         <>
                             <Stack direction='row' alignItems='center'>
-                                <Icon 
-                                    as={MaterialIcons} 
-                                    name='airline-seat-recline-normal' 
-                                    color='lancPrimaryLight' 
-                                    size='sm' 
+                                <Image
+                                    alt='IC_AIRLINE_SEAT_RECLINE'
+                                    source={IC_AIRLINE_SEAT_RECLINE}
+                                    width='18px'
+                                    height='18px'
+                                    tintColor='lancPrimaryLight'
                                 />
-                                <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.quota - data?.current_participant}</Text>
-                                <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> kuota lagi</Text>
+                                <Text 
+                                    fontFamily='Poppins-SemiBold' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > {data?.quota - data?.current_participant}</Text>
+                                <Text 
+                                    fontFamily='Poppins-Regular' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > kuota lagi</Text>
                             </Stack>
                             <Stack direction='row' alignItems='center'>
-                                <Icon 
-                                    as={Ionicons} 
-                                    name='calendar' 
-                                    color='lancPrimaryLight' 
-                                    size='sm' 
+                                <Image
+                                    alt='IC_CALENDAR_MONTH'
+                                    source={IC_CALENDAR_MONTH}
+                                    width='18px'
+                                    height='18px'
+                                    tintColor='lancPrimaryLight'
                                 />
-                                <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> {format(new Date(data?.trip_start), 'dd MMM')} - {format(new Date(data?.trip_end), 'dd MMM')}</Text>
+                                <Text 
+                                    fontFamily='Poppins-Regular' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > {format(new Date(data?.trip_start), 'dd MMM')} - {format(new Date(data?.trip_end), 'dd MMM')}</Text>
                             </Stack>
                         </>
                     }
@@ -105,48 +124,69 @@ const PackageTripCard = (props: IPackageTripCard) => {
                     {group === 'private' &&
                         <>
                             <Stack direction='row' alignItems='center'>
-                                <Icon 
-                                    as={Ionicons} 
-                                    name='calendar' 
-                                    color='lancPrimaryLight' 
-                                    size='sm' 
+                                <Image
+                                    alt='IC_CALENDAR_MONTH'
+                                    source={IC_CALENDAR_MONTH}
+                                    width='18px'
+                                    height='18px'
+                                    tintColor='lancPrimaryLight'
                                 />
-                                <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> {format(new Date(data?.availability?.open), 'dd MMM')} - {format(new Date(data?.availability?.close), 'dd MMM')}</Text>
+                                <Text 
+                                    fontFamily='Poppins-Regular' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > {format(new Date(data?.availability?.open), 'dd MMM')} - {format(new Date(data?.availability?.close), 'dd MMM')}</Text>
                             </Stack>
                             <Stack direction='row' alignItems='center'>
-                                <Icon 
-                                    as={MaterialIcons} 
-                                    name='reduce-capacity' 
-                                    color='lancPrimaryLight' 
-                                    size='sm' 
+                                <Image
+                                    alt='IC_AIRLINE_SEAT_RECLINE'
+                                    source={IC_AIRLINE_SEAT_RECLINE}
+                                    width='18px'
+                                    height='18px'
+                                    tintColor='lancPrimaryLight'
                                 />
-                                <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.person?.min}</Text>
-                                <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> sampai</Text>
-                                <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.person?.max}</Text>
-                                <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> orang</Text>
+                                <Text 
+                                    fontFamily='Poppins-Medium' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > {data?.person?.min}</Text>
+                                <Text 
+                                    fontFamily='Poppins-Regular' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > sampai</Text>
+                                <Text 
+                                    fontFamily='Poppins-Medium' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > {data?.person?.max}</Text>
+                                <Text 
+                                    fontFamily='Poppins-Regular' 
+                                    fontSize='10px' 
+                                    color='gray.400'
+                                > orang</Text>
                             </Stack>
-                            {/* <Stack direction='row' alignItems='center'>
-                                <Icon 
-                                    as={MaterialIcons} 
-                                    name='local-police' 
-                                    color='lancPrimaryLight' 
-                                    size='sm' 
-                                />
-                                <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.team_on_duty}</Text>
-                                <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> petugas</Text>
-                            </Stack> */}
                         </>
                     }
 
                     <Stack direction='row' alignItems='center'>
-                        <Icon 
-                            as={MaterialIcons} 
-                            name='location-on' 
-                            color='lancPrimaryLight' 
-                            size='sm' 
+                        <Image
+                            alt='IC_LOCATION_ON'
+                            source={IC_LOCATION_ON}
+                            width='18px'
+                            height='18px'
+                            tintColor='lancPrimaryLight'
                         />
-                        <Text fontFamily='Poppins-Light' fontSize='11px' color='gray.500'> titik bertemu di</Text>
-                        <Text fontFamily='Poppins-Medium' fontSize='11px' color='gray.500'> {data?.meeting_point?.text}</Text>
+                        <Text 
+                            fontFamily='Poppins-Regular' 
+                            fontSize='10px' 
+                            color='gray.400'
+                        > titik bertemu di</Text>
+                        <Text 
+                            fontFamily='Poppins-SemiBold' 
+                            fontSize='10px' 
+                            color='gray.400'
+                        > {data?.meeting_point?.text}</Text>
                     </Stack>
                 </Stack>
             </Stack>
@@ -154,4 +194,4 @@ const PackageTripCard = (props: IPackageTripCard) => {
     )
 }
 
-export default PackageTripCard
+export default memo(PackageTripCard)

@@ -31,13 +31,16 @@ const ListTripScreen = (props: IListTripScreen) => {
         participant,
     } = route.params
 
-    const tripList = useQuery('get-trip-list', () => tripSearchApi({
-        type, 
-        destination, 
-        group,
-        trip_start: new Date(tripStart).getTime(),
-        participant,
-    }))
+    const tripList = useQuery(
+        'get-trip-list', 
+        () => tripSearchApi({
+            type, 
+            destination, 
+            group,
+            trip_start: new Date(tripStart).getTime(),
+            participant,
+        }),
+    )
 
     return (
         <Flex backgroundColor='white' flex={1}>
@@ -75,17 +78,6 @@ const ListTripScreen = (props: IListTripScreen) => {
             </Stack>
 
             {
-                tripList?.isFetching &&
-                <Stack padding='16px' space='16px'>
-                    {[...Array(3)]?.map((_, index: number) => {
-                        return (
-                            <TripCardSkeleton key={index} />
-                        )
-                    })}
-                </Stack>
-            }
-
-            {
                 !tripList?.isFetching &&
                 tripList?.data &&
                 <FlatList
@@ -94,10 +86,23 @@ const ListTripScreen = (props: IListTripScreen) => {
                     paddingX='16px'
                     paddingTop='16px'
                     numColumns={1}
+                    onRefresh={() => tripList?.refetch()}
+                    refreshing={tripList?.isFetching}
                     renderItem={({ item }) => {
                         return <TripCard data={item} navigation={navigation} group={group} />
                     }}
                 />
+            }
+
+            {
+                tripList?.isFetching &&
+                <Stack padding='16px' space='16px'>
+                    {[...Array(3)]?.map((_, index: number) => {
+                        return (
+                            <TripCardSkeleton key={index} />
+                        )
+                    })}
+                </Stack>
             }
         </Flex>
     )

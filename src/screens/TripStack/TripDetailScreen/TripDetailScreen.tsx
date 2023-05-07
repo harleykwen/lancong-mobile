@@ -2,7 +2,9 @@ import React from 'react'
 import Swiper from 'react-native-swiper'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import PackageTripCard from '../ListTripScreen/components/PackageTripCard'
-import * as Unicons from 'react-native-unicons'
+import { ROUTE_NAME } from '../../../router'
+import { Dimensions } from 'react-native'
+import { IC_LOCATION_ON } from '../../../assets'
 import { 
     Flex, 
     HStack, 
@@ -11,10 +13,10 @@ import {
     Pressable, 
     ScrollView, 
     Stack, 
+    StatusBar, 
     Text, 
     VStack 
 } from 'native-base'
-import { ROUTE_NAME } from '../../../router'
 
 interface ITripDetailScreen {
     route: any
@@ -26,25 +28,30 @@ const TripDetailScreen = (props: ITripDetailScreen) => {
     const { data, group } = route.params
 
     return (
-        <Flex flex='1' backgroundColor='white'>
-            <ScrollView paddingBottom='100px'>
-                <Flex height='175px'>
-                    <Swiper style={{ height: 175 }} showsButtons={false} activeDotColor='#178a11'>
+        <Flex flex='1' backgroundColor='lancBackgroundLight'>
+            <StatusBar backgroundColor='white' />
+            <ScrollView>
+                <Flex height={`${Dimensions.get('window').height / 3}px`}>
+                    <Swiper 
+                        style={{ height: Dimensions.get('window').height / 3 }} 
+                        showsButtons={false} 
+                        activeDotColor='#178a11'
+                    >
                         {data?.images?.map((image: any, index: number) => {
                             return (
                                 <Image 
                                     key={index}
                                     source={{uri: image?.url}} 
                                     alt={image?.url} 
-                                    height='175px' 
+                                    height={`${Dimensions.get('window').height / 3}px`} 
                                 />
                             )
                         })}
                     </Swiper>
                     <Pressable
                         position='absolute'
-                        top='10px'
-                        left='10px'
+                        top='16px'
+                        left='16px'
                         onPress={() => navigation?.goBack()}
                     >
                         <Flex 
@@ -65,34 +72,34 @@ const TripDetailScreen = (props: ITripDetailScreen) => {
                         </Flex>
                     </Pressable>
                 </Flex>
-                <VStack space='5px' padding='10px'>
-                    <Text 
-                        marginTop='15px' 
-                        fontSize='14px' 
-                        marginLeft='10px'
-                        fontFamily='Poppins-SemiBold'
-                    >{data?.name}</Text>
-                    <HStack 
-                        padding='5px' 
-                        alignItems='center' 
-                        space='5px'
-                    >
-                        <Icon as={Unicons.LocationPoint} />
-                        <Text fontSize='11px' fontFamily='Poppins-Light'>{data?.location?.text}</Text>
+                <VStack 
+                    space='16px' 
+                    padding='16px' 
+                    borderTopLeftRadius='xl' 
+                    borderTopRightRadius='xl'
+                >
+                    <Text fontFamily='Poppins-SemiBold'>{data?.name}</Text>
+                    <HStack alignItems='center' space='5px'>
+                        <Image
+                            alt='IC_LOCATION_ON'
+                            source={IC_LOCATION_ON}
+                            width='18px'
+                            height='18px'
+                            tintColor='gray.400'
+                        />
+                        <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{data?.location?.text}</Text>
                     </HStack>
-                    <Stack marginTop='10px'>
-                        <Stack padding='10px'>
-                            <Text fontFamily='Poppins-Medium'>Sorotan</Text>
-                            <Text color='gray.500' fontFamily='Poppins-Light'>{data?.highlight}</Text>
-                        </Stack>
-                        <Stack padding='10px'>
-                            <Text fontFamily='Poppins-Medium'>Deskripsi</Text>
-                            <Text color='gray.500' fontFamily='Poppins-Light'>{data?.description}</Text>
-                        </Stack>
+                    <Stack>
+                        <Text fontFamily='Poppins-SemiBold' fontSize='10px'>Sorotan</Text>
+                        <Text fontFamily='Poppins-Regular' fontSize='10px'>{data?.highlight}</Text>
+                    </Stack>
+                    <Stack>
+                        <Text fontFamily='Poppins-SemiBold' fontSize='10px'>Deskripsi</Text>
+                        <Text fontFamily='Poppins-Regular' fontSize='10px'>{data?.description}</Text>
                     </Stack>
 
-                    <Stack padding='10px' space='5px'>
-                        <Text marginTop='5px' fontFamily='Poppins-Medium'>Paket</Text>
+                    <Stack space='4px'>
+                        <Text fontFamily='Poppins-SemiBold' fontSize='10px'>Paket</Text>
                         {data?.[group]?.map((packageTrip: any, index: number) => {
                             return (
                                 <PackageTripCard

@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons'
+import { Dimensions } from 'react-native'
 import { IC_ARROW_BACK } from '../../../assets'
 import { useMutation } from 'react-query'
 import { tripCreateTransactionApi } from '../../../apis/trip'
@@ -9,11 +10,13 @@ import { ROUTE_NAME } from '../../../router'
 import { add, format } from 'date-fns'
 import { 
     Button, 
+    Center, 
     Flex, 
     Icon, 
     Image, 
     Pressable, 
     Stack, 
+    StatusBar, 
     Text, 
 } from 'native-base'
 
@@ -75,17 +78,22 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
     }
 
     return (
-        <Flex flex='1' backgroundColor='white'>
-            <Stack
-                paddingY='16px'
-                paddingX='24px'
-                shadow='3'
+        <Flex flex='1' backgroundColor='lancBackgroundLight'>
+            <StatusBar barStyle='dark-content' backgroundColor='white' />
+            <Stack 
+                direction='row' 
+                paddingX='16px'
+                paddingY='8px' 
+                shadow='3' 
                 backgroundColor='lancBackgroundLight'
-                direction='row'
+                space='8px'
                 alignItems='center'
-                space='16px'
             >
-                <Pressable onPress={() => navigation?.goBack()}>
+                <Pressable 
+                    onPress={() => {
+                        navigation?.goBack()
+                    }}
+                >
                     <Image
                         alt='IC_ARROW_BACK'
                         source={IC_ARROW_BACK}
@@ -94,7 +102,30 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                         tintColor='lancOnBackgroundLight'
                     />
                 </Pressable>
-                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>{`${trip?.name} - ${data?.duration?.day}D${data?.duration?.night}N`}</Text>
+                <Stack 
+                    direction='row' 
+                    alignItems='center' 
+                    space='8px'
+                >
+                    <Center 
+                        backgroundColor='gray.100' 
+                        paddingX='8px' 
+                        paddingY='2px' 
+                        rounded='sm'
+                    >
+                        <Text 
+                            fontSize='12px' 
+                            fontFamily='Poppins-SemiBold' 
+                            color='gray.400'
+                        >{data?.duration?.day}D{data?.duration?.night}N</Text>
+                    </Center>
+                    <Text 
+                        fontSize='16px' 
+                        fontFamily='Poppins-SemiBold' 
+                        numberOfLines={1}
+                        maxWidth={Dimensions.get('window').width * 80 / 100}
+                    >{trip?.name}</Text>
+                </Stack>
             </Stack>
 
             <Stack padding='10px' space='10px'>
@@ -222,11 +253,11 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                 shadow='5'
             >
                 <Stack>
-                    <Text fontFamily='Poppins-Light' fontSize='11px'>Total</Text>
+                    <Text fontSize='12px'>Total</Text>
                     <Text 
-                        color='lancPrimaryLight' 
-                        fontFamily='Poppins-Medium' 
-                        fontSize='13px'
+                        color='orange.400' 
+                        fontFamily='Poppins-SemiBold' 
+                        fontSize='12px'
                     >Rp. {(data?.price * totalPelancong)?.toLocaleString('id')}</Text>
                 </Stack>
                 <Button

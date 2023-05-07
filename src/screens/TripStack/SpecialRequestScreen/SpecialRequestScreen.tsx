@@ -33,14 +33,6 @@ const SpecialRequestScreen: React.FC<ISpecialRequestScreen> = (props: ISpecialRe
     })])
     const [loading, setLoading] = useState(false)
 
-    // const updateTripTransaction = useMutation(updateTransactionTripApi, {
-    //     onSuccess: (resp) => {
-    //         console.log({resp})
-    //         setData(specialRequests?.map((data: any) => data))
-    //         navigation.goBack()
-    //     }
-    // })
-
     function handleCounter(index: number, type: 'minus' | 'plus') {
         const tempSpecialRequests = specialRequests
         if (type === 'minus') {

@@ -16,10 +16,12 @@ import {
     Pressable, 
     ScrollView, 
     Stack, 
+    StatusBar, 
     Text, 
 } from 'native-base'
 import { IC_ARROW_BACK } from '../../../assets'
 import { ROUTE_NAME } from '../../../router'
+import { Dimensions } from 'react-native'
 
 interface IPackageTripDetailScreen {
     navigation: any
@@ -51,17 +53,22 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
     const facilities = useQuery('facilities', getFacilitiesApi)
 
     return (
-        <Flex flex='1' backgroundColor='white'>
+        <Flex flex='1' backgroundColor='lancBackgroundLight'>
+            <StatusBar barStyle='dark-content' backgroundColor='white' />
             <Stack 
-                paddingY='16px'
-                paddingX='24px'
+                direction='row' 
+                paddingX='16px'
+                paddingY='8px' 
                 shadow='3' 
                 backgroundColor='lancBackgroundLight'
-                direction='row'
+                space='8px'
                 alignItems='center'
-                space='16px'
             >
-                <Pressable onPress={() => navigation?.goBack()}>
+                <Pressable 
+                    onPress={() => {
+                        navigation?.goBack()
+                    }}
+                >
                     <Image
                         alt='IC_ARROW_BACK'
                         source={IC_ARROW_BACK}
@@ -70,39 +77,56 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                         tintColor='lancOnBackgroundLight'
                     />
                 </Pressable>
-                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>{`${trip?.name} - ${data?.duration?.day}D${data?.duration?.night}N`}</Text>
+                <Stack 
+                    direction='row' 
+                    alignItems='center' 
+                    space='8px'
+                >
+                    <Center 
+                        backgroundColor='gray.100' 
+                        paddingX='8px' 
+                        paddingY='2px' 
+                        rounded='sm'
+                    >
+                        <Text 
+                            fontSize='12px' 
+                            fontFamily='Poppins-SemiBold' 
+                            color='gray.400'
+                        >{data?.duration?.day}D{data?.duration?.night}N</Text>
+                    </Center>
+                    <Text 
+                        fontSize='16px' 
+                        fontFamily='Poppins-SemiBold' 
+                        numberOfLines={1}
+                        maxWidth={Dimensions.get('window').width * 80 / 100}
+                    >{trip?.name}</Text>
+                </Stack>
             </Stack>
             <Flex flex='1' paddingBottom='70px'>
                 <ScrollView showsVerticalScrollIndicator={false}>
-                    <Stack padding='24px' space='20px'>
-                        <Stack>
-                            <Text 
-                                fontFamily='Poppins-Medium' 
-                                fontSize='15px'
-                                marginBottom='5px'
-                            >Ketersediaan Trip</Text>
+                    <Stack padding='16px' space='20px'>
+                        <Stack space='4px'>
+                            <Text fontFamily='Poppins-SemiBold' fontSize='12px'>Ketersediaan Trip</Text>
                             <Stack>
-                                <Text fontFamily='Poppins-Light' fontSize='11px'>Trip ini tersedia pada tanggal:</Text>
+                                <Text fontSize='10px'>Trip ini tersedia pada tanggal:</Text>
                                 {group === 'private'
                                     ?   <Stack direction='row'>
-                                            <Text fontFamily='Poppins-Medium' fontSize='11px'>{format(new Date(data?.availability?.open), 'dd MMMM yyyy', { locale: id })} </Text>
-                                            <Text fontFamily='Poppins-Light' fontSize='11px'>{data?.person?.min}sampai </Text>
-                                            <Text fontFamily='Poppins-Medium' fontSize='11px'>{format(new Date(data?.availability?.close), 'dd MMMM yyyy', { locale: id })}</Text>
+                                            <Text fontSize='10px'>
+                                                {format(new Date(data?.availability?.open), 'dd MMMM yyyy', { locale: id })}
+                                                {' '} sampai {' '}
+                                                {format(new Date(data?.availability?.close), 'dd MMMM yyyy', { locale: id })}
+                                            </Text>
                                         </Stack>
                                     :   <Stack direction='row'>
                                             <Text fontFamily='Poppins-Medium' fontSize='11px'>{format(new Date(data?.trip_start), 'dd MMMM yyyy', { locale: id })} </Text>
-                                            <Text fontFamily='Poppins-Light' fontSize='11px'>{data?.person?.min}sampai </Text>
+                                            <Text fontSize='11px'>{data?.person?.min}sampai </Text>
                                             <Text fontFamily='Poppins-Medium' fontSize='11px'>{format(new Date(data?.trip_end), 'dd MMMM yyyy', { locale: id })}</Text>
                                         </Stack>
                                 }
                             </Stack>
                         </Stack>
-                        <Stack>
-                            <Text 
-                                fontFamily='Poppins-Medium' 
-                                fontSize='15px' 
-                                marginBottom='5px'
-                            >Rencana Perjalanan</Text>
+                        <Stack space='4px'>
+                            <Text fontFamily='Poppins-SemiBold' fontSize='12px'>Rencana Perjalanan</Text>
                             <Stack space='5px'>
                                 {data?.itineraries?.map((itinerary: any, index: number) => {
                                     return (
@@ -122,11 +146,11 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                                                 borderTopRightRadius='full'
                                                 backgroundColor='lancPrimaryLight'
                                                 width='100px'
-                                                marginLeft='-10px'
+                                                marginLeft='-10.5px'
                                             >
                                                 <Text 
-                                                    fontFamily='Poppins-Medium' 
-                                                    fontSize='11px'
+                                                    fontFamily='Poppins-SemiBold' 
+                                                    fontSize='10px'
                                                     color='white'
                                                 >Hari ke - {itinerary?.day}</Text>
                                             </Center>
@@ -137,14 +161,10 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                                                         direction='row' 
                                                         space='5px'
                                                     >
-                                                        <Text fontFamily='Poppins-Medium' fontSize='11px'>{itinerary?.start_time}</Text>
-                                                        <Text fontFamily='Poppins-Light' fontSize='11px'> - </Text>
-                                                        <Text fontFamily='Poppins-Medium' fontSize='11px'>{itinerary?.end_time} </Text>
-                                                        <Text 
-                                                            fontFamily='Poppins-Light' 
-                                                            fontSize='11px'
-                                                            flex='1'
-                                                        >{itinerary?.description}</Text>
+                                                        <Text fontSize='10px'>
+                                                            {itinerary?.start_time} {' - '} {itinerary?.end_time} { ' ' }
+                                                        </Text>
+                                                        <Text fontSize='10px'flex='1'>{itinerary?.description}</Text>
                                                     </Stack>
                                                 )
                                             })}
@@ -154,47 +174,21 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                             </Stack>
                         </Stack>
                         {group === 'private'
-                            ?   <Stack>
-                                    <Text 
-                                        fontFamily='Poppins-Medium' 
-                                        fontSize='15px'
-                                        marginBottom='5px'
-                                    >Batas Penumpang</Text>
+                            ?   <Stack space='4px'>
+                                    <Text fontFamily='Poppins-SemiBold' fontSize='12px'>Batas Penumpang</Text>
                                     <Stack>
-                                        <Stack direction='row'>
-                                            <Text fontFamily='Poppins-Light' fontSize='11px'>minimal: </Text>
-                                            <Text fontFamily='Poppins-Medium' fontSize='11px'>{data?.person?.min} orang</Text>
-                                        </Stack>
-                                        <Stack direction='row'>
-                                            <Text fontFamily='Poppins-Light' fontSize='11px'>maksimal: </Text>
-                                            <Text fontFamily='Poppins-Medium' fontSize='11px'>{data?.person?.max} orang</Text>
-                                        </Stack>
+                                        <Text fontFamily='Poppins-Light' fontSize='10px'>minimal: {data?.person?.min} orang</Text>
+                                        <Text fontFamily='Poppins-Light' fontSize='10px'>maksimal: {data?.person?.max} orang</Text>
                                     </Stack>
                                 </Stack>
-                            :   <Stack>
-                                    <Text 
-                                        fontFamily='Poppins-Medium' 
-                                        fontSize='15px'
-                                        marginBottom='5px'
-                                    >Kuota Penumpang</Text>
-                                    <Stack>
-                                        <Stack direction='row'>
-                                            <Text fontFamily='Poppins-Light' fontSize='11px'>{data?.quota - data?.current_participant}</Text>
-                                            <Text fontFamily='Poppins-Medium' fontSize='11px'> orang</Text>
-                                        </Stack>
-                                    </Stack>
+                            :   <Stack space='4px'>
+                                    <Text fontFamily='Poppins-SemiBold' fontSize='10px'>Kuota Penumpang</Text>
+                                    <Text fontFamily='Poppins-Light' fontSize='10px'>{data?.quota - data?.current_participant} orang</Text>
                                 </Stack>
                         }
                         <Stack>
-                            <Text 
-                                fontFamily='Poppins-Medium' 
-                                fontSize='15px'
-                                marginBottom='5px'
-                            >Titik Berkumpul</Text>
-                            <Stack direction='row'>
-                                <Text fontFamily='Poppins-Light' fontSize='11px'>Titik berkumpul trip ini berada di </Text>
-                                <Text fontFamily='Poppins-Medium' fontSize='11px'>{data?.meeting_point?.text}</Text>
-                            </Stack>
+                            <Text fontFamily='Poppins-SemiBold' fontSize='10px'>Titik Berkumpul</Text>
+                            <Text fontFamily='Poppins-Light' fontSize='10px'>Titik berkumpul trip ini berada di {data?.meeting_point?.text}</Text>
                         </Stack>
                     </Stack>
                 </ScrollView>
@@ -215,10 +209,10 @@ const PackageTripDetailScreen = (props: IPackageTripDetailScreen) => {
                 flex='1'
             >
                 <Stack>
-                    <Text fontFamily='Poppins-Light' fontSize='11px'>Harga per orang</Text>
+                    <Text fontFamily='Poppins-Regular' fontSize='11px'>Harga per orang</Text>
                     <Text 
-                        color='lancPrimaryLight' 
-                        fontFamily='Poppins-Medium' 
+                        color='orange.400' 
+                        fontFamily='Poppins-SemiBold' 
                         fontSize='13px'
                     >Rp. {data?.price?.toLocaleString('id')}</Text>
                 </Stack>

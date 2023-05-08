@@ -3,6 +3,7 @@ import { ROUTE_NAME } from '../routeName'
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack'
 import { 
     AddPelancongScreen, 
+    EditPelancongScreen, 
     PelancongDataScreen, 
     PelancongDetailScreen, 
     ProfileScreen, 
@@ -35,6 +36,11 @@ const ProfileNavigator: React.FC = () => {
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 
                 name={ROUTE_NAME.PROFILE_NAVIGATOR_DETAIL_PELANCONG_DATA} 
                 component={PelancongDetailScreen} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.SlideFromRightIOS }} 
+                name={ROUTE_NAME.PROFILE_NAVIGATOR_UPDATE_PELANCONG_DATA} 
+                component={EditPelancongScreen} 
             />
         </Stack.Navigator>
     )

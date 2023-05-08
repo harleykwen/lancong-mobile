@@ -43,4 +43,5 @@ export const ROUTE_NAME = {
     PROFILE_NAVIGATOR_PELANCONG_DATA: 'Profile-Navigator-Pelancong-Data',
     PROFILE_NAVIGATOR_ADD_PELANCONG_DATA: 'Profile-Navigator-Add-Pelancong-Data',
     PROFILE_NAVIGATOR_DETAIL_PELANCONG_DATA: 'Profile-Navigator-Detail-Pelancong-Data',
+    PROFILE_NAVIGATOR_UPDATE_PELANCONG_DATA: 'Profile-Navigator-Update-Pelancong-Data',
 }

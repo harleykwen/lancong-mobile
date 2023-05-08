@@ -15,6 +15,7 @@ import {
     StatusBar, 
     Text, 
 } from 'native-base'
+import { ROUTE_NAME } from '../../../router'
 
 interface IPelancongDetailScreen {
     navigation?: any
@@ -180,10 +181,16 @@ const PelancongDetailScreen: React.FC<IPelancongDetailScreen> = (props: IPelanco
                         </Stack>
                     }
                     <Stack 
-                        padding='24px' 
-                        space='16px' 
+                        paddingY='16px'
+                        paddingX='24px' 
+                        space='8px' 
                         backgroundColor='white'
                     >
+                        <Button 
+                            onPress={() => navigation?.push(ROUTE_NAME?.PROFILE_NAVIGATOR_UPDATE_PELANCONG_DATA, { data })}
+                        >
+                            Edit Pelancong
+                        </Button>
                         <Button colorScheme='lancError' onPress={() => setActionSheetConfirmationDelete(true)}>
                             Hapus Pelancong
                         </Button>

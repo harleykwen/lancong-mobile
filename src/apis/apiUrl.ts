@@ -19,6 +19,7 @@ const API_URL = {
     PELANCONG: {
         CREATE: '/user/pelancong/create',
         GET_ALL: '/user/pelancong',
+        DELETE: '/user/pelancong/:id/delete'
     },
     TRANSACTION: {
         GET_ALL: '/user/transaction',

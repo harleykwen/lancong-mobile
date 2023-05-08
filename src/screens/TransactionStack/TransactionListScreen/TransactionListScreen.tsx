@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react'
+import React from 'react'
+import { RefreshControl } from 'react-native'
 import { id } from 'date-fns/locale'
 import { format } from 'date-fns'
 import { ROUTE_NAME } from '../../../router'
@@ -11,18 +12,17 @@ import {
     Image, 
     Pressable, 
     ScrollView, 
+    Skeleton, 
     Stack, 
     Text,
 } from 'native-base'
-import { useIsFocused } from '@react-navigation/native'
 
 interface ITransactionListScreen {
     navigation?: any
 }
 
-const TransactionListScreen = (props: ITransactionListScreen) => {
+const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransactionListScreen) => {
     const { navigation } = props
-    const isFocused = useIsFocused()
 
     const transactions = useQuery('transaction-list', getTransactionListApi)
     const transactionDetail = useMutation(getTransactionDetailApi, {
@@ -47,7 +47,7 @@ const TransactionListScreen = (props: ITransactionListScreen) => {
                         trip: resp?.data?.order?.trip,
                         checkoutData: {
                             totalPelancong: pelancong??resp?.data?.order?.pax,
-                            textSelectedDate: `${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_start), 'dd MMM')} - ${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_end), 'dd MMM')}`,
+                            // textSelectedDate: `${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_start), 'dd MMM')} - ${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_end), 'dd MMM')}`,
                         },
                         transaction: resp,
                     },
@@ -101,10 +101,6 @@ const TransactionListScreen = (props: ITransactionListScreen) => {
         }
     }
 
-    useEffect(() => {
-        transactions?.refetch()
-    }, [isFocused])
-
     return (
         <Flex flex='1' backgroundColor='gray.100'>
             <Stack 
@@ -118,90 +114,139 @@ const TransactionListScreen = (props: ITransactionListScreen) => {
             >
                 <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Daftar Transaksi</Text>
             </Stack>
-            <ScrollView>
+            <ScrollView
+                refreshControl={
+                    <RefreshControl 
+                        refreshing={transactions?.isFetching} 
+                        onRefresh={() => {
+                            transactions?.remove()
+                            transactions?.refetch()
+                        }} 
+                    />
+                }
+            >
                 <Stack padding='24px' space='10px'>
-                    {transactions?.data?.data?.map((transaction: any, index: number) => {
-                        return (
-                            <Pressable 
-                                key={index}
-                                onPress={() => {
-                                    transactionDetail?.mutate({ id: transaction?.id })
-                                    // navigation?.push('transaction-detail', { transaction })
-                                }}
-                            >
+                    {
+                        !transactions?.isLoading &&
+                        transactions?.data?.data?.map((transaction: any, index: number) => {
+                            return (
+                                <Pressable 
+                                    key={index}
+                                    onPress={() => {
+                                        transactionDetail?.mutate({ id: transaction?.id })
+                                        // navigation?.push('transaction-detail', { transaction })
+                                    }}
+                                >
+                                    <Stack
+                                        backgroundColor='white' 
+                                        shadow='5' 
+                                        rounded='md'
+                                        padding='10px'
+                                        space='10px'
+                                    >
+                                        <Stack 
+                                            direction='row' 
+                                            alignItems='center' 
+                                            justifyContent='space-between'
+                                        >
+                                            <Stack>
+                                                <Text 
+                                                    fontSize='13px' 
+                                                    fontFamily='Poppins-SemiBold' 
+                                                    color='gray.900'
+                                                    textTransform='capitalize'
+                                                >{transaction?.transaction_type}</Text>
+                                                <Text 
+                                                    fontSize='11px' 
+                                                    fontFamily='Poppins-Regular' 
+                                                    color='gray.600'
+                                                >{format(new Date(transaction?.created_at), 'dd MMM yyyy', { locale: id })}</Text>
+                                            </Stack>
+                                            <Center 
+                                                rounded='lg' 
+                                                backgroundColor={generateBackgroundColorStatusTransaction(transaction)}
+                                                padding='5px'
+                                            >
+                                                <Text 
+                                                    fontSize='11px' 
+                                                    fontFamily='Poppins-Regular' 
+                                                    color={generateTextColorStatusTransaction(transaction)}
+                                                >{generateStatusTransaction(transaction)}</Text>
+                                            </Center>
+                                        </Stack>
+                                        <Divider />
+                                        <Stack 
+                                            direction='row' 
+                                            alignItems='center' 
+                                            space='5px'
+                                        >
+                                            <Image 
+                                                source={{ uri: transaction?.order?.trip?.images[0]?.url }} 
+                                                width='50px' 
+                                                height='50px' 
+                                                alt={transaction?.order?.trip?.images[0]?.name}
+                                                rounded='md'
+                                            />
+                                            <Stack>
+                                                <Text 
+                                                    fontSize='13px' 
+                                                    fontFamily='Poppins-SemiBold' 
+                                                    color='gray.900'
+                                                    textTransform='capitalize'
+                                                >{transaction?.order?.trip?.name}</Text>
+                                                <Text 
+                                                    fontSize='11px' 
+                                                    fontFamily='Poppins-Regular' 
+                                                    color='gray.600'
+                                                >Total Harga</Text>
+                                                <Text 
+                                                    fontSize='11px' 
+                                                    fontFamily='Poppins-SemiBold' 
+                                                    color='black'
+                                                >Rp. {transaction?.order?.total_price?.toLocaleString('id')}</Text>
+                                            </Stack>
+                                        </Stack>
+                                    </Stack>
+                                </Pressable>
+                            )
+                    })}
+
+                    {
+                        transactions?.isFetching &&
+                        [...Array(3)]?.map((_, index: number) => {
+                            return (
                                 <Stack
+                                    key={index}
                                     backgroundColor='white' 
                                     shadow='5' 
                                     rounded='md'
                                     padding='10px'
-                                    space='10px'
+                                    space='10.5px'
                                 >
-                                    <Stack 
+                                    <Stack
                                         direction='row' 
                                         alignItems='center' 
                                         justifyContent='space-between'
                                     >
-                                        <Stack>
-                                            <Text 
-                                                fontSize='13px' 
-                                                fontFamily='Poppins-SemiBold' 
-                                                color='gray.900'
-                                                textTransform='capitalize'
-                                            >{transaction?.transaction_type}</Text>
-                                            <Text 
-                                                fontSize='11px' 
-                                                fontFamily='Poppins-Regular' 
-                                                color='gray.600'
-                                            >{format(new Date(transaction?.created_at), 'dd MMM yyyy', { locale: id })}</Text>
+                                        <Stack space='4px'>
+                                            <Skeleton height='17px' width='50px' />
+                                            <Skeleton height='14px' width='30px' />
                                         </Stack>
-                                        <Center 
-                                            rounded='lg' 
-                                            backgroundColor={generateBackgroundColorStatusTransaction(transaction)}
-                                            padding='5px'
-                                        >
-                                            <Text 
-                                                fontSize='11px' 
-                                                fontFamily='Poppins-Regular' 
-                                                color={generateTextColorStatusTransaction(transaction)}
-                                            >{generateStatusTransaction(transaction)}</Text>
-                                        </Center>
+                                        <Skeleton height='24px' width='50px' />
                                     </Stack>
                                     <Divider />
-                                    <Stack 
-                                        direction='row' 
-                                        alignItems='center' 
-                                        space='5px'
-                                    >
-                                        <Image 
-                                            source={{ uri: transaction?.order?.trip?.images[0]?.url }} 
-                                            width='50px' 
-                                            height='50px' 
-                                            alt={transaction?.order?.trip?.images[0]?.name}
-                                            rounded='md'
-                                        />
-                                        <Stack>
-                                            <Text 
-                                                fontSize='13px' 
-                                                fontFamily='Poppins-SemiBold' 
-                                                color='gray.900'
-                                                textTransform='capitalize'
-                                            >{transaction?.order?.trip?.name}</Text>
-                                            <Text 
-                                                fontSize='11px' 
-                                                fontFamily='Poppins-Regular' 
-                                                color='gray.600'
-                                            >Total Harga</Text>
-                                            <Text 
-                                                fontSize='11px' 
-                                                fontFamily='Poppins-SemiBold' 
-                                                color='black'
-                                            >Rp. {transaction?.order?.total_price?.toLocaleString('id')}</Text>
+                                    <Stack direction='row' space='4px'>
+                                        <Skeleton height='50px' width='50px' />
+                                        <Stack space='4px'>
+                                            <Skeleton height='17px' width='100px' />
+                                            <Skeleton height='14px' width='60px' />
+                                            <Skeleton height='14px' width='40px' />
                                         </Stack>
                                     </Stack>
                                 </Stack>
-                            </Pressable>
-                        )
-                    })}
+                            )
+                        })
+                    }
                 </Stack>
             </ScrollView>
         </Flex>

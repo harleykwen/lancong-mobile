@@ -119,7 +119,11 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                     space='8px'
                 >
                     {pelancong?.data?.data?.map((pelancong: any, index: number) => {
-                        return <PelancongItem data={pelancong} key={index} />
+                        return <PelancongItem 
+                            navigation={navigation} 
+                            data={pelancong} 
+                            key={index} 
+                        />
                     })}
                 </Stack>
             }
@@ -135,7 +139,11 @@ const PelancongDataScreen = (props: IPelancongDataScreen) => {
                         space='8px'
                     >
                         {pelancong?.data?.data?.filter((x: any) => x?.name?.toLowerCase()?.includes(search?.toLowerCase()))?.map((pelancong: any, index: number) => {
-                            return <PelancongItem data={pelancong} key={index} />
+                            return <PelancongItem 
+                                navigation={navigation} 
+                                data={pelancong} 
+                                key={index} 
+                            />
                         })}
                     </Stack>
             }

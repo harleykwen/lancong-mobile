@@ -53,90 +53,6 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                 <ScrollView>
                     <Stack space='10px'>
                         <Stack 
-                            backgroundColor='white' 
-                            paddingX='10px'
-                            paddingY='20px' 
-                            space='5px'
-                            marginTop='10px'
-                        >
-                            <Stack 
-                                direction='row' 
-                                alignItems='center' 
-                                justifyContent='space-between'
-                            >
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='gray.600'
-                                >Tanggal Transaksi</Text>
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='black'
-                                >{format(new Date(transactionData?.data?.data?.created_at), 'dd MMMM yyyy', { locale: id })}</Text>
-                            </Stack>
-                            <Stack 
-                                direction='row' 
-                                alignItems='center' 
-                                justifyContent='space-between'
-                            >
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='gray.600'
-                                >Tipe Transaksi</Text>
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='black'
-                                    textTransform='capitalize'
-                                >{transactionData?.data?.data?.transaction_type}</Text>
-                            </Stack>
-                        </Stack>
-
-                        <Stack 
-                            backgroundColor='white' 
-                            paddingX='10px'
-                            paddingY='20px' 
-                            space='5px'
-                        >
-                            <Stack 
-                                direction='row' 
-                                alignItems='center' 
-                                justifyContent='space-between'
-                            >
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='gray.600'
-                                >Grup</Text>
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='black'
-                                    textTransform='capitalize'
-                                >{transactionData?.data?.data?.order?.group}</Text>
-                            </Stack>
-                            <Stack 
-                                direction='row' 
-                                alignItems='center' 
-                                justifyContent='space-between'
-                            >
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='gray.600'
-                                >Nama Trip</Text>
-                                <Text 
-                                    fontSize='13px' 
-                                    fontFamily='Poppins-Regular' 
-                                    color='black'
-                                    textTransform='capitalize'
-                                >{transactionData?.data?.data?.order?.trip?.name}</Text>
-                            </Stack>
-                        </Stack>
-
-                        <Stack 
                             padding='16px' 
                             space='16px' 
                             backgroundColor='lancBackgroundLight'
@@ -146,6 +62,25 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                                     <Text color='lancOutlineLight'>Tanggal Transaksi</Text>
                                     <Text fontFamily='Poppins-SemiBold'>{format(new Date(transactionData?.data?.data?.created_at), 'EEEE, dd MMMM yyyy HH:mm', { locale: id })} WIB</Text>
                                 </Stack>
+                            </Stack>
+                        </Stack>
+
+                        <Stack 
+                            padding='16px' 
+                            space='16px' 
+                            backgroundColor='lancBackgroundLight'
+                        >
+                            <Stack>
+                                <Text>Tipe Transaksi</Text>
+                                <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>{transactionData?.data?.data?.transaction_type}</Text>
+                            </Stack>
+                            <Stack>
+                                <Text>Grup</Text>
+                                <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>{transactionData?.data?.data?.order?.group}</Text>
+                            </Stack>
+                            <Stack>
+                                <Text>Nama Trip</Text>
+                                <Text fontFamily='Poppins-SemiBold'>{transactionData?.data?.data?.order?.trip?.name}</Text>
                             </Stack>
                         </Stack>
 

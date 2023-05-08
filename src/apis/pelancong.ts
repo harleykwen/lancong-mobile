@@ -18,6 +18,10 @@ interface IAddPelancongApi {
     }
 }
 
+interface IDeletePelancongApi {
+    id: string
+}
+
 export async function getPelancongApi() {
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.PELANCONG.GET_ALL)
@@ -35,5 +39,15 @@ export async function AddPelancongApi(payload: IAddPelancongApi) {
         return response?.data
     } catch (error: any) {
         throw error?.data?.message??'Create pelancong error'
+    }
+}
+
+export async function deletePelancongApi(payload: IDeletePelancongApi) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).delete(API_URL.PELANCONG.DELETE?.replace(':id', payload?.id))
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Delete pelancong error'
     }
 }

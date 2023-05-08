@@ -4,6 +4,7 @@ import { createStackNavigator, TransitionPresets } from '@react-navigation/stack
 import { 
     AddPelancongScreen, 
     PelancongDataScreen, 
+    PelancongDetailScreen, 
     ProfileScreen, 
 } from '../../screens/ProfileStack'
 
@@ -29,6 +30,11 @@ const ProfileNavigator: React.FC = () => {
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 
                 name={ROUTE_NAME.PROFILE_NAVIGATOR_ADD_PELANCONG_DATA} 
                 component={AddPelancongScreen} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.SlideFromRightIOS }} 
+                name={ROUTE_NAME.PROFILE_NAVIGATOR_DETAIL_PELANCONG_DATA} 
+                component={PelancongDetailScreen} 
             />
         </Stack.Navigator>
     )

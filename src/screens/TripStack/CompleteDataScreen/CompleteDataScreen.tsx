@@ -157,10 +157,10 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                             <Text fontFamily='Poppins-Light' fontSize='11px'>Total pelancong: </Text>
                             <Text fontFamily='Poppins-Medium' fontSize='11px'>{typeof(checkoutData?.totalPelancong) === 'number' ? checkoutData?.totalPelancong : checkoutData?.totalPelancong?.length} orang</Text>
                         </Stack>
-                        <Stack direction='row'>
+                        {/* <Stack direction='row'>
                             <Text fontFamily='Poppins-Light' fontSize='11px'>Waktu melancong: </Text>
                             <Text fontFamily='Poppins-Medium' fontSize='11px'>{checkoutData?.textSelectedDate}</Text>
-                        </Stack>
+                        </Stack> */}
                     </Stack>
                 </Stack>
 

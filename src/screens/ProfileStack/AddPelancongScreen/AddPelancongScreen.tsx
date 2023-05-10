@@ -1,23 +1,27 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { Header } from '../../../components'
+import ActionSheetUploadIdCard from './components/ActionSheetUploadIdCard'
+import { format } from 'date-fns'
+import { useMutation } from 'react-query'
+import { AddPelancongApi } from '../../../apis/pelancong'
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
+import { 
+    IC_ARROW_BACK, 
+    IC_ARROW_DROP_DOWN, 
+    IC_CALENDAR_MONTH, 
+} from '../../../assets'
 import { 
     Button,
     Flex, 
-    Icon, 
     Image, 
     Input, 
     Pressable, 
     ScrollView, 
     Select, 
     Stack, 
-    Text, 
+    Text,
+    useDisclose, 
 } from 'native-base'
-import { format } from 'date-fns'
-import { useMutation } from 'react-query'
-import { AddPelancongApi } from '../../../apis/pelancong'
-import { IC_ARROW_BACK, IC_ARROW_DROP_DOWN, IC_CALENDAR_MONTH } from '../../../assets'
 
 interface IAddPelancongScreen {
     navigation: any
@@ -27,6 +31,7 @@ interface IAddPelancongScreen {
 const AddPelancongScreen = (props: IAddPelancongScreen) => {
     const { navigation, route } = props
     const { callbackSuccess } = route.params
+    const actionSheetUploadIdCard = useDisclose()
 
     const [name, setName] = useState<string>('')
     const [email, setEmail] = useState<string>('')
@@ -37,6 +42,7 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
     const [passport_number, setPassport_number] = useState<string>('')
     const [publication_date, setPublication_date] = useState<Date | string>('')
     const [expiration_date, setExpiration_date] = useState<Date | string>('')
+    const [idCard, setIdCard] = useState<any>(null)
 
     const [showDatePickerBirthdate, setShowDatePickerBirthdate] = useState(false)
     const [showDatePickerPublicationDate, setShowDatePickerPublicationDate] = useState(false)
@@ -48,6 +54,24 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
             callbackSuccess && callbackSuccess()
         }
     })
+
+    const launchCameraUploadIdCard = useCallback(() => {
+        launchCamera({ mediaType: 'photo', includeBase64: true }, (resultLaunchCamera: any) => {
+            actionSheetUploadIdCard.onClose()
+            if (resultLaunchCamera?.assets?.length > 0) {
+                setIdCard(resultLaunchCamera.assets[0])
+            }
+        })
+    }, [])
+
+    const launchImageLibraryUploadIdCard = useCallback(() => {
+        launchImageLibrary({ mediaType: 'photo', includeBase64: true }, (resultlaunchImageLibrary: any) => {
+            actionSheetUploadIdCard.onClose()
+            if (resultlaunchImageLibrary?.assets?.length > 0) {
+                setIdCard(resultlaunchImageLibrary.assets[0])
+            }
+        })
+    }, [])
 
     return (
         <Flex flex='1' backgroundColor='white'>
@@ -216,6 +240,39 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                         space='16px' 
                         backgroundColor='white'
                     >
+                        <Text
+                            fontFamily='Poppins-SemiBold' 
+                            fontSize='15px'
+                            color='gray.600'
+                        >KTP / ID Card</Text>
+                        { 
+                            idCard && 
+                            <Image 
+                                source={{ uri: idCard?.uri }} 
+                                alt='preview-id-card'
+                                size='xl'
+                                resizeMode='cover'
+                                marginX='auto'
+                            /> 
+                        }
+                        <Pressable 
+                            backgroundColor='gray.200' 
+                            padding='8px 4px' 
+                            rounded='lg'
+                            marginX='auto'
+                            onPress={actionSheetUploadIdCard.onOpen}
+                            _pressed={{
+                                backgroundColor: 'gray.300'
+                            }}
+                        >
+                            <Text fontSize='12px'>{ idCard ? 'Upload Ulang KTP / ID Card' : 'Upload KTP / ID Card' }</Text>
+                        </Pressable>
+                    </Stack>
+                    <Stack 
+                        padding='24px' 
+                        space='16px' 
+                        backgroundColor='white'
+                    >
                         <Button 
                             isLoading={addPelancong?.isLoading}
                             onPress={() => {
@@ -226,13 +283,18 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                                     phone,
                                     identity: {
                                         citizenship,
-                                        id_number
+                                        id_number,
+                                        id_card: {
+                                            content: `data:${idCard?.type};base64,${idCard?.base64}`,
+                                            filename: 'dummy-image'
+                                        }
                                     },
                                     passport: {
                                         passport_number,
                                         publication_date: typeof(publication_date) !== 'string' ? publication_date?.getTime() : '',
                                         expiration_date: typeof(expiration_date) !== 'string' ? expiration_date?.getTime() : '',
                                     }
+                                    
                                 })
                             }}
                         >
@@ -269,6 +331,13 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                     setShowDatePickerExpirationDate(false)
                 }}
                 onCancel={() => setShowDatePickerExpirationDate(false)}
+            />
+
+            <ActionSheetUploadIdCard 
+                isOpen={actionSheetUploadIdCard.isOpen} 
+                onClose={actionSheetUploadIdCard.onClose} 
+                launchCamera={launchCameraUploadIdCard}
+                launchImageLibrary={launchImageLibraryUploadIdCard}
             />
         </Flex>
     )

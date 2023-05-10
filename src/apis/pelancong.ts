@@ -10,6 +10,10 @@ interface IAddPelancongApi {
     identity: {
         citizenship: string
         id_number: string
+        id_card: {
+            filename: string
+            content: string
+        }
     }
     passport: {
         passport_number?: string

@@ -181,6 +181,31 @@ const PelancongDetailScreen: React.FC<IPelancongDetailScreen> = (props: IPelanco
                         </Stack>
                     }
                     <Stack 
+                        padding='24px' 
+                        space='16px' 
+                        backgroundColor='white'
+                    >
+                        <Text
+                            fontFamily='Poppins-SemiBold' 
+                            fontSize='15px'
+                            color='gray.600'
+                        >KTP / ID Card</Text>
+                        { 
+                            data?.identity?.id_card?.url && 
+                            <Image 
+                                source={{ uri: data.identity.id_card.url }} 
+                                alt='preview-id-card'
+                                size='xl'
+                                resizeMode='cover'
+                                marginX='auto'
+                            /> 
+                        }
+                        { 
+                            !data?.identity?.id_card?.url && 
+                            <Text color='gray.300' marginX='auto'>Belum upload KTP / ID Card</Text>
+                        }
+                    </Stack>
+                    <Stack 
                         paddingY='16px'
                         paddingX='24px' 
                         space='8px' 

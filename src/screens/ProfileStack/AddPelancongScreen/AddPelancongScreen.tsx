@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from 'react'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
-import ActionSheetUploadIdCard from './components/ActionSheetUploadIdCard'
+import { ActionSheetUploadMedia } from '../../../components'
 import { format } from 'date-fns'
 import { useMutation } from 'react-query'
 import { AddPelancongApi } from '../../../apis/pelancong'
@@ -333,7 +333,7 @@ const AddPelancongScreen = (props: IAddPelancongScreen) => {
                 onCancel={() => setShowDatePickerExpirationDate(false)}
             />
 
-            <ActionSheetUploadIdCard 
+            <ActionSheetUploadMedia 
                 isOpen={actionSheetUploadIdCard.isOpen} 
                 onClose={actionSheetUploadIdCard.onClose} 
                 launchCamera={launchCameraUploadIdCard}

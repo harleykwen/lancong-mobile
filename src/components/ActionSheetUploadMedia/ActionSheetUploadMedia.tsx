@@ -1,14 +1,14 @@
 import React, { memo } from 'react'
 import { Actionsheet } from 'native-base'
 
-interface IActionSheetUploadIdCard {
+interface IActionSheetUploadMedia {
     isOpen: boolean
     onClose: any
     launchCamera: any
     launchImageLibrary: any
 }
 
-const ActionSheetUploadIdCard: React.FC<IActionSheetUploadIdCard> = (props: IActionSheetUploadIdCard) => {
+const ActionSheetUploadMedia: React.FC<IActionSheetUploadMedia> = (props: IActionSheetUploadMedia) => {
     const { 
         isOpen, 
         onClose, 
@@ -26,4 +26,4 @@ const ActionSheetUploadIdCard: React.FC<IActionSheetUploadIdCard> = (props: IAct
     )
 }
 
-export default memo(ActionSheetUploadIdCard)
+export default memo(ActionSheetUploadMedia)

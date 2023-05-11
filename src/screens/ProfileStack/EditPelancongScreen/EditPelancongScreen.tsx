@@ -1,6 +1,11 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import DateTimePickerModal from 'react-native-modal-datetime-picker'
 import { format } from 'date-fns'
+import { useMutation } from 'react-query'
+import { updatePelancongApi } from '../../../apis/pelancong'
+import { ROUTE_NAME } from '../../../router'
+import { ActionSheetUploadMedia } from '../../../components'
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker'
 import { 
     IC_ARROW_BACK, 
     IC_ARROW_DROP_DOWN, 
@@ -16,11 +21,9 @@ import {
     Select, 
     Stack, 
     StatusBar, 
-    Text, 
+    Text,
+    useDisclose, 
 } from 'native-base'
-import { useMutation } from 'react-query'
-import { updatePelancongApi } from '../../../apis/pelancong'
-import { ROUTE_NAME } from '../../../router'
 
 interface IEditPelancongScreen {
     navigation?: any
@@ -30,6 +33,7 @@ interface IEditPelancongScreen {
 const EditPelancongScreen: React.FC<IEditPelancongScreen> = (props: IEditPelancongScreen) => {
     const { navigation, route } = props
     const { data } = route?.params
+    const actionSheetUploadIdCard = useDisclose()
 
     const [name, setName] = useState<string>(data?.name??'')
     const [email, setEmail] = useState<string>(data?.email??'')
@@ -40,6 +44,8 @@ const EditPelancongScreen: React.FC<IEditPelancongScreen> = (props: IEditPelanco
     const [passport_number, setPassport_number] = useState<string>(data?.passport?.passport_number??'')
     const [publication_date, setPublication_date] = useState<Date | string>(data?.passport?.publication_date ? new Date(Number(data?.passport?.publication_date)) : '')
     const [expiration_date, setExpiration_date] = useState<Date | string>(data?.passport?.expiration_date ? new Date(Number(data?.passport?.expiration_date)) : '')
+    const [idCard, setIdCard] = useState<any>(data?.identity?.id_card??null)
+    const [newIdCard, setNewIdCard] = useState<any>(null)
 
     const [showDatePickerBirthdate, setShowDatePickerBirthdate] = useState(false)
     const [showDatePickerPublicationDate, setShowDatePickerPublicationDate] = useState(false)
@@ -50,6 +56,26 @@ const EditPelancongScreen: React.FC<IEditPelancongScreen> = (props: IEditPelanco
             navigation?.replace(ROUTE_NAME?.PROFILE_NAVIGATOR_PELANCONG_DATA)
         }
     })
+
+    const launchCameraUploadIdCard = useCallback(() => {
+        launchCamera({ mediaType: 'photo', includeBase64: true }, (resultLaunchCamera: any) => {
+            actionSheetUploadIdCard.onClose()
+            if (resultLaunchCamera?.assets?.length > 0) {
+                setNewIdCard(resultLaunchCamera.assets[0])
+                setIdCard(null)
+            }
+        })
+    }, [])
+
+    const launchImageLibraryUploadIdCard = useCallback(() => {
+        launchImageLibrary({ mediaType: 'photo', includeBase64: true }, (resultlaunchImageLibrary: any) => {
+            actionSheetUploadIdCard.onClose()
+            if (resultlaunchImageLibrary?.assets?.length > 0) {
+                setNewIdCard(resultlaunchImageLibrary.assets[0])
+                setIdCard(null)
+            }
+        })
+    }, [])
 
     return (
         <Flex flex='1' backgroundColor='white'>
@@ -224,9 +250,99 @@ const EditPelancongScreen: React.FC<IEditPelancongScreen> = (props: IEditPelanco
                         space='16px' 
                         backgroundColor='white'
                     >
+                        <Text
+                            fontFamily='Poppins-SemiBold' 
+                            fontSize='15px'
+                            color='gray.600'
+                        >KTP / ID Card</Text>
+                        { 
+                            idCard?.url && 
+                            !newIdCard &&
+                            <Image 
+                                source={{ uri: idCard.url }} 
+                                alt='preview-id-card'
+                                size='xl'
+                                resizeMode='cover'
+                                marginX='auto'
+                            /> 
+                        }
+                        { 
+                            newIdCard && 
+                            <Image 
+                                source={{ uri: newIdCard?.uri }} 
+                                alt='preview-id-card'
+                                size='xl'
+                                resizeMode='cover'
+                                marginX='auto'
+                            /> 
+                        }
+                        { 
+                            !idCard?.url && 
+                            !newIdCard &&
+                            <Text color='gray.300' marginX='auto'>Belum upload KTP / ID Card</Text>
+                        }
+                        <Pressable 
+                            backgroundColor='gray.200' 
+                            padding='8px 4px' 
+                            rounded='lg'
+                            marginX='auto'
+                            onPress={actionSheetUploadIdCard.onOpen}
+                            _pressed={{
+                                backgroundColor: 'gray.300'
+                            }}
+                        >
+                            <Text fontSize='12px'>
+                                { 
+                                    idCard?.url || newIdCard
+                                        ? 'Ganti KTP / ID Card' 
+                                        : 'Upload KTP / ID Card' 
+                                }
+                            </Text>
+                        </Pressable>
+                        {
+                            idCard || newIdCard
+                                ?   <Pressable 
+                                        backgroundColor='red.200' 
+                                        padding='8px 4px' 
+                                        rounded='lg'
+                                        marginX='auto'
+                                        onPress={() => {
+                                            setIdCard(null)
+                                            setNewIdCard(null)
+                                        }}
+                                        _pressed={{
+                                            backgroundColor: 'red.300'
+                                        }}
+                                    >
+                                        <Text fontSize='12px' color='red.600'>
+                                            Hapus Foto KTP / ID Card
+                                        </Text>
+                                    </Pressable>
+                                :   null
+                        }
+                    </Stack>
+                    <Stack 
+                        padding='24px' 
+                        space='16px' 
+                        backgroundColor='white'
+                    >
                         <Button
                             isLoading={updatePelancong?.isLoading}
                             onPress={() => {
+                                let filename: any
+                                let content: any
+
+                                if (idCard && !newIdCard) {
+                                    filename = idCard?.identity?.id_card?.name
+                                    content = idCard?.identity?.id_card?.url
+                                } else if (!idCard && newIdCard) {
+                                    content = `data:${newIdCard?.type};base64,${newIdCard?.base64}`,
+                                    filename = 'dummy-image'
+                                } else {
+                                    filename = null
+                                    content = null
+                                }
+
                                 updatePelancong?.mutate({
                                     id: data?.id,
                                     name,
@@ -236,6 +352,10 @@ const EditPelancongScreen: React.FC<IEditPelancongScreen> = (props: IEditPelanco
                                     identity: {
                                         citizenship,
                                         id_number,
+                                        id_card: {
+                                            filename,
+                                            content,
+                                        },
                                     },
                                     passport: {
                                         passport_number,
@@ -278,6 +398,13 @@ const EditPelancongScreen: React.FC<IEditPelancongScreen> = (props: IEditPelanco
                     setShowDatePickerExpirationDate(false)
                 }}
                 onCancel={() => setShowDatePickerExpirationDate(false)}
+            />
+
+            <ActionSheetUploadMedia 
+                isOpen={actionSheetUploadIdCard.isOpen} 
+                onClose={actionSheetUploadIdCard.onClose} 
+                launchCamera={launchCameraUploadIdCard}
+                launchImageLibrary={launchImageLibraryUploadIdCard}
             />
         </Flex>
     )

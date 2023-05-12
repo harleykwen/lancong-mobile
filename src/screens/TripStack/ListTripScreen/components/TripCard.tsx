@@ -37,8 +37,9 @@ const TripCard = (props: ITripCard) => {
         <Flex flex={1} backgroundColor='white'>
             <Pressable 
                 onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_TRIP_DETAIL, { 
-                    data: data,
+                    id: data?.id,
                     group: group,
+                    packages: data[group]?.map((x: any) => x?.id)?.join(),
                 })}
             >
                 <Stack 

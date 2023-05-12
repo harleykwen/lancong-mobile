@@ -29,6 +29,12 @@ interface ITripCheckout {
     bank_code: string
 }
 
+interface ITripDetailApi {
+    id: string
+    group: string
+    packages: string
+}
+
 export async function tripTypesApi() {
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRIP.TYPES)
@@ -89,5 +95,20 @@ export async function tripCheckoutApi(payload: ITripCheckout) {
         return response?.data
     } catch (error: any) {
         throw error?.data?.message??'Checkout trip error'
+    }
+}
+
+export async function tripDetailApi(payload: ITripDetailApi) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRIP.DETAIL?.replace(':id', payload?.id), { 
+            params: {
+                group: payload?.group,
+                packages: payload?.packages,
+            } 
+        })
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Get trip detail error'
     }
 }

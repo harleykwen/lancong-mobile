@@ -15,6 +15,7 @@ const API_URL = {
         CREATE_TRANSACTION: '/user/trip/transaction/create',
         UPDATE_TRANSACTION: '/user/trip/transaction/:transactionId/update',
         CHECKOUT: '/user/trip/transaction/virtual-account/checkout',
+        DETAIL: '/user/trip/:id',
     },
     PELANCONG: {
         CREATE: '/user/pelancong/create',

@@ -38,7 +38,7 @@ interface IUpdatePelancongApi {
         id_card: {
             filename: string
             content: string
-        }
+        } | null
     }
     passport: {
         passport_number?: string

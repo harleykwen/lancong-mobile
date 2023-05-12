@@ -352,10 +352,12 @@ const EditPelancongScreen: React.FC<IEditPelancongScreen> = (props: IEditPelanco
                                     identity: {
                                         citizenship,
                                         id_number,
-                                        id_card: {
-                                            filename,
-                                            content,
-                                        },
+                                        id_card: idCard === null || newIdCard === null
+                                            ?   null
+                                            :   {
+                                                    filename,
+                                                    content,
+                                                },
                                     },
                                     passport: {
                                         passport_number,

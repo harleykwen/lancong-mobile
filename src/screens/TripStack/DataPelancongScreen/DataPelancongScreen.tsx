@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import PickPelancongItem from './components/PickPelancongItem'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import Ionicons from 'react-native-vector-icons/Ionicons'
@@ -28,7 +28,6 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
     const queryClient = useQueryClient()
     const { 
         pelancong,
-        setPelancong,
         index, 
         onSelectPelancong,
         updateTripTransaction,
@@ -52,7 +51,7 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
             special_requests: specialRequests,
         })
         setLoading(false)
-        navigation.goBack()
+        onSelectPelancong()
     }
 
     return (
@@ -212,13 +211,6 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                 shadow='5'
             >
                 <Button 
-                    height='50px'
-                    borderRadius='8px'
-                    backgroundColor='xprimary.50'
-                    width='full'
-                    _pressed={{
-                        backgroundColor: 'xprimary.40'
-                    }}
                     onPress={() => navigation.navigate('Akun', { 
                         screen: 'add-data-pelancong',
                         params: {
@@ -226,11 +218,7 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                         },
                     })}
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
-                        color='white'
-                    >Tambah Data Pelancong</Text>
+                    Tambah Data Pelancong
                 </Button>
             </Stack>
 
@@ -243,11 +231,11 @@ const DataPelancongScreen = (props: IDataPelancongScreen) => {
                             justifyContent='center'
                             space='10px'
                         >
-                            <Spinner color='xprimary.50' size='sm' />
+                            <Spinner color='lancPrimaryLight' size='sm' />
                             <Text
                                 fontFamily='Poppins-Regular' 
                                 fontSize='13px'
-                                color='xprimary.50'
+                                color='lancPrimaryLight'
                             >Menambahkan pelancong ...</Text>
                         </Stack>
                     </Modal.Body>

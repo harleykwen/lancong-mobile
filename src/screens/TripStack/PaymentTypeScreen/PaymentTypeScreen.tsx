@@ -2,8 +2,9 @@ import React, { useState } from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { bankListApi } from '../../../apis/va'
 import { tripCheckoutApi } from '../../../apis/trip'
-import { useMutation, useQuery } from 'react-query'
 import { LInput } from '../../../components'
+import { ROUTE_NAME } from '../../../router'
+import { useMutation, useQuery } from 'react-query'
 import { 
     Button, 
     Center, 
@@ -30,7 +31,6 @@ import {
     LOGO_MANDIRI, 
     LOGO_PERMATA, 
 } from '../../../assets'
-import { ROUTE_NAME } from '../../../router'
 
 interface IPayment {
     navigation: any
@@ -39,15 +39,7 @@ interface IPayment {
 
 const PaymentTypeScreen = (props: IPayment) => {
     const { navigation, route } = props
-    const { 
-        data, 
-        group, 
-        trip,
-        pelancong,
-        checkoutData, 
-        specialRequests,
-        transaction,
-    } = route?.params
+    const { transaction } = route?.params
 
     const [paymentType, setPaymentType] = useState('')
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
@@ -78,23 +70,6 @@ const PaymentTypeScreen = (props: IPayment) => {
             case 'BSI':
                 return LOGO_BSI
         }
-    }
-
-    function calculateTotalPrice() {
-        let price: any
-        if (typeof(checkoutData.totalPelancong) === 'number') {
-            price = data?.price * checkoutData?.totalPelancong
-        } else {
-            price = data?.price * checkoutData?.totalPelancong?.length
-        }
-
-        const totalPriceSpecialRequest: any = specialRequests
-            ?.filter((x: any) => x?.amount != 0)
-            ?.reduce((accumulator: any, { price, amount }: any) => {
-                return accumulator + (amount * price)
-            }, 0)
-
-        return Number(price + totalPriceSpecialRequest)?.toLocaleString('id')
     }
 
     return (
@@ -314,7 +289,7 @@ const PaymentTypeScreen = (props: IPayment) => {
                         fontFamily='Poppins-SemiBold' 
                         fontSize='13px'
                     >
-                        Rp. {calculateTotalPrice()}
+                        Rp. {transaction?.order?.total_price}
                     </Text>
                 </Stack>
                 <Button 

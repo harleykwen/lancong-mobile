@@ -3,8 +3,8 @@ import { RefreshControl } from 'react-native'
 import { id } from 'date-fns/locale'
 import { format } from 'date-fns'
 import { ROUTE_NAME } from '../../../router'
-import { useMutation, useQuery } from 'react-query'
-import { getTransactionDetailApi, getTransactionListApi } from '../../../apis/transaction'
+import { getTransactionListApi } from '../../../apis/transaction'
+import { useQuery } from 'react-query'
 import { 
     Center,
     Divider,
@@ -25,45 +25,6 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
     const { navigation } = props
 
     const transactions = useQuery('transaction-list', getTransactionListApi)
-    const transactionDetail = useMutation(getTransactionDetailApi, {
-        onSuccess: (resp: any) => {
-            if (resp?.data?.order?.status === 'DRAFT') {
-                let pelancong: any = null
-                if (resp?.data?.order?.participants?.length > 0) {
-                    pelancong = resp?.data?.order?.participants
-                    const pelancongLeft: number = resp?.data?.order?.pax - resp?.data?.order?.participants?.length
-                    for (let i = 1; i <= pelancongLeft; i++) {
-                        pelancong?.push({})
-                    }
-                }
-                navigation.navigate(ROUTE_NAME.TRIP_NAVIGATOR, { 
-                    screen: ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA,
-                    params: {
-                        data: {
-                            ...resp?.data?.order[resp?.data?.order?.group],
-                            special_requests: resp?.data?.order?.special_requests?.length !== 0 ? resp?.data?.order?.special_requests : resp?.data?.order[resp?.data?.order?.group]?.special_requests,
-                        },
-                        group: resp?.data?.order?.group,
-                        trip: resp?.data?.order?.trip,
-                        checkoutData: {
-                            totalPelancong: pelancong??resp?.data?.order?.pax,
-                            // textSelectedDate: `${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_start), 'dd MMM')} - ${format(new Date(resp?.data?.order[resp?.data?.order?.group]?.trip_end), 'dd MMM')}`,
-                        },
-                        transaction: resp,
-                    },
-                })
-            } else {
-                navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR, { 
-                    screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
-                    params: {
-                        transaction: resp?.data,
-                    },
-                })
-            }
-        }
-    })
-
-    // type status: 'INACTIVE' || 'ACTIVE' || 'PENDING'
 
     function generateStatusTransaction(data: any) {
         if (data?.order?.status === 'DRAFT') {
@@ -133,8 +94,21 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
                                 <Pressable 
                                     key={index}
                                     onPress={() => {
-                                        transactionDetail?.mutate({ id: transaction?.id })
-                                        // navigation?.push('transaction-detail', { transaction })
+                                        if (transaction?.order?.status === 'DRAFT') {
+                                            navigation.navigate(ROUTE_NAME.TRIP_NAVIGATOR, { 
+                                                screen: ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA,
+                                                params: {
+                                                    transactionId: transaction?.id,
+                                                },
+                                            })
+                                        } else {
+                                            navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR, { 
+                                                screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
+                                                params: {
+                                                    transactionId: transaction?.id,
+                                                },
+                                            })
+                                        }
                                     }}
                                 >
                                     <Stack

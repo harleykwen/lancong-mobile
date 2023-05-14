@@ -57,16 +57,8 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
     const createTransaction = useMutation(tripCreateTransactionApi, {
         onSuccess: (resp: any) => {
             navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA, { 
-                data: data,
-                group: group,
                 trip: trip,
-                checkoutData: {
-                    totalPelancong,
-                    startDate,
-                    endDate,
-                    textSelectedDate,
-                },
-                transaction: resp,
+                transactionId: resp?.data?.id,
             })
         }
     })

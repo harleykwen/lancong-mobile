@@ -56,9 +56,12 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
 
     const createTransaction = useMutation(tripCreateTransactionApi, {
         onSuccess: (resp: any) => {
-            navigation.push(ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA, { 
-                trip: trip,
-                transactionId: resp?.data?.id,
+            navigation?.replace(ROUTE_NAME.TRIP_NAVIGATOR, {
+                screen: ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA,
+                params: {
+                    trip: trip,
+                    transactionId: resp?.data?.id,
+                }
             })
         }
     })
@@ -121,21 +124,24 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
             </Stack>
 
             <Stack padding='10px' space='10px'>
-                <Pressable 
-                    {...baseStylePressedComponent}  
-                    borderRadius='8px'
-                    onPress={() => setShowDatePicker(true)}
-                >
-                    <Icon 
-                        as={MaterialCommunityIcons} 
-                        name='calendar-range' 
-                        color='gray.400' 
-                        size='lg' 
-                    />
-                    <Text {...baseStylePressedTextComponent}>
-                        {textSelectedDate !== '' ? textSelectedDate : 'Pilih tanggal mulai ngelancong'}
-                    </Text>
-                </Pressable>
+                {
+                    group === 'private' &&
+                    <Pressable
+                        {...baseStylePressedComponent}
+                        borderRadius='8px'
+                        onPress={() => setShowDatePicker(true)}
+                    >
+                        <Icon
+                            as={MaterialCommunityIcons}
+                            name='calendar-range'
+                            color='gray.400'
+                            size='lg'
+                        />
+                        <Text {...baseStylePressedTextComponent}>
+                            {textSelectedDate !== '' ? textSelectedDate : 'Pilih tanggal mulai ngelancong'}
+                        </Text>
+                    </Pressable>
+                }
 
                 <Stack 
                     direction='row' 
@@ -260,7 +266,7 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                             package_id: data?.id,
                             group,
                             pax: totalPelancong,
-                            trip_start: new Date(startDate)?.getTime(),
+                            trip_start: group === 'public' ? null : new Date(startDate)?.getTime(),
                         })
                     }}
                 >

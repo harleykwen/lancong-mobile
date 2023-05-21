@@ -23,6 +23,7 @@ export const ROUTE_NAME = {
 
     // TRIP NAVIGATOR
     TRIP_NAVIGATOR_SEARCH_STRIP: 'Trip-Navigator-Search-Trip',
+    TRIP_NAVIGATOR_SEARCH_STRIP_LOCATION: 'Trip-Navigator-Search-Trip-Location',
     TRIP_NAVIGATOR_LIST_STRIP: 'Trip-Navigator-List-Trip',
     TRIP_NAVIGATOR_TRIP_DETAIL: 'Trip-Navigator-Trip-Detail',
     TRIP_NAVIGATOR_PACKAGE_DETAIL: 'Trip-Navigator-Package-Detail',

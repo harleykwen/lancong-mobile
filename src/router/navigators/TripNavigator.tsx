@@ -8,6 +8,7 @@ import {
     ListTripScreen, 
     PackageTripDetailScreen, 
     PaymentTypeScreen, 
+    SearchTripLocationScreen, 
     SearchTripScreen, 
     SpecialRequestScreen, 
     TripCheckoutComplete, 
@@ -26,6 +27,11 @@ const TripNavigator: React.FC = () => {
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 
                 name={ROUTE_NAME.TRIP_NAVIGATOR_SEARCH_STRIP} 
                 component={SearchTripScreen} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.ModalSlideFromBottomIOS }} 
+                name={ROUTE_NAME.TRIP_NAVIGATOR_SEARCH_STRIP_LOCATION} 
+                component={SearchTripLocationScreen} 
             />
             <Stack.Screen 
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 

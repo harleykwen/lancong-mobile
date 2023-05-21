@@ -35,7 +35,7 @@ const ListTripScreen = (props: IListTripScreen) => {
         'get-trip-list', 
         () => tripSearchApi({
             type, 
-            destination, 
+            destination: destination?.place_id, 
             group,
             trip_start: new Date(tripStart).getTime(),
             participant,
@@ -68,7 +68,7 @@ const ListTripScreen = (props: IListTripScreen) => {
                     />
                 </Pressable>
                 <Stack>
-                    <Text fontSize='16px' fontFamily='Poppins-SemiBold'>{destination}</Text>
+                    <Text fontSize='16px' fontFamily='Poppins-SemiBold'>{destination?.name}</Text>
                     <Stack direction='row'>
                         <Text fontSize='12px' color='gray.400'>{format(new Date(tripStart), 'dd MMMM yyyy', { locale: id })},</Text>
                         <Text fontSize='12px' color='gray.400' textTransform='capitalize'> {group} Trip,</Text>

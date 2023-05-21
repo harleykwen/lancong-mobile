@@ -103,7 +103,7 @@ const HistorySearchTrip: React.FC<IHistorySearchTrip> = (props: IHistorySearchTr
                                                     height='18px'
                                                     tintColor='gray.400'
                                                 />
-                                                <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{history?.destination}</Text>
+                                                <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{history?.destination?.name}</Text>
                                             </Stack>
                                             <Center rounded='sm' backgroundColor='gray.100' padding='2px'>
                                                 <Text 

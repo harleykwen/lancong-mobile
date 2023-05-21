@@ -97,7 +97,7 @@ const TripCard = (props: ITripCard) => {
                                 fontSize='10px' 
                                 color='gray.400' 
                                 fontFamily='Poppins-SemiBold'
-                            >{data?.location?.text}</Text>
+                            >{data?.location?.name}</Text>
                         </Stack>
                         <Stack 
                             marginTop='auto' 

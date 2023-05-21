@@ -29,7 +29,7 @@ import {
     Select, 
     Stack, 
     StatusBar, 
-    Text, 
+    Text,
 } from 'native-base'
 
 interface ISearchTripScreen {
@@ -45,7 +45,7 @@ const SearchTripScreen = (props: ISearchTripScreen) => {
     const [isDatePickerStartVisible, setIsDatePickerStartVisible] = useState(false)
 
     const [type, setType] = useState('')
-    const [destination, setDestination] = useState('')
+    const [destination, setDestination] = useState<any>('')
     const [group, setGroup] = useState('')
     const [tripStart, setTripStart] = useState<any>(null)
     const [participant, setParticipant] = useState('')
@@ -183,22 +183,19 @@ const SearchTripScreen = (props: ISearchTripScreen) => {
                         })}
                     </Select>
 
-                    <Select
-                        size='lancSmall'
-                        placeholder='Destinasi Lokasi'
-                        selectedValue={destination}
-                        onValueChange={(e: any) => setDestination(e)}
-                        paddingLeft='74px'
-                        dropdownIcon={
-                            <Stack
-                                direction='row'
-                                width='full'
-                                position='absolute'
-                                top='0'
-                                bottom='0'
-                                alignItems='center'
-                                justifyContent='space-between'
-                            >
+                    <Pressable 
+                        onPress={() => {
+                            navigation?.push(ROUTE_NAME.TRIP_NAVIGATOR_SEARCH_STRIP_LOCATION, {
+                                handleSelectPlace: setDestination
+                            })
+                        }}
+                    >
+                        <Input
+                            isReadOnly
+                            size='lancSmall'
+                            placeholder='Destinasi Lokasi'
+                            value={destination ? `${destination?.name}` : ''}
+                            InputLeftElement={
                                 <Image
                                     alt='IC_LOCATION_ON'
                                     source={IC_LOCATION_ON}
@@ -207,24 +204,9 @@ const SearchTripScreen = (props: ISearchTripScreen) => {
                                     marginLeft='24px'
                                     tintColor='lancSurfaceLight'
                                 />
-                                <Image
-                                    alt='IC_ARROW_DROPDOWN'
-                                    source={IC_ARROW_DROP_DOWN}
-                                    width='32px'
-                                    height='32px'
-                                    marginRight='16px'
-                                    tintColor='lancSurfaceLight'
-                                />
-                            </Stack>
-                        }
-                    >
-                        <Select.Item label="Jakarta" value="Jakarta" />
-                        <Select.Item label="Bandung" value="Bandung" />
-                        <Select.Item label="Yogyakarta" value="Yogyakarta" />
-                        <Select.Item label="Bali" value="Bali" />
-                        <Select.Item label="Bogor" value="Bogor" />
-                        <Select.Item label="Bekasi" value="Bekasi" />
-                    </Select>
+                            }
+                        />
+                    </Pressable>
 
                     <Select
                         size='lancSmall'

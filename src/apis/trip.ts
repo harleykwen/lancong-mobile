@@ -15,7 +15,7 @@ interface ITripCreateTransactionApi {
     package_id: string
     group: string
     pax: number
-    trip_start: number
+    trip_start: number | null
 }
 
 interface IUpdateTransactionTripApi {

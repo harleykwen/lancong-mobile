@@ -1,4 +1,5 @@
 import SearchTripScreen from './SearchTripScreen/SearchTripScreen'
+import SearchTripLocationScreen from './SearchTripLocationScreen/SearchTripLocationScreen'
 import ListTripScreen from './ListTripScreen/ListTripScreen'
 import TripDetailScreen from './TripDetailScreen/TripDetailScreen'
 import PackageTripDetailScreen from './PackageTripDetailScreen/PackageTripDetailScreen'
@@ -11,6 +12,7 @@ import TripCheckoutComplete from './TripCheckoutComplete/TripCheckoutComplete'
 
 export {
     SearchTripScreen,
+    SearchTripLocationScreen,
     ListTripScreen,
     TripDetailScreen,
     PackageTripDetailScreen,

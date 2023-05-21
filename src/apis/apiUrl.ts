@@ -31,7 +31,8 @@ const API_URL = {
         BANK_LIST: '/user/payment/virtual-account/banks',
     },
     MASTER: {
-        FACILITIES: '/master/trip/facilities'
+        FACILITIES: '/master/trip/facilities',
+        PLACE_AUTOCOMPLETE: '/master/maps/place/autocomplete?input=jakarta%20selatan',
     },
     USER: {
         PROFILE: '/user/profile',

@@ -137,7 +137,7 @@ const TripDetailScreen = (props: ITripDetailScreen) => {
                                         height='18px'
                                         tintColor='gray.400'
                                     />
-                                    <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{tripDetail?.data?.data?.location?.text}</Text>
+                                    <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{tripDetail?.data?.data?.location?.name}</Text>
                                 </HStack>
                             :   <Skeleton width='150px' height='17.75px' />
                     }

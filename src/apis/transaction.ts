@@ -6,6 +6,10 @@ interface IGetTransactionDetail {
     id: string
 }
 
+interface IGetTransactionDraftDetail {
+    id: string
+}
+
 export async function getTransactionListApi() {
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRANSACTION.GET_ALL)
@@ -23,5 +27,25 @@ export async function getTransactionDetailApi(payload: IGetTransactionDetail) {
         return response?.data
     } catch (error: any) {
         throw error?.data?.message??'Get transaction detail error'
+    }
+}
+
+export async function getTransactionDraftListApi() {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRANSACTION.GET_ALL_DRAFT)
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Get transaction draft error'
+    }
+}
+
+export async function getTransactionDraftDetailApi(payload: IGetTransactionDraftDetail) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRANSACTION.DRAFT_DETAIL.replace(':transactionId', payload?.id))
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Get transaction draft detail error'
     }
 }

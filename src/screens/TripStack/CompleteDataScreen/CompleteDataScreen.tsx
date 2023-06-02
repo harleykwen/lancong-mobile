@@ -3,7 +3,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { IC_ARROW_BACK } from '../../../assets'
 import { ROUTE_NAME } from '../../../router'
-import { getTransactionDetailApi } from '../../../apis/transaction'
+import { getTransactionDraftDetailApi } from '../../../apis/transaction'
 import { updateTransactionTripApi } from '../../../apis/trip'
 import { RefreshControl } from 'react-native-gesture-handler'
 import { 
@@ -65,7 +65,7 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
 
     const transactionDetail = useQuery(
         `transaction-detail-${transactionId}`,
-        () => getTransactionDetailApi({ id: transactionId }),
+        () => getTransactionDraftDetailApi({ id: transactionId }),
         {
             onSuccess: (resp: any) => {
                 console.log({ resp })

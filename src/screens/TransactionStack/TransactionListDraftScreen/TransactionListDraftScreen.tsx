@@ -4,8 +4,7 @@ import { id } from 'date-fns/locale'
 import { format } from 'date-fns'
 import { ROUTE_NAME } from '../../../router'
 import { useQuery } from 'react-query'
-import { IC_CHEVRON_RIGHT } from '../../../assets'
-import { getTransactionDraftListApi, getTransactionListApi } from '../../../apis/transaction'
+import { getTransactionDraftListApi } from '../../../apis/transaction'
 import { 
     Center,
     Divider,
@@ -18,14 +17,13 @@ import {
     Text,
 } from 'native-base'
 
-interface ITransactionListScreen {
+interface ITransactionListDraftScreen {
     navigation?: any
 }
 
-const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransactionListScreen) => {
+const TransactionListDraftScreen: React.FC<ITransactionListDraftScreen> = (props: ITransactionListDraftScreen) => {
     const { navigation } = props
 
-    const transactions = useQuery('transaction-list', getTransactionListApi)
     const transactionsDraft = useQuery('transaction-draft-list', getTransactionDraftListApi)
 
     function generateStatusTransaction(data: any) {
@@ -75,15 +73,13 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
                 alignItems='center'
                 space='16px'
             >
-                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Daftar Transaksi</Text>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Transaksi Draft</Text>
             </Stack>
             <ScrollView
                 refreshControl={
                     <RefreshControl 
-                        refreshing={transactions?.isFetching} 
+                        refreshing={transactionsDraft?.isFetching} 
                         onRefresh={() => {
-                            transactions?.remove()
-                            transactions?.refetch()
                             transactionsDraft?.remove()
                             transactionsDraft?.refetch()
                         }} 
@@ -92,45 +88,8 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
             >
                 <Stack padding='24px' space='10px'>
                     {
-                        transactionsDraft?.data?.data?.length !== 0 && 
-                        !transactionsDraft?.isFetching &&
-                        <Pressable 
-                            onPress={() => {
-                                navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR, { 
-                                    screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_LIST_DRAFT,
-                                })
-                            }}
-                        >
-                            <Stack
-                                backgroundColor='white' 
-                                shadow='5' 
-                                rounded='md'
-                                padding='10px'
-                                space='10px'
-                                direction='row'
-                                alignItems='center'
-                            >
-                                <Center backgroundColor='red.600' width='24px' height='24px' rounded='full'>
-                                    <Text fontSize='10px' color='lancBackgroundLight' marginTop='2px'>
-                                        {transactionsDraft?.data?.data?.length}
-                                    </Text>
-                                </Center>
-                                <Text fontSize='12px'>Menunggu kelengkapan data</Text>
-                                <Image
-                                    alt='IC_CHEVRON_RIGHT'
-                                    source={IC_CHEVRON_RIGHT}
-                                    width='24px'
-                                    height='24px'
-                                    tintColor='lancOnBackgroundLight'
-                                    marginLeft='auto'
-                                />
-                            </Stack>
-                        </Pressable>
-                    }
-
-                    {
-                        !transactions?.isLoading &&
-                        transactions?.data?.data?.map((transaction: any, index: number) => {
+                        !transactionsDraft?.isLoading &&
+                        transactionsDraft?.data?.data?.map((transaction: any, index: number) => {
                             return (
                                 <Pressable 
                                     key={index}
@@ -227,7 +186,7 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
                     })}
 
                     {
-                        transactions?.isFetching &&
+                        transactionsDraft?.isFetching &&
                         [...Array(3)]?.map((_, index: number) => {
                             return (
                                 <Stack
@@ -268,4 +227,4 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
     )
 }
 
-export default TransactionListScreen
+export default TransactionListDraftScreen

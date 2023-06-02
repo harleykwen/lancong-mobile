@@ -17,7 +17,8 @@ import {
     Select, 
     Stack, 
     Text, 
-    VStack 
+    VStack, 
+    useDisclose
 } from 'native-base'
 import { 
     IC_ARROW_BACK,
@@ -31,6 +32,7 @@ import {
     LOGO_MANDIRI, 
     LOGO_PERMATA, 
 } from '../../../assets'
+import ActionSheetDetail from './components/ActionSheetDetail'
 
 interface IPayment {
     navigation: any
@@ -40,6 +42,8 @@ interface IPayment {
 const PaymentTypeScreen = (props: IPayment) => {
     const { navigation, route } = props
     const { transaction } = route?.params
+
+    const actionSheetDetailDisclosure = useDisclose()
 
     const [paymentType, setPaymentType] = useState('')
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
@@ -72,6 +76,8 @@ const PaymentTypeScreen = (props: IPayment) => {
         }
     }
 
+    console.log({ transaction })
+
     return (
         <Flex flex='1' backgroundColor='white'>
             <Stack 
@@ -92,11 +98,63 @@ const PaymentTypeScreen = (props: IPayment) => {
                         tintColor='lancOnBackgroundLight'
                     />
                 </Pressable>
-                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Tipe Pembayaran</Text>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Ringkasan Pesanan</Text>
             </Stack>
 
             <ScrollView>
                 <VStack space='10px' padding='24px'>
+                    <Stack 
+                        direction='row' 
+                        padding='10px' 
+                        shadow='3' 
+                        backgroundColor='white'
+                        borderRadius='8px'
+                        // alignItems='center'
+                        space='10px'
+                    >
+                        <Image 
+                            source={{uri: transaction?.order?.trip?.images[0]?.url}} 
+                            alt={transaction?.order?.trip?.images[0]?.url} 
+                            height='100px'
+                            width='100px' 
+                            borderRadius='8px'
+                        />
+                        <Stack flex='1'>
+                            <Stack direction='row' alignItems='center'>
+                                <Text fontFamily='Poppins-Regular' fontSize='12px'>{transaction?.order?.trip?.name} </Text>
+                                <Center backgroundColor='gray.100' padding='4px 8px'>
+                                    <Text 
+                                        fontFamily='Poppins-SemiBold' 
+                                        color='gray.600' 
+                                        fontSize='10px'
+                                    >
+                                        {transaction?.order[transaction?.order?.group]?.duration?.day}
+                                        D
+                                        {transaction?.order[transaction?.order?.group]?.duration?.night}
+                                        N
+                                    </Text>
+                                </Center>
+                            </Stack>
+                            <Text 
+                                textTransform='capitalize' 
+                                fontFamily='Poppins-Regular' 
+                                fontSize='12px'
+                            >{transaction?.order?.trip?.location?.name}</Text>
+                            <Pressable 
+                                marginTop='auto'
+                                marginLeft='auto'
+                                onPress={actionSheetDetailDisclosure.onOpen}
+                            >
+                                <Text 
+                                    textTransform='capitalize' 
+                                    fontFamily='Poppins-SemiBold' 
+                                    fontSize='12px'
+                                    color='lancPrimaryLight'
+                                >Lihat lebih detail</Text>
+                            </Pressable>
+                        </Stack>
+                    </Stack>
+
                     <Select 
                         placeholder="Pilih skema pembayaran"  
                         selectedValue={paymentType} 
@@ -309,6 +367,11 @@ const PaymentTypeScreen = (props: IPayment) => {
                     >Konfirmasi</Text>
                 </Button>
             </Stack>
+
+            <ActionSheetDetail
+                disclosure={actionSheetDetailDisclosure}
+                data={transaction}
+            />
         </Flex>
     )
 }

@@ -13,6 +13,7 @@ import {
     HStack, 
     Icon, 
     Image, 
+    Link, 
     Pressable, 
     ScrollView, 
     Skeleton, 
@@ -137,7 +138,9 @@ const TripDetailScreen = (props: ITripDetailScreen) => {
                                         height='18px'
                                         tintColor='gray.400'
                                     />
-                                    <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{tripDetail?.data?.data?.location?.name}</Text>
+                                    <Link href={tripDetail?.data?.data?.location?.maps_url}>
+                                        <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{tripDetail?.data?.data?.location?.name}</Text>
+                                    </Link>
                                 </HStack>
                             :   <Skeleton width='150px' height='17.75px' />
                     }

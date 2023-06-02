@@ -1,7 +1,11 @@
 import React from 'react'
 import { ROUTE_NAME } from '../routeName'
 import { createStackNavigator, TransitionPresets } from '@react-navigation/stack'
-import { TransactionDetailScreen, TransactionListScreen } from '../../screens/TransactionStack'
+import { 
+    TransactionDetailScreen, 
+    TransactionListDraftScreen, 
+    TransactionListScreen, 
+} from '../../screens/TransactionStack'
 
 const TransactionNavigator: React.FC = () => {
     const Stack = createStackNavigator()
@@ -15,6 +19,11 @@ const TransactionNavigator: React.FC = () => {
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 
                 name={ROUTE_NAME.TRANSACTION_NAVIGATOR_LIST} 
                 component={TransactionListScreen} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.SlideFromRightIOS }} 
+                name={ROUTE_NAME.TRANSACTION_NAVIGATOR_LIST_DRAFT} 
+                component={TransactionListDraftScreen} 
             />
             <Stack.Screen 
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 

@@ -8,7 +8,7 @@ interface IPlaceAutoCompleteApi {
 
 export async function getFacilitiesApi() {
     try {
-        const response: AxiosResponse = await http({ useAuth: false }).get(API_URL.MASTER.FACILITIES)
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.MASTER.FACILITIES)
         if (response?.data?.error) throw response
         return response?.data
     } catch (error: any) {
@@ -18,7 +18,7 @@ export async function getFacilitiesApi() {
 
 export async function placeAutoCompleteApi(payload: IPlaceAutoCompleteApi) {
     try {
-        const response: AxiosResponse = await http({ useAuth: false }).get(API_URL.MASTER.PLACE_AUTOCOMPLETE, {
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.MASTER.PLACE_AUTOCOMPLETE, {
             params: {
                 input: payload.search,
             },

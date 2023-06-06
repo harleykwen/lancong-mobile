@@ -288,7 +288,8 @@ const SearchTripScreen = (props: ISearchTripScreen) => {
                     <Button
                         size='lancSmall'
                         marginTop='14px'
-                        isDisabled={!type || !destination || !group || !tripStart || !participant}
+                        // isDisabled={!type || !destination || !group || !tripStart || !participant}
+                        isDisabled={!group}
                         onPress={handleSearchTrip}
                     >
                         Cari Trip

@@ -70,9 +70,9 @@ const ListTripScreen = (props: IListTripScreen) => {
                 <Stack>
                     <Text fontSize='16px' fontFamily='Poppins-SemiBold'>{destination?.name}</Text>
                     <Stack direction='row'>
-                        <Text fontSize='12px' color='gray.400'>{format(new Date(tripStart), 'dd MMMM yyyy', { locale: id })},</Text>
+                        { tripStart && <Text fontSize='12px' color='gray.400'>{format(new Date(tripStart), 'dd MMMM yyyy', { locale: id })},</Text> }
                         <Text fontSize='12px' color='gray.400' textTransform='capitalize'> {group} Trip,</Text>
-                        <Text fontSize='12px' color='gray.400'> {participant} Pelancong</Text>
+                        { participant && <Text fontSize='12px' color='gray.400'> {participant} Pelancong</Text> }
                     </Stack>
                 </Stack>
             </Stack>

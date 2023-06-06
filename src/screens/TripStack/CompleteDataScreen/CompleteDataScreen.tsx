@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
 import { IC_ARROW_BACK } from '../../../assets'
@@ -6,6 +6,8 @@ import { ROUTE_NAME } from '../../../router'
 import { getTransactionDraftDetailApi } from '../../../apis/transaction'
 import { updateTransactionTripApi } from '../../../apis/trip'
 import { RefreshControl } from 'react-native-gesture-handler'
+import { BackHandler } from 'react-native'
+import { useFocusEffect } from '@react-navigation/native'
 import { 
     useMutation, 
     useQuery, 
@@ -21,7 +23,9 @@ import {
     Skeleton, 
     Stack, 
     Text,
+    useDisclose,
 } from 'native-base'
+import LeaveConfirmationBottomSheet from './LeaveConfirmationBottomSheet'
 
 interface ICompleteDataScreen {
     navigation: any
@@ -30,6 +34,7 @@ interface ICompleteDataScreen {
 
 const CompleteDataScreen = (props: ICompleteDataScreen) => {
     const queryClient = useQueryClient()
+    const leaveConfirmDisclosure = useDisclose()
 
     const baseStylePressedComponent: object = {
         height:'50px',
@@ -68,7 +73,6 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
         () => getTransactionDraftDetailApi({ id: transactionId }),
         {
             onSuccess: (resp: any) => {
-                console.log({ resp })
                 if (resp?.data?.order?.participants?.length === 0) {
                     setPelancong(() => {
                         return [...Array(resp?.data?.order?.pax)]?.map(() => {})
@@ -104,6 +108,23 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
         navigation?.goBack()
     }
 
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                if (navigation?.getState()?.routes?.length <= 1) {
+                    return false
+                } else {
+                    leaveConfirmDisclosure.onOpen()
+                    return true
+                }
+            }
+
+            const subscription = BackHandler.addEventListener('hardwareBackPress', onBackPress)
+
+            return () => subscription.remove()
+        }, [])
+    )
+
     return (
         <Flex flex='1' backgroundColor='white'>
             <Stack 
@@ -115,7 +136,15 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                 alignItems='center'
                 space='16px'
             >
-                <Pressable onPress={() => navigation?.goBack()}>
+                <Pressable 
+                    onPress={() => {
+                        if (navigation?.getState()?.routes?.length <= 1) {
+                            navigation?.goBack()
+                        } else {
+                            leaveConfirmDisclosure.onOpen()
+                        }
+                    }}
+                >
                     <Image
                         alt='IC_ARROW_BACK'
                         source={IC_ARROW_BACK}
@@ -349,6 +378,8 @@ const CompleteDataScreen = (props: ICompleteDataScreen) => {
                     Konfirmasi
                 </Button>
             </Stack>
+
+            <LeaveConfirmationBottomSheet disclosure={leaveConfirmDisclosure} />
         </Flex>
     )
 }

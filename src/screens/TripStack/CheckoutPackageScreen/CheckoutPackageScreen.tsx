@@ -56,7 +56,7 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
 
     const createTransaction = useMutation(tripCreateTransactionApi, {
         onSuccess: (resp: any) => {
-            navigation?.replace(ROUTE_NAME.TRIP_NAVIGATOR, {
+            navigation?.navigate(ROUTE_NAME.TRIP_NAVIGATOR, {
                 screen: ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA,
                 params: {
                     trip: trip,
@@ -268,6 +268,10 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                             pax: totalPelancong,
                             trip_start: group === 'public' ? null : new Date(startDate)?.getTime(),
                         })
+                        
+                        // const { routes } = navigation?.getState()
+                        // const listTripRoute = routes?.find((x: any) => x?.name === ROUTE_NAME.TRIP_NAVIGATOR_LIST_STRIP)
+                        // navigation?.navigate(ROUTE_NAME?.TRIP_NAVIGATOR_LIST_STRIP, { ...listTripRoute?.params })
                     }}
                 >
                     Lanjutkan

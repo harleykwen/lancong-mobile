@@ -47,6 +47,7 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
 
     const { navigation, route } = props
     const { data, group, trip } = route?.params
+    const { routes } = navigation?.getState()
 
     const [showDatePicker, setShowDatePicker] = useState(false)
     const [totalPelancong, setTotalPelancong] = useState(group === 'public' ? 1 : data?.person?.min)
@@ -71,6 +72,8 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
             return type === 'plus' ? prev + 1 : prev - 1
         })
     }
+
+    console.log({ routes })
 
     return (
         <Flex flex='1' backgroundColor='lancBackgroundLight'>
@@ -288,10 +291,11 @@ const CheckoutPackageScreen = (props: ICheckoutPackageScreen) => {
                     setShowDatePicker(false)
                 }}
                 onCancel={() => setShowDatePicker(false)}
-                minimumDate={group === 'public'
-                    ?   new Date(data?.trip_start)
-                    :   new Date(data?.availability?.open)
-                }
+                // minimumDate={group === 'public'
+                //     ?   new Date(data?.trip_start)
+                //     :   new Date(data?.availability?.open)
+                // }
+                minimumDate={add(new Date(), { days: 1 })}
                 maximumDate={group === 'public'
                     ?   new Date(data?.trip_end)
                     :   new Date(data?.availability?.close)

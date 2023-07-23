@@ -78,6 +78,7 @@ const HistorySearchTrip: React.FC<IHistorySearchTrip> = (props: IHistorySearchTr
                         space='8px'
                     >
                         {historySearchTrip?.map((history: any, index: number) => {
+                            console.log(history)
                             return (
                                 <Pressable key={index} onPress={() => clickHistory(history)}>
                                     <Stack 
@@ -103,7 +104,7 @@ const HistorySearchTrip: React.FC<IHistorySearchTrip> = (props: IHistorySearchTr
                                                     height='18px'
                                                     tintColor='gray.400'
                                                 />
-                                                <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{history?.destination?.name}</Text>
+                                                <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{history?.destination?.name??'-'}</Text>
                                             </Stack>
                                             <Center rounded='sm' backgroundColor='gray.100' padding='2px'>
                                                 <Text 
@@ -127,7 +128,7 @@ const HistorySearchTrip: React.FC<IHistorySearchTrip> = (props: IHistorySearchTr
                                                 height='18px'
                                                 tintColor='gray.400'
                                             />
-                                            <Text fontSize='10px' marginTop='3px'>{format(new Date(history?.tripStart), 'dd MMM yyyy', { locale: id })}</Text>
+                                            <Text fontSize='10px' marginTop='3px'>{history?.tripStart ? format(new Date(history?.tripStart), 'dd MMM yyyy', { locale: id }) : '-'}</Text>
                                         </Stack>
                                         <Stack
                                             direction='row' 
@@ -142,7 +143,7 @@ const HistorySearchTrip: React.FC<IHistorySearchTrip> = (props: IHistorySearchTr
                                                 height='18px'
                                                 tintColor='gray.400'
                                             />
-                                            <Text fontSize='10px' marginTop='3px' textTransform='capitalize'>{history?.participant}</Text>
+                                            <Text fontSize='10px' marginTop='3px' textTransform='capitalize'>{history?.participant !== "" ? history?.participant : '-'}</Text>
                                         </Stack>
                                     </Stack>
                                 </Pressable>

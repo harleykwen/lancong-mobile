@@ -38,7 +38,7 @@ const LeaveConfirmationBottomSheet: React.FC<ILeaveConfirmationBottomSheet> = (p
                             fontSize='16px'
                         >Kamu yakin mau keluar dari halaman ini?</Text>
                         <Stack space='4px'>
-                            <Button size='lancSmall' onPress={disclosure?.onClose}>Tetap Dihalama Ini</Button>
+                            <Button size='lancSmall' onPress={disclosure?.onClose}>Tetap Dihalaman Ini</Button>
                             <Button 
                                 size='lancSmall' 
                                 variant='lancOutline' 

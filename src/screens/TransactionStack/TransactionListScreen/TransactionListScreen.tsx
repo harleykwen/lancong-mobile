@@ -31,6 +31,8 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
     function generateStatusTransaction(data: any) {
         if (data?.order?.status === 'DRAFT') {
             return 'Draft'
+        } else if (data?.order?.status === 'CANCELED') {
+            return 'Dibatalkan'
         } else if (data?.order?.status === 'PROCEED' && data?.order[data?.order?.payment_method]?.is_paid) {
             return 'Berhasil'
         } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.id_paid && data?.order[data?.order?.payment_method]?.status === 'INACTIVE') {
@@ -43,10 +45,12 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
     function generateBackgroundColorStatusTransaction(data: any) {
         if (data?.order?.status === 'DRAFT') {
             return 'gray.300'
+        } else if (data?.order?.status === 'CANCELED') {
+            return 'red.300'
         } else if (data?.order?.status === 'PROCEED' && data?.order[data?.order?.payment_method]?.is_paid) {
             return 'green.300'
         } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'INACTIVE') {
-            return 'red.300'
+            return 'orange.300'
         } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'ACTIVE') {
             return 'yellow.300'
         }
@@ -55,10 +59,12 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
     function generateTextColorStatusTransaction(data: any) {
         if (data?.order?.status === 'DRAFT') {
             return 'gray.600'
+        } else if (data?.order?.status === 'CANCELED') {
+            return 'red.600'
         } else if (data?.order?.status === 'PROCEED' && data?.order[data?.order?.payment_method]?.is_paid) {
             return 'green.600'
         } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'INACTIVE') {
-            return 'red.600'
+            return 'orange.600'
         } else if (data?.order?.status === 'PROCEED' && !data?.order[data?.order?.payment_method]?.is_paid && data?.order[data?.order?.payment_method]?.status === 'ACTIVE') {
             return 'yellow.600'
         }

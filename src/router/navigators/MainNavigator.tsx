@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { useTranslation } from 'react-i18next'
 import { 
     IC_CHAT, 
+    IC_CONFIRMATION_NUMBER, 
     IC_HOME, 
     IC_RECEIPT_LOG, 
     IC_USER, 
@@ -13,6 +14,7 @@ import Chat from '../../screens/Chat/Chat'
 import { ProfileScreen } from '../../screens/ProfileStack'
 import { TransactionListScreen } from '../../screens/TransactionStack'
 import Home from '../../screens/Home/Home'
+import { ECardScreen } from '../../screens/ECardStack'
 
 const MainNavigator: React.FC = () => {
     const Tab = createBottomTabNavigator()
@@ -33,6 +35,11 @@ const MainNavigator: React.FC = () => {
                 name={ROUTE_NAME.MAIN_NAVIGATOR_TRANSACTION} 
                 component={TransactionListScreen} 
                 options={{ tabBarLabel: `${t('common:bottom_tabs_transaction')}`, tabBarIcon: IC_RECEIPT_LOG }}
+            />
+            <Tab.Screen 
+                name={ROUTE_NAME.MAIN_NAVIGATOR_E_CARD} 
+                component={ECardScreen} 
+                options={{ tabBarLabel: 'E Card', tabBarIcon: IC_CONFIRMATION_NUMBER }}
             />
             <Tab.Screen 
                 name={ROUTE_NAME.MAIN_NAVIGATOR_CHAT} 

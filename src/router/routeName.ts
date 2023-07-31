@@ -6,6 +6,7 @@ export const ROUTE_NAME = {
     TRIP_NAVIGATOR: 'Trip-Navigator',
     TRANSACTION_NAVIGATOR: 'Transaction-Navigator',
     PROFILE_NAVIGATOR: 'Profile-Navigator',
+    REFUND_NAVIGATOR: 'Refund-Navigator',
 
     // SPLASH_NAVIGATOR
     SPLASH_NAVIGATOR_SPLASH: 'Splash-Navigator-Splash',
@@ -20,6 +21,7 @@ export const ROUTE_NAME = {
     MAIN_NAVIGATOR_TRANSACTION: 'Main-Navigator-Transaction',
     MAIN_NAVIGATOR_CHAT: 'Main-Navigator-Chat',
     MAIN_NAVIGATOR_PROFILE: 'Main-Navigator-Profile',
+    MAIN_NAVIGATOR_E_CARD: 'Main-Navigator-E-Card',
 
     // TRIP NAVIGATOR
     TRIP_NAVIGATOR_SEARCH_STRIP: 'Trip-Navigator-Search-Trip',
@@ -46,4 +48,10 @@ export const ROUTE_NAME = {
     PROFILE_NAVIGATOR_ADD_PELANCONG_DATA: 'Profile-Navigator-Add-Pelancong-Data',
     PROFILE_NAVIGATOR_DETAIL_PELANCONG_DATA: 'Profile-Navigator-Detail-Pelancong-Data',
     PROFILE_NAVIGATOR_UPDATE_PELANCONG_DATA: 'Profile-Navigator-Update-Pelancong-Data',
+
+    // REFUND NAVIGATOR
+    REFUND_NAVIGATOR_REFUND: 'Refund-Navigator-Refund',
+    REFUND_NAVIGATOR_TERMS_AND_CONDITIONS: 'Refund-Navigator-Terms-And-Conditions',
+    REFUND_NAVIGATOR_INFORMATION: 'Refund-Navigator-Information',
+    REFUND_NAVIGATOR_FORM: 'Refund-Navigator-Form',
 }

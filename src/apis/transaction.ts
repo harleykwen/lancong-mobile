@@ -10,6 +10,10 @@ interface IGetTransactionDraftDetail {
     id: string
 }
 
+interface ICancelVaTransactionApi {
+    transactionId: string
+}
+
 export async function getTransactionListApi() {
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRANSACTION.GET_ALL)
@@ -47,5 +51,19 @@ export async function getTransactionDraftDetailApi(payload: IGetTransactionDraft
         return response?.data
     } catch (error: any) {
         throw error?.data?.message??'Get transaction draft detail error'
+    }
+}
+
+export async function cancelVaTransactionApi(payload: ICancelVaTransactionApi) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).put(API_URL.TRANSACTION.VA_CANCEL.replace(':transactionId', payload?.transactionId), {
+            Headers: {
+                'Content-Type': 'application-json',
+            }
+        })
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Cancel VA Transaction Error'
     }
 }

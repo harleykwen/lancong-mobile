@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { useQuery } from 'react-query'
 import { getTransactionDetailApi } from '../../../apis/transaction'
-import { format } from 'date-fns'
+import { format, intervalToDuration, isPast } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { RefreshControl } from 'react-native-gesture-handler'
 import { IC_ARROW_BACK, IC_CONTENT_COPY } from '../../../assets'
 import { 
+    Button,
+    Center,
     Flex, 
     Image, 
     Pressable, 
@@ -13,20 +15,98 @@ import {
     Skeleton, 
     Stack, 
     Text,
-    useClipboard, 
+    useClipboard,
+    useDisclose, 
 } from 'native-base'
+import ActionSheetCancelTransaction from './components/ActionSheetCancelTransaction'
 
 interface ITransactionDetailScreen {
     navigation?: any
     route?: any
 }
 
-const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
+const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITransactionDetailScreen) => {
     const { navigation, route } = props
     const { transactionId } = route?.params
     const { onCopy } = useClipboard()
+    const cancelTransactionDisclosure = useDisclose()
+
+    const [paymentCountdown, setPaymentCountdown] = useState('')
+    const [showCountdown, setShowCountdown] = useState(false)
 
     const transactionDetail = useQuery(`transaction-detail-${transactionId}`, () => getTransactionDetailApi({ id: transactionId }))
+
+    function showButtonCancelVa() {
+        console.log(transactionDetail?.data?.data)
+        if (!transactionDetail?.data) return false
+        if (
+            transactionDetail?.data?.data?.order?.payment_method === 'virtual_account' &&
+            !isPast(new Date(transactionDetail?.data?.data.order.virtual_account.expiration_date))
+        ) return true
+        return false
+    }
+
+    function runIntervalPaymentCountdown() {
+        if (!transactionDetail?.data?.data) return
+        const paymentMethod = transactionDetail?.data?.data?.order?.payment_method
+        const timestamp = transactionDetail?.data?.data?.order[paymentMethod]?.expiration_date
+        const myPaymentCountdownInterval = setInterval(handleUpdatePaymentCountdownInterval, 1000)
+        function handleUpdatePaymentCountdownInterval() {
+            if (isPast(new Date(timestamp))) {
+                clearInterval(myPaymentCountdownInterval)
+                setShowCountdown(false)
+            } else {
+                setShowCountdown(true)
+                const interval = intervalToDuration({
+                    start: new Date(),
+                    end: new Date(timestamp)
+                })
+                const generatedInterval = handleGenerateInterval(interval)
+                setPaymentCountdown(generatedInterval)
+            }
+        }
+    }
+
+    function handleGenerateInterval(data: any) {
+        console.log({ data })
+        const hourArg = data?.hours
+        const minuteArg = data?.minutes
+        const secondArg = data?.seconds
+
+        let hour
+        let minute
+        let second
+
+        if (hourArg > 9) {
+            hour = `${hourArg}`
+        } else if (hourArg < 9 && hourArg > 0) {
+            hour = `0${hourArg}`
+        } else {
+            hour = '00'
+        }
+
+        if (minuteArg > 9) {
+            minute = `${minuteArg}`
+        } else if (minuteArg < 9 && minuteArg > 0) {
+            minute = `0${minuteArg}`
+        } else {
+            minute = '00'
+        }
+
+        if (secondArg > 9) {
+            second = `${secondArg}`
+        } else if (secondArg < 9 && secondArg > 0) {
+            second = `0${secondArg}`
+        } else {
+            second = '00'
+        }
+
+        return hour + ':' + minute + ':' + second
+    }
+
+    useEffect(() => {
+        runIntervalPaymentCountdown()
+    }, [transactionDetail?.data])
     
     return (
         <Flex flex='1' backgroundColor='gray.100'>
@@ -63,6 +143,34 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                 }
             >
                 <Stack space='10px'>
+                    {
+                        showCountdown &&
+                        <Stack 
+                            padding='16px' 
+                            space='16px' 
+                            backgroundColor='lancBackgroundLight'
+                        >
+                            <Stack direction='row' justifyContent='space-between'>
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Selesaikan Pembayaran Dalam:</Text>
+                                    {
+                                        transactionDetail?.isFetching
+                                            ?   <Skeleton height='22px' width='150px' />
+                                            :   <Center 
+                                                    paddingY='4px' 
+                                                    paddingX='8px' 
+                                                    backgroundColor='orange.400' 
+                                                    width='100px' 
+                                                    rounded='full'
+                                                >
+                                                    <Text fontFamily='Poppins-SemiBold' color='white'>{paymentCountdown}</Text>
+                                                </Center>
+                                    }
+                                </Stack>
+                            </Stack>
+                        </Stack>
+                    }
+
                     <Stack 
                         padding='16px' 
                         space='16px' 
@@ -213,7 +321,18 @@ const TransactionDetailScreen = (props: ITransactionDetailScreen) => {
                         </Stack>
                     </Stack>
                 </Stack>
+
+                <Stack padding='16px'>
+                    {showButtonCancelVa() && <Button colorScheme='lancError' onPress={cancelTransactionDisclosure?.onOpen}>Batalkan Pesanan</Button>}
+                </Stack>
             </ScrollView>
+
+            <ActionSheetCancelTransaction 
+                isOpen={cancelTransactionDisclosure?.isOpen} 
+                onClose={cancelTransactionDisclosure?.onClose} 
+                navigation={navigation} 
+                transactionId={transactionDetail?.data?.data?.id}
+            />
         </Flex>
     )
 }

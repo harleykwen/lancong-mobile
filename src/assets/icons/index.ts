@@ -29,6 +29,8 @@ const IC_LANGUAGE = require('./ic_language.png')
 const IC_CONTENT_COPY = require('./ic_content_copy.png')
 const IC_AIRLINE_SEAT_RECLINE = require('./ic_airline_seat_recline.png')
 const IC_INFO = require('./ic_info.png')
+const IC_THREE_DOTS_VERTICAL = require('./ic_three_dots_vertical.png')
+const IC_CONFIRMATION_NUMBER = require('./ic_confirmation_number.png')
 
 export {
     IC_EMAIL,
@@ -62,4 +64,6 @@ export {
     IC_CONTENT_COPY,
     IC_AIRLINE_SEAT_RECLINE,
     IC_INFO,
+    IC_THREE_DOTS_VERTICAL,
+    IC_CONFIRMATION_NUMBER,
 }

@@ -5,6 +5,7 @@ import SplashNavigator from './navigators/SplashNavigator'
 import TripNavigator from './navigators/TripNavigator'
 import ProfileNavigator from './navigators/ProfileNavigator'
 import TransactionNavigator from './navigators/TransactionNavigator'
+import RefundNavigator from './navigators/RefundNavigator'
 import { ROUTE_NAME } from './routeName'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { NavigationContainer } from '@react-navigation/native'
@@ -47,6 +48,11 @@ const Router: React.FC = () => {
                         options={{ ...TransitionPresets.ModalSlideFromBottomIOS }} 
                         name={ROUTE_NAME.TRANSACTION_NAVIGATOR} 
                         component={TransactionNavigator} 
+                    />
+                    <Stack.Screen 
+                        options={{ ...TransitionPresets.ModalSlideFromBottomIOS }} 
+                        name={ROUTE_NAME.REFUND_NAVIGATOR} 
+                        component={RefundNavigator} 
                     />
                 </Stack.Navigator>
             </NavigationContainer>

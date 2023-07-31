@@ -28,6 +28,7 @@ const API_URL = {
         DETAIL: '/user/transaction/:transactionId',
         GET_ALL_DRAFT: '/user/transaction/draft',
         DRAFT_DETAIL: '/user/transaction/draft/:transactionId',
+        VA_CANCEL: '/user/transaction/:transactionId/payment/virtual-account/cancel',
     },
     VA: {
         BANK_LIST: '/user/payment/virtual-account/banks',

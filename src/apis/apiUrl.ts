@@ -14,7 +14,7 @@ const API_URL = {
         SEARCH: '/user/trip',
         CREATE_TRANSACTION: '/user/trip/transaction/create',
         UPDATE_TRANSACTION: '/user/trip/transaction/:transactionId/update',
-        CHECKOUT: '/user/trip/transaction/virtual-account/checkout',
+        CHECKOUT: '/user/trip/transaction/full-payment/virtual-account/checkout',
         DETAIL: '/user/trip/:id',
     },
     PELANCONG: {
@@ -32,6 +32,8 @@ const API_URL = {
     },
     VA: {
         BANK_LIST: '/user/payment/virtual-account/banks',
+        BLUEPRINT: '/user/trip/transaction/installment/:transactionId/blueprint',
+        INSTALLMENT_CREATE: 'user/trip/transaction/installment/:transactionId/virtual-account/create',
     },
     MASTER: {
         FACILITIES: '/master/trip/facilities',

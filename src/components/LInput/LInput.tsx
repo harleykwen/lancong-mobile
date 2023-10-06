@@ -5,6 +5,8 @@ interface ILInput {
     label?: string
     type: 'text' | 'number' | 'select' | 'radio'
     options?: { label: string, value: any }[]
+    onChange?: any
+    defaultValue?: any
 }
 
 const LInput = (props: ILInput) => {
@@ -12,17 +14,23 @@ const LInput = (props: ILInput) => {
         label,
         type,
         options,
+        onChange,
+        defaultValue,
     } = props
 
     function renderComponent() {
         switch(type) {
             case 'text':
-                return <Input />
+                return <Input defaultValue={defaultValue && defaultValue} />
             case 'number':
-                return <Input keyboardType='number-pad' />
+                return <Input keyboardType='number-pad' defaultValue={defaultValue && defaultValue} />
             case 'select':
                 return (
-                    <Select dropdownIcon={<></>}>
+                    <Select 
+                        dropdownIcon={<></>} 
+                        onValueChange={onChange && onChange}
+                        defaultValue={defaultValue && defaultValue}
+                    >
                         {options?.map((option: any, index: number) => {
                             return <Select.Item key={index} label={option?.label} value={option?.value} />
                         })}
@@ -30,7 +38,12 @@ const LInput = (props: ILInput) => {
                 )
             case 'radio':
                 return (
-                    <Radio.Group name="exampleGroup" defaultValue="1" accessibilityLabel="pick a size">
+                    <Radio.Group 
+                        name="exampleGroup" 
+                        defaultValue={defaultValue && defaultValue}
+                        accessibilityLabel="pick a size"
+                        onChange={onChange && onChange}
+                    >
                         <Stack 
                             direction='row' 
                             space='10px'

@@ -1,13 +1,17 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
+import ActionSheetCancelTransaction from './components/ActionSheetCancelTransaction'
 import { useQuery } from 'react-query'
 import { getTransactionDetailApi } from '../../../apis/transaction'
-import { format, intervalToDuration, isPast } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { RefreshControl } from 'react-native-gesture-handler'
 import { IC_ARROW_BACK, IC_CONTENT_COPY } from '../../../assets'
 import { 
+    format, 
+    intervalToDuration, 
+    isPast, 
+} from 'date-fns'
+import { 
     Button,
-    Center,
     Flex, 
     Image, 
     Pressable, 
@@ -18,7 +22,6 @@ import {
     useClipboard,
     useDisclose, 
 } from 'native-base'
-import ActionSheetCancelTransaction from './components/ActionSheetCancelTransaction'
 
 interface ITransactionDetailScreen {
     navigation?: any
@@ -37,7 +40,6 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
     const transactionDetail = useQuery(`transaction-detail-${transactionId}`, () => getTransactionDetailApi({ id: transactionId }))
 
     function showButtonCancelVa() {
-        console.log(transactionDetail?.data?.data)
         if (!transactionDetail?.data) return false
         if (
             transactionDetail?.data?.data?.order?.payment_method === 'virtual_account' &&
@@ -68,7 +70,6 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
     }
 
     function handleGenerateInterval(data: any) {
-        console.log({ data })
         const hourArg = data?.hours
         const minuteArg = data?.minutes
         const secondArg = data?.seconds
@@ -104,9 +105,131 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
         return hour + ':' + minute + ':' + second
     }
 
-    useEffect(() => {
-        runIntervalPaymentCountdown()
-    }, [transactionDetail?.data])
+    function handleGetPaymentScheme(data: any) {
+        return data?.order?.payment?.scheme
+    }
+
+    function handleGetPaymentMethod(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        return data?.order?.payment[paymentScheme]?.method
+    }
+
+    function handleGetTransactionDate(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        switch(paymentScheme) {
+            case 'full_payment':
+                return ''
+            case 'installment':
+                return ''
+            default:
+                return ''
+        }
+    }
+
+    function handleGetTransactionType(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        switch(paymentScheme) {
+            case 'full_payment':
+            case 'installment':
+                return data?.transaction_type
+            default:
+                return ''
+        }
+    }
+
+    function handleGetGroup(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        switch(paymentScheme) {
+            case 'full_payment':
+            case 'installment':
+                return data?.order?.group
+            default:
+                return ''
+        }
+    }
+
+    function handleGetTripName(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        switch(paymentScheme) {
+            case 'full_payment':
+            case 'installment':
+                return data?.order[data?.transaction_type]?.name
+            default:
+                return ''
+        }
+    }
+
+    function handleGetExpirationDate(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const expirationDate = data?.order?.payment[paymentScheme][paymentMethod]?.expiration_date
+        switch(paymentScheme) {
+            case 'full_payment':
+                return format(new Date(expirationDate), 'dd LLLL yyyy, HH:mm', { locale: id }) + ' WIB'
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return format(new Date(payableInstallment?.expected_payment_date), 'dd LLLL yyyy, HH:mm', { locale: id }) + ' WIB'
+            default:
+                return ''
+        }
+    }
+
+    function handleGetFullPaymentMethod(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const bankCode = data?.order?.payment[paymentScheme][paymentMethod]?.bank_code
+        switch(paymentScheme) {
+            case 'full_payment':
+                return `${bankCode?.toUpperCase()} ${paymentMethod?.replace('_', ' ')?.toUpperCase()}`
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return `${payableInstallment[payableInstallment?.method]?.bank_code?.toUpperCase()} ${payableInstallment?.method?.replaceAll('_', ' ')?.toUpperCase()}`
+            default:
+                return ''
+        }
+    }
+
+    function handleGetExpectedAmount(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const expectedAmount = data?.order?.payment[paymentScheme][paymentMethod]?.expected_amount
+        switch(paymentScheme) {
+            case 'full_payment':
+                return expectedAmount
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return payableInstallment[payableInstallment?.method]?.expected_amount
+            default:
+                return ''
+        }
+    }
+
+    function handleGetAccountNumber(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const accountNumber = data?.order?.payment[paymentScheme][paymentMethod]?.account_number
+        switch(paymentScheme) {
+            case 'full_payment':
+                return accountNumber
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return payableInstallment[payableInstallment?.method]?.account_number
+            default:
+                return ''
+        }
+    }
+
+    // useEffect(() => {
+    //     runIntervalPaymentCountdown()
+    // }, [transactionDetail?.data])
     
     return (
         <Flex flex='1' backgroundColor='gray.100'>
@@ -153,7 +276,7 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                             <Stack direction='row' justifyContent='space-between'>
                                 <Stack>
                                     <Text color='lancOutlineLight'>Selesaikan Pembayaran Dalam:</Text>
-                                    {
+                                    {/* {
                                         transactionDetail?.isFetching
                                             ?   <Skeleton height='22px' width='150px' />
                                             :   <Center 
@@ -165,7 +288,7 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                                 >
                                                     <Text fontFamily='Poppins-SemiBold' color='white'>{paymentCountdown}</Text>
                                                 </Center>
-                                    }
+                                    } */}
                                 </Stack>
                             </Stack>
                         </Stack>
@@ -179,11 +302,11 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                         <Stack direction='row' justifyContent='space-between'>
                             <Stack>
                                 <Text color='lancOutlineLight'>Tanggal Transaksi</Text>
-                                {
+                                {/* {
                                     transactionDetail?.isFetching
                                         ?   <Skeleton height='22px' width='150px' />
                                         :   <Text fontFamily='Poppins-SemiBold'>{format(new Date(transactionDetail?.data?.data?.created_at), 'EEEE, dd MMMM yyyy HH:mm', { locale: id })} WIB</Text>
-                                }
+                                } */}
                             </Stack>
                         </Stack>
                     </Stack>
@@ -198,7 +321,9 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                             {
                                 transactionDetail?.isFetching
                                     ?   <Skeleton height='22px' width='150px' />
-                                    :   <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>{transactionDetail?.data?.data?.transaction_type}</Text>
+                                    :   <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>
+                                            {handleGetTransactionType(transactionDetail?.data?.data)}
+                                        </Text>
                             }
                         </Stack>
                         <Stack>
@@ -206,7 +331,9 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                             {
                                 transactionDetail?.isFetching
                                     ?   <Skeleton height='20.5px' width='150px' />
-                                    :   <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>{transactionDetail?.data?.data?.order?.group}</Text>
+                                    :   <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>
+                                            {handleGetGroup(transactionDetail?.data?.data)}
+                                        </Text>
                             }
                         </Stack>
                         <Stack>
@@ -214,7 +341,9 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                             {
                                 transactionDetail?.isFetching
                                     ?   <Skeleton height='20.5px' width='150px' />
-                                    :   <Text fontFamily='Poppins-SemiBold'>{transactionDetail?.data?.data?.order?.trip?.name}</Text>
+                                    :   <Text fontFamily='Poppins-SemiBold'>
+                                            {handleGetTripName(transactionDetail?.data?.data)}
+                                        </Text>
                             }
                         </Stack>
                     </Stack>
@@ -230,7 +359,9 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                 {
                                     transactionDetail?.isFetching
                                         ?   <Skeleton height='21.5px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>{format(new Date(transactionDetail?.data?.data?.order[transactionDetail?.data?.data?.order?.payment_method]?.expiration_date), 'EEEE, dd MMMM yyyy HH:mm', { locale: id })} WIB</Text>
+                                        :   <Text fontFamily='Poppins-SemiBold'>
+                                                {handleGetExpirationDate(transactionDetail?.data?.data)}
+                                            </Text>
                                 }
                             </Stack>
                             <Pressable>
@@ -243,7 +374,9 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                 {
                                     transactionDetail?.isFetching
                                         ?   <Skeleton height='21.5px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>{transactionDetail?.data?.data?.order[transactionDetail?.data?.data?.order?.payment_method]?.bank_code} {transactionDetail?.data?.data?.order?.payment_method?.replace('_', ' ')}</Text>
+                                        :   <Text fontFamily='Poppins-SemiBold'>
+                                                {handleGetFullPaymentMethod(transactionDetail?.data?.data)}
+                                            </Text>
                                 }
                             </Stack>
                         </Stack>
@@ -257,11 +390,13 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                 {
                                     transactionDetail?.isFetching
                                         ?   <Skeleton height='21.5px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>Rp. {transactionDetail?.data?.data?.order[transactionDetail?.data?.data?.order?.payment_method]?.expected_amount?.toLocaleString('id')}</Text>
+                                        :   <Text fontFamily='Poppins-SemiBold'>
+                                                Rp. {handleGetExpectedAmount(transactionDetail?.data?.data)?.toLocaleString('id')}
+                                            </Text>
                                 }
                             </Stack>
                             <Pressable
-                                onPress={() => onCopy(`${transactionDetail?.data?.data?.order[transactionDetail?.data?.data?.order?.payment_method]?.expected_amount}`)}
+                                onPress={() => onCopy(`${handleGetExpectedAmount(transactionDetail?.data?.data)}`)}
                             >
                                 <Stack
                                     direction='row'
@@ -293,11 +428,13 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                 {
                                     transactionDetail?.isFetching
                                         ?   <Skeleton height='22px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>{transactionDetail?.data?.data?.order[transactionDetail?.data?.data?.order?.payment_method]?.account_number}</Text>
+                                        :   <Text fontFamily='Poppins-SemiBold'>
+                                                {handleGetAccountNumber(transactionDetail?.data?.data)}
+                                            </Text>
                                 }
                             </Stack>
                             <Pressable
-                                onPress={() => onCopy(`${transactionDetail?.data?.data?.order[transactionDetail?.data?.data?.order?.payment_method]?.account_number}`)}
+                                onPress={() => onCopy(`${handleGetAccountNumber(transactionDetail?.data?.data)}`)}
                             >
                                 <Stack
                                     direction='row'

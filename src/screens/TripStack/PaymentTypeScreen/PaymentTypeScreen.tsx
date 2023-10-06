@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons'
-import { bankListApi } from '../../../apis/va'
+import { bankListApi, blueprintApi, installmentCreateApi } from '../../../apis/va'
 import { tripCheckoutApi } from '../../../apis/trip'
 import { LInput } from '../../../components'
 import { ROUTE_NAME } from '../../../router'
@@ -33,6 +33,7 @@ import {
     LOGO_PERMATA, 
 } from '../../../assets'
 import ActionSheetDetail from './components/ActionSheetDetail'
+import ActionSheetPaymentMethodCicilan from './components/ActionSheetPaymentMethodCicilan'
 
 interface IPayment {
     navigation: any
@@ -43,14 +44,35 @@ const PaymentTypeScreen = (props: IPayment) => {
     const { navigation, route } = props
     const { transaction } = route?.params
 
+    const [termPlan, setTermPlan] = useState(null)
+    const [paymentDate, setPaymentDate] = useState(null)
+
     const actionSheetDetailDisclosure = useDisclose()
+    const actionSheetPaymentMethodDisclosure = useDisclose()
 
     const [paymentType, setPaymentType] = useState('')
     const [selectedPaymentMethod, setSelectedPaymentMethod] = useState('')
+    const [paymentMethodCicilan, setPaymentMethodCicilan] = useState<any>('')
 
     const vas = useQuery('list-va', bankListApi)
+    const blueprint = useQuery('blueprint', () => blueprintApi({
+        transactionId: transaction?.id,
+        term_plan: termPlan,
+        payment_date: paymentDate,
+    }), {
+        onSuccess: (resp: any) => {
+            console.log({ resp})
+            if (termPlan === null) setTermPlan(resp?.data?.term_plan[resp?.data?.term_plan?.length - 1]?.value)
+            if (paymentDate === null) setPaymentDate(resp?.data?.payment_date[0]?.value)
+        }
+    })
     const checkout = useMutation(tripCheckoutApi, {
         onSuccess: (resp) => {
+            navigation?.replace(ROUTE_NAME.TRIP_NAVIGATOR_CHECKOUT_COMPLETE, { transaction: resp })
+        }
+    })
+    const createInstallment = useMutation(installmentCreateApi, {
+        onSuccess: (resp: any) => {
             navigation?.replace(ROUTE_NAME.TRIP_NAVIGATOR_CHECKOUT_COMPLETE, { transaction: resp })
         }
     })
@@ -75,6 +97,10 @@ const PaymentTypeScreen = (props: IPayment) => {
                 return LOGO_BSI
         }
     }
+
+    useEffect(() => {
+        blueprint?.refetch()
+    }, [termPlan, paymentDate])
 
     console.log({ transaction })
 
@@ -155,126 +181,184 @@ const PaymentTypeScreen = (props: IPayment) => {
                         </Stack>
                     </Stack>
 
-                    <Select 
-                        placeholder="Pilih skema pembayaran"  
-                        selectedValue={paymentType} 
-                        onValueChange={itemValue => {
-                            setPaymentType(itemValue)
-                            setSelectedPaymentMethod('')
-                        }}
-                        dropdownIcon={
-                            <Stack
-                                direction='row'
-                                width='full'
-                                position='absolute'
-                                top='0'
-                                bottom='0'
-                                alignItems='center'
-                                justifyContent='space-between'
+                    <VStack marginTop='16px' space='8px'>
+                        <Text fontSize='12px' fontFamily='Poppins-SemiBold'>Skema Pembayaran</Text>
+                        <HStack space='8px'>
+                            <Pressable 
+                                borderColor={paymentType === 'non-cicilan' ? 'green.600' : 'gray.600'} 
+                                borderWidth='1px' 
+                                borderRadius='4px'
+                                backgroundColor={paymentType === 'non-cicilan' ? 'green.200' : 'white'}
+                                onPress={() => setPaymentType('non-cicilan')}
                             >
-                                <Stack></Stack>
-                                <Image
-                                    alt='IC_ARROW_DROPDOWN'
-                                    source={IC_ARROW_DROP_DOWN}
-                                    width='32px'
-                                    height='32px'
-                                    marginRight='16px'
-                                    tintColor='lancSurfaceLight'
-                                />
-                            </Stack>
-                        } 
-                    >
-                        <Select.Item label="Cicilan" value="cicilan" />
-                        <Select.Item label="Pembayaran Penuh" value="non-cicilan" />
-                    </Select>
+                                <Text 
+                                    fontSize='12px' 
+                                    marginX='12px' 
+                                    marginY='4px'
+                                    color={paymentType === 'non-cicilan' ? 'green.600' : 'gray.600'} 
+                                >Pembayaran Penuh</Text>
+                            </Pressable>
+                            <Pressable 
+                                borderColor={paymentType === 'cicilan' ? 'green.600' : 'gray.600'} 
+                                borderWidth='1px' 
+                                borderRadius='4px'
+                                backgroundColor={paymentType === 'cicilan' ? 'green.200' : 'white'}
+                                onPress={() => setPaymentType('cicilan')}
+                            >
+                                <Text 
+                                    fontSize='12px' 
+                                    marginX='12px' 
+                                    marginY='4px'
+                                    color={paymentType === 'cicilan' ? 'green.600' : 'gray.600'} 
+                                >Cicilan</Text>
+                            </Pressable>
+                        </HStack>
+                    </VStack>
 
                     {paymentType === 'cicilan' &&
-                        <Stack space='10px'>
-                            <VStack>
-                                <LInput 
-                                    label='Down Payment' 
-                                    type='number'
-                                />
+                        <Stack paddingBottom='70px'>
+                            <VStack 
+                                backgroundColor='warning.200' 
+                                padding='8px' 
+                                marginX='-10px'
+                                marginTop='16px'
+                            >
+                                <Flex
+                                    direction='row' 
+                                    alignItems='center' 
+                                    justifyContent='space-between'
+                                >
+                                    <Text fontSize='12px' fontFamily='Poppins-SemiBold'>Down Payment</Text>
+                                    <Text fontSize='12px' fontFamily='Poppins-SemiBold'>Rp. {blueprint?.data?.data?.down_payment?.total_amount?.toLocaleString('id')}</Text>
+                                </Flex>
                                 <Text 
-                                    color='#038103' 
+                                    color='warning.600' 
                                     fontSize='10px' 
                                     textAlign='right'
                                 >
                                     15% of Total Payment
                                 </Text>
                                 <Text 
-                                    color='gray.400' 
+                                    color='gray.600' 
                                     fontSize='10px' 
                                     textAlign='right'
                                 >
-                                    Sudah termasuk biaya administrasi booking sebesar Rp. 7.000
+                                    Sudah termasuk biaya administrasi booking sebesar Rp. {blueprint?.data?.data?.down_payment?.admin_fee?.toLocaleString('id')}
                                 </Text>
                             </VStack>
-                            <HStack space='10px'>
-                                <Flex width='50%'>
-                                    <LInput
-                                        label='Rencana Cicilan'
-                                        type='select'
-                                        options={[{label: '6x', value: '6x'}]}
-                                    />
-                                </Flex>
-                                <Flex width='50%'>
-                                    <LInput
-                                        label=' '
-                                        type='number'
-                                        options={[{label: '6x', value: '6x'}]}
-                                    />
-                                </Flex>
-                            </HStack>
-                            <LInput 
-                                label='Tanggal Pembayaran' 
-                                type='radio'
-                                options={[
-                                    { label: '2', value: '2' },
-                                    { label: '10', value: '10' },
-                                    { label: '25', value: '25' },
-                                    { label: '28', value: '28'}
-                                ]} 
-                            />
+                            <VStack marginTop='16px' space='8px'>
+                                <Text fontSize='12px' fontFamily='Poppins-SemiBold'>Banyak Cicilan</Text>
+                                <HStack space='8px'>
+                                    {blueprint && blueprint?.data?.data?.term_plan?.map((plan: any, index: number) => {
+                                        return (
+                                            <Pressable 
+                                                key={index}
+                                                borderColor={termPlan === plan?.value ? 'green.600' : 'gray.600'} 
+                                                borderWidth='1px' 
+                                                borderRadius='4px'
+                                                backgroundColor={termPlan === plan?.value ? 'green.200' : 'white'}
+                                                onPress={() => setTermPlan(plan?.value)}
+                                            >
+                                                <Text 
+                                                    fontSize='12px' 
+                                                    marginX='12px' 
+                                                    marginY='4px'
+                                                    color={termPlan === plan?.value ? 'green.600' : 'gray.600'} 
+                                                >{plan?.name}</Text>
+                                            </Pressable>
+                                        )
+                                    })}
+                                </HStack>
+                            </VStack>
+                            <VStack marginTop='16px' space='8px'>
+                                <Text fontSize='12px' fontFamily='Poppins-SemiBold'>Tanggal Pembayaran</Text>
+                                <HStack space='8px'>
+                                    {blueprint && blueprint?.data?.data?.payment_date?.map((plan: any, index: number) => {
+                                        return (
+                                            <Pressable 
+                                                key={index}
+                                                borderColor={paymentDate === plan?.value ? 'green.600' : 'gray.600'} 
+                                                borderWidth='1px' 
+                                                borderRadius='4px'
+                                                backgroundColor={paymentDate === plan?.value ? 'green.200' : 'white'}
+                                                onPress={() => setPaymentDate(plan?.value)}
+                                            >
+                                                <Text 
+                                                    fontSize='12px' 
+                                                    marginX='12px' 
+                                                    marginY='4px'
+                                                    color={paymentDate === plan?.value ? 'green.600' : 'gray.600'} 
+                                                >{plan?.name}</Text>
+                                            </Pressable>
+                                        )
+                                    })}
+                                </HStack>
+                            </VStack>
                             <Flex 
                                 marginX='-10px' 
                                 padding='10px' 
-                                backgroundColor='#c5e2c5'
+                                backgroundColor='green.200'
+                                marginTop='16px'
                             >
-                                <Text fontSize='10px' color='#038103'>Rp. 151.625 x 6 Bulan</Text>
-                                <Text fontSize='10px' color='gray.400'>Sudah termasuk biaya administrasi</Text>
+                                <Text fontSize='12px' color='green.600'>Rp. {blueprint?.data?.data?.terms[0]?.amount?.toLocaleString('id')} x {blueprint && blueprint?.data?.data?.terms?.length} Bulan</Text>
+                                <Text fontSize='10px' color='gray.600'>Sudah termasuk biaya administrasi</Text>
                             </Flex>
-                            <Text>Waktu Pembayaran</Text>
-                            <VStack marginX='-10px'>
-                                {[...Array(6)].map((cicilan: any, index: any) => {
-                                    return (
-                                        <HStack 
-                                            key={index} 
-                                            borderBottomColor='gray.400' 
-                                            borderBottomWidth='1px' 
-                                            padding='10px'
-                                            space='10px'
-                                            alignItems='center'
-                                        >
-                                            <Center 
-                                                rounded='full' 
-                                                borderColor='gray.400' 
-                                                borderWidth='1px'
-                                                height='30px'
-                                                width='30px'
+                            <VStack marginTop='16px'>
+                                <Text fontSize='12px' fontFamily='Poppins-SemiBold'>Waktu Pembayaran</Text>
+                                <VStack marginX='-10px'>
+                                    {blueprint?.data?.data?.terms?.map((cicilan: any, index: any) => {
+                                        return (
+                                            <HStack 
+                                                key={index} 
+                                                borderBottomColor='gray.400' 
+                                                borderBottomWidth='1px' 
+                                                padding='10px'
+                                                space='10px'
+                                                alignItems='center'
                                             >
-                                                <Text>{index+1}</Text>
-                                            </Center>
-                                            <Text>0{index+1} Juni 2021</Text>
-                                            <Text fontWeight='bold' marginLeft='auto'>Rp. 151.000</Text>
-                                        </HStack>
-                                    )
-                                })}
+                                                <Center 
+                                                    rounded='full' 
+                                                    borderColor='gray.400' 
+                                                    borderWidth='1px'
+                                                    height='20px'
+                                                    width='20px'
+                                                >
+                                                    <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{index+1}</Text>
+                                                </Center>
+                                                <Text fontSize='10px' fontFamily='Poppins-SemiBold'>{cicilan?.expected_date}</Text>
+                                                <Flex flexDirection='column' marginLeft='auto' alignItems='flex-end'>
+                                                    <Text fontFamily='Poppins-SemiBold' fontSize='12px' color='green.600'>Rp. {cicilan?.amount?.toLocaleString('id')}</Text>
+                                                    <Text fontSize='10px' color='orange.600'>Include admin fee Rp. {cicilan?.admin_fee?.toLocaleString('id')}</Text>
+                                                </Flex>
+                                            </HStack>
+                                        )
+                                    })}
+                                </VStack>
                             </VStack>
+                            <Flex 
+                                marginX='-10px' 
+                                padding='10px' 
+                                backgroundColor='green.200'
+                                marginTop='16px'
+                                alignItems='center'
+                                flexDirection='row'
+                                justifyContent='space-between'
+                            >
+                                <Text fontSize='12px' color='green.600'>Metode Pembayaran</Text>
+                                <Pressable onPress={() => actionSheetPaymentMethodDisclosure?.onOpen()}>
+                                    <Text fontSize='12px' color='gray.600'>
+                                        {
+                                            paymentMethodCicilan
+                                                ?   paymentMethodCicilan?.name
+                                                :   'Pilih'
+                                        }
+                                    </Text>
+                                </Pressable>
+                            </Flex>
                         </Stack>
                     }
 
-                    {paymentType &&
+                    {paymentType === 'non-cicilan' &&
                         <Stack paddingBottom='70px' space='10px'>
                             <Stack 
                                 backgroundColor='white' 
@@ -328,49 +412,77 @@ const PaymentTypeScreen = (props: IPayment) => {
                 </VStack>
             </ScrollView>
 
-            <Stack 
-                direction='row' 
-                justifyContent='space-between'
-                padding='10px'
-                backgroundColor='white'
-                alignItems='center'
-                position='absolute'
-                bottom='0px'
-                left='0px'
-                right='0px'
-                shadow='5'
-            >
-                <Stack>
-                    <Text fontFamily='Poppins-Light' fontSize='11px'>Total</Text>
-                    <Text 
-                        color='lancPrimaryLight' 
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='13px'
-                    >
-                        Rp. {transaction?.order?.total_price}
-                    </Text>
-                </Stack>
-                <Button 
-                    width='150px'
-                    isLoading={checkout?.isLoading}
-                    onPress={() => {
-                        checkout.mutate({
-                            transaction_id: transaction?.id,
-                            bank_code: selectedPaymentMethod,
-                        })
-                    }}
+            {
+                paymentType &&
+                <Stack 
+                    direction='row' 
+                    justifyContent='space-between'
+                    padding='10px'
+                    backgroundColor='white'
+                    alignItems='center'
+                    position='absolute'
+                    bottom='0px'
+                    left='0px'
+                    right='0px'
+                    shadow='5'
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='15px'
-                        color='white'
-                    >Konfirmasi</Text>
-                </Button>
-            </Stack>
+                    <Stack>
+                        <Text fontFamily='Poppins-Light' fontSize='11px'>Total</Text>
+                        <Text 
+                            color='lancPrimaryLight' 
+                            fontFamily='Poppins-SemiBold' 
+                            fontSize='13px'
+                        >
+                            Rp. {
+                                paymentType === 'non-cicilan'
+                                    ?   transaction?.order?.total_price?.toLocaleString('id')
+                                    :   blueprint?.data?.data?.down_payment?.total_amount?.toLocaleString('id')
+                            }
+                        </Text>
+                    </Stack>
+                    <Button 
+                        width='150px'
+                        isLoading={checkout?.isLoading || createInstallment?.isLoading}
+                        onPress={() => {
+                            if (paymentType === 'cicilan') {
+                                console.log({
+                                    termPlan,
+                                    paymentDate,
+                                    paymentMethodCicilan,
+                                })
+                                createInstallment?.mutate({
+                                    transaction_id: transaction?.id,
+                                    term_plan: termPlan,
+                                    payment_date: paymentDate,
+                                    bank_code: paymentMethodCicilan?.code,
+                                })
+                            } else {
+                                checkout.mutate({
+                                    transaction_id: transaction?.id,
+                                    bank_code: selectedPaymentMethod,
+                                })
+                            }
+                        }}
+                    >
+                        <Text
+                            fontFamily='Poppins-SemiBold' 
+                            fontSize='15px'
+                            color='white'
+                        >Konfirmasi</Text>
+                    </Button>
+                </Stack>
+            }
 
             <ActionSheetDetail
                 disclosure={actionSheetDetailDisclosure}
                 data={transaction}
+            />
+
+            <ActionSheetPaymentMethodCicilan
+                disclosure={actionSheetPaymentMethodDisclosure}
+                data={vas?.data?.data}
+                paymentMethodCicilan={paymentMethodCicilan}
+                setPaymentMethodCicilan={setPaymentMethodCicilan}
             />
         </Flex>
     )

@@ -1,4 +1,7 @@
 import React from 'react'
+import { format } from 'date-fns'
+import { id } from 'date-fns/locale'
+import { ROUTE_NAME } from '../../../router'
 import { IC_CONTENT_COPY, IMG_CHECKED } from '../../../assets'
 import { 
     Button, 
@@ -10,9 +13,6 @@ import {
     Text,
     useClipboard, 
 } from 'native-base'
-import { format } from 'date-fns'
-import { id } from 'date-fns/locale'
-import { ROUTE_NAME } from '../../../router'
 
 interface ITripCheckoutComplete {
     navigation?: any
@@ -22,7 +22,84 @@ interface ITripCheckoutComplete {
 const TripCheckoutComplete: React.FC<ITripCheckoutComplete> = (props: ITripCheckoutComplete) => {
     const { navigation, route } = props
     const { transaction } = route?.params
-    const { value, onCopy } = useClipboard()
+    const { onCopy } = useClipboard()
+
+    function handleGetPaymentScheme(data: any) {
+        return data?.order?.payment?.scheme
+    }
+
+    function handleGetPaymentMethod(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        return data?.order?.payment[paymentScheme]?.method
+    }
+
+    function handleGetExpirationDate(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const expirationDate = data?.order?.payment[paymentScheme][paymentMethod]?.expiration_date
+        switch(paymentScheme) {
+            case 'full_payment':
+                return format(new Date(expirationDate), 'dd LLLL yyyy, HH:mm', { locale: id }) + ' WIB'
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return format(new Date(payableInstallment?.expected_payment_date), 'dd LLLL yyyy, HH:mm', { locale: id }) + ' WIB'
+            default:
+                return ''
+        }
+    }
+
+    function handleGetFullPaymentMethod(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const bankCode = data?.order?.payment[paymentScheme][paymentMethod]?.bank_code
+        switch(paymentScheme) {
+            case 'full_payment':
+                return `${bankCode?.toUpperCase()} ${paymentMethod?.replace('_', ' ')?.toUpperCase()}`
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return `${payableInstallment[payableInstallment?.method]?.bank_code?.toUpperCase()} ${payableInstallment?.method?.replaceAll('_', ' ')?.toUpperCase()}`
+            default:
+                return ''
+        }
+    }
+
+    function handleGetExpectedAmount(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const expectedAmount = data?.order?.payment[paymentScheme][paymentMethod]?.expected_amount
+        switch(paymentScheme) {
+            case 'full_payment':
+                return expectedAmount
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return payableInstallment[payableInstallment?.method]?.expected_amount
+            default:
+                return ''
+        }
+    }
+
+    function handleGetAccountNumber(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+        const accountNumber = data?.order?.payment[paymentScheme][paymentMethod]?.account_number
+        switch(paymentScheme) {
+            case 'full_payment':
+                return accountNumber
+            case 'installment':
+                const installment = data?.order?.payment[paymentScheme]
+                const payableInstallment = installment?.find((x: any) => x?.method !== null && x?.payment_date === null)
+                if (!payableInstallment) return 'lunas'
+                return payableInstallment[payableInstallment?.method]?.account_number
+            default:
+                return ''
+        }
+    }
 
     return (
         <Flex flex='1' backgroundColor='lancBackgroundLight'>
@@ -52,7 +129,9 @@ const TripCheckoutComplete: React.FC<ITripCheckoutComplete> = (props: ITripCheck
                     >
                         <Stack>
                             <Text color='lancOutlineLight'>Batas Akhir Pembayaran</Text>
-                            <Text fontFamily='Poppins-SemiBold'>{format(new Date(transaction?.data?.order[transaction?.data?.order?.payment_method]?.expiration_date), 'EEEE, dd MMMM yyyy HH:mm', { locale: id })} WIB</Text>
+                            <Text fontFamily='Poppins-SemiBold'>
+                                {handleGetExpirationDate(transaction?.data)}
+                            </Text>
                         </Stack>
                         <Pressable>
 
@@ -61,7 +140,9 @@ const TripCheckoutComplete: React.FC<ITripCheckoutComplete> = (props: ITripCheck
                     <Stack direction='row' justifyContent='space-between'>
                         <Stack>
                             <Text color='lancOutlineLight'>Metode Pembayaran</Text>
-                            <Text fontFamily='Poppins-SemiBold'>{transaction?.data?.order[transaction?.data?.order?.payment_method]?.bank_code} {transaction?.data?.order?.payment_method?.replace('_', ' ')}</Text>
+                            <Text fontFamily='Poppins-SemiBold'>
+                                {handleGetFullPaymentMethod(transaction?.data)}
+                            </Text>
                         </Stack>
                     </Stack>
                     <Stack 
@@ -71,10 +152,12 @@ const TripCheckoutComplete: React.FC<ITripCheckoutComplete> = (props: ITripCheck
                     >
                         <Stack>
                             <Text color='lancOutlineLight'>Total Pembayaran</Text>
-                            <Text fontFamily='Poppins-SemiBold'>Rp. {transaction?.data?.order[transaction?.data?.order?.payment_method]?.expected_amount?.toLocaleString('id')}</Text>
+                            <Text fontFamily='Poppins-SemiBold'>
+                                {handleGetExpectedAmount(transaction?.data)}
+                            </Text>
                         </Stack>
                         <Pressable
-                            onPress={() => onCopy(`${transaction?.data?.order[transaction?.data?.order?.payment_method]?.expected_amount}`)}
+                            onPress={() => onCopy(`${handleGetExpectedAmount(transaction?.data)}`)}
                         >
                             <Stack 
                                 direction='row' 
@@ -103,10 +186,12 @@ const TripCheckoutComplete: React.FC<ITripCheckoutComplete> = (props: ITripCheck
                     >
                         <Stack>
                             <Text color='lancOutlineLight'>Nomor Virtual Account</Text>
-                            <Text fontFamily='Poppins-SemiBold'>{transaction?.data?.order[transaction?.data?.order?.payment_method]?.account_number}</Text>
+                            <Text fontFamily='Poppins-SemiBold'>
+                                {handleGetAccountNumber(transaction?.data)}
+                            </Text>
                         </Stack>
                         <Pressable
-                            onPress={() => onCopy(`${transaction?.data?.order[transaction?.data?.order?.payment_method]?.account_number}`)}
+                            onPress={() => onCopy(`${handleGetAccountNumber(transaction?.data)}`)}
                         >
                             <Stack 
                                 direction='row' 

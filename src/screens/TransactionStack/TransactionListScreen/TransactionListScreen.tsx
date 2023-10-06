@@ -141,21 +141,12 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
                                 <Pressable 
                                     key={index}
                                     onPress={() => {
-                                        if (transaction?.order?.status === 'DRAFT') {
-                                            navigation.navigate(ROUTE_NAME.TRIP_NAVIGATOR, { 
-                                                screen: ROUTE_NAME.TRIP_NAVIGATOR_COMPLETE_DATA,
-                                                params: {
-                                                    transactionId: transaction?.id,
-                                                },
-                                            })
-                                        } else {
-                                            navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR, { 
-                                                screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
-                                                params: {
-                                                    transactionId: transaction?.id,
-                                                },
-                                            })
-                                        }
+                                        navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR, { 
+                                            screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
+                                            params: {
+                                                transactionId: transaction?.id,
+                                            },
+                                        })
                                     }}
                                 >
                                     <Stack
@@ -177,22 +168,22 @@ const TransactionListScreen: React.FC<ITransactionListScreen> = (props: ITransac
                                                     color='gray.900'
                                                     textTransform='capitalize'
                                                 >{transaction?.transaction_type}</Text>
-                                                <Text 
+                                                {/* <Text 
                                                     fontSize='11px' 
                                                     fontFamily='Poppins-Regular' 
                                                     color='gray.600'
-                                                >{format(new Date(transaction?.created_at), 'dd MMM yyyy', { locale: id })}</Text>
+                                                >{format(new Date(transaction?.created_at), 'dd MMM yyyy', { locale: id })}</Text> */}
                                             </Stack>
                                             <Center 
                                                 rounded='lg' 
-                                                backgroundColor={generateBackgroundColorStatusTransaction(transaction)}
+                                                backgroundColor={transaction?.order?.status?.background}
                                                 padding='5px'
                                             >
                                                 <Text 
                                                     fontSize='11px' 
                                                     fontFamily='Poppins-Regular' 
-                                                    color={generateTextColorStatusTransaction(transaction)}
-                                                >{generateStatusTransaction(transaction)}</Text>
+                                                    color={transaction?.order?.status?.color}
+                                                >{transaction?.order?.status?.text}</Text>
                                             </Center>
                                         </Stack>
                                         <Divider />

@@ -39,13 +39,18 @@ interface ISearchTripScreen {
 
 const SearchTripScreen = (props: ISearchTripScreen) => {
     const { navigation, route } = props
+    const { place } = route.params
     const today = startOfToday()
 
     const [historySearchTrip, setHistorySearchTrip] = useState<any>(null)
     const [isDatePickerStartVisible, setIsDatePickerStartVisible] = useState(false)
 
     const [type, setType] = useState('')
-    const [destination, setDestination] = useState<any>('')
+    const [destination, setDestination] = useState<any>(
+        place
+            ?   { place_id: place?.place_id, name: place?.name }
+            :   ''
+    )
     const [group, setGroup] = useState('')
     const [tripStart, setTripStart] = useState<any>(null)
     const [participant, setParticipant] = useState('')

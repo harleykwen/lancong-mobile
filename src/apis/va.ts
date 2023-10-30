@@ -15,6 +15,12 @@ interface IInstallmentCreateApi {
     bank_code: any
 }
 
+interface IInstallmentPayApi {
+    transaction_id: string
+    term_id: string[]
+    bank_code: string
+}
+
 export async function bankListApi() {
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.VA.BANK_LIST)
@@ -51,5 +57,18 @@ export async function installmentCreateApi(props: IInstallmentCreateApi) {
         return response?.data
     } catch (error: any) {
         throw error?.data?.message??'Create installment error'
+    }
+}
+
+export async function installmentPayApi(props: IInstallmentPayApi) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).post(API_URL.VA.INSTALLMENT_PAY?.replace(':transactionId', props?.transaction_id), {
+            term_id: props?.term_id,
+            bank_code: props?.bank_code,
+        })
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Pay installment error'
     }
 }

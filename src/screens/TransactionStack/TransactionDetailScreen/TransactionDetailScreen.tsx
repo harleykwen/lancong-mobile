@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
+import React from 'react'
 import ActionSheetCancelTransaction from './components/ActionSheetCancelTransaction'
+import useCountDown from '../../../../hooks/useCountdown'
+import { ROUTE_NAME } from '../../../router'
 import { useQuery } from 'react-query'
 import { getTransactionDetailApi } from '../../../apis/transaction'
 import { id } from 'date-fns/locale'
 import { RefreshControl } from 'react-native-gesture-handler'
+import { format, isPast } from 'date-fns'
 import { IC_ARROW_BACK, IC_CONTENT_COPY } from '../../../assets'
-import { 
-    format, 
-    intervalToDuration, 
-    isPast, 
-} from 'date-fns'
 import { 
     Button,
     Flex, 
+    HStack, 
     Image, 
     Pressable, 
     ScrollView, 
@@ -22,6 +21,7 @@ import {
     useClipboard,
     useDisclose, 
 } from 'native-base'
+import InstallmentCard from './components/InstallmentCard'
 
 interface ITransactionDetailScreen {
     navigation?: any
@@ -31,13 +31,18 @@ interface ITransactionDetailScreen {
 const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITransactionDetailScreen) => {
     const { navigation, route } = props
     const { transactionId } = route?.params
+
     const { onCopy } = useClipboard()
     const cancelTransactionDisclosure = useDisclose()
+    const { hours, minutes, seconds, start: startCountdown, isCountdown } = useCountDown()
 
-    const [paymentCountdown, setPaymentCountdown] = useState('')
-    const [showCountdown, setShowCountdown] = useState(false)
-
-    const transactionDetail = useQuery(`transaction-detail-${transactionId}`, () => getTransactionDetailApi({ id: transactionId }))
+    const transactionDetail = useQuery(`transaction-detail-${transactionId}`, () => getTransactionDetailApi({ id: transactionId }), {
+        onSuccess: (resp: any) => {
+            console.log(resp?.data?.order)
+            if (resp?.data?.order?.payment?.scheme === 'installment') return
+            startCountdown(handleGetCountdownExpirationDate(resp?.data))
+        }
+    })
 
     function showButtonCancelVa() {
         if (!transactionDetail?.data) return false
@@ -48,63 +53,6 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
         return false
     }
 
-    function runIntervalPaymentCountdown() {
-        if (!transactionDetail?.data?.data) return
-        const paymentMethod = transactionDetail?.data?.data?.order?.payment_method
-        const timestamp = transactionDetail?.data?.data?.order[paymentMethod]?.expiration_date
-        const myPaymentCountdownInterval = setInterval(handleUpdatePaymentCountdownInterval, 1000)
-        function handleUpdatePaymentCountdownInterval() {
-            if (isPast(new Date(timestamp))) {
-                clearInterval(myPaymentCountdownInterval)
-                setShowCountdown(false)
-            } else {
-                setShowCountdown(true)
-                const interval = intervalToDuration({
-                    start: new Date(),
-                    end: new Date(timestamp)
-                })
-                const generatedInterval = handleGenerateInterval(interval)
-                setPaymentCountdown(generatedInterval)
-            }
-        }
-    }
-
-    function handleGenerateInterval(data: any) {
-        const hourArg = data?.hours
-        const minuteArg = data?.minutes
-        const secondArg = data?.seconds
-
-        let hour
-        let minute
-        let second
-
-        if (hourArg > 9) {
-            hour = `${hourArg}`
-        } else if (hourArg < 9 && hourArg > 0) {
-            hour = `0${hourArg}`
-        } else {
-            hour = '00'
-        }
-
-        if (minuteArg > 9) {
-            minute = `${minuteArg}`
-        } else if (minuteArg < 9 && minuteArg > 0) {
-            minute = `0${minuteArg}`
-        } else {
-            minute = '00'
-        }
-
-        if (secondArg > 9) {
-            second = `${secondArg}`
-        } else if (secondArg < 9 && secondArg > 0) {
-            second = `0${secondArg}`
-        } else {
-            second = '00'
-        }
-
-        return hour + ':' + minute + ':' + second
-    }
-
     function handleGetPaymentScheme(data: any) {
         return data?.order?.payment?.scheme
     }
@@ -112,18 +60,6 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
     function handleGetPaymentMethod(data: any) {
         const paymentScheme = handleGetPaymentScheme(data)
         return data?.order?.payment[paymentScheme]?.method
-    }
-
-    function handleGetTransactionDate(data: any) {
-        const paymentScheme = handleGetPaymentScheme(data)
-        switch(paymentScheme) {
-            case 'full_payment':
-                return ''
-            case 'installment':
-                return ''
-            default:
-                return ''
-        }
     }
 
     function handleGetTransactionType(data: any) {
@@ -173,6 +109,21 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                 return format(new Date(payableInstallment?.expected_payment_date), 'dd LLLL yyyy, HH:mm', { locale: id }) + ' WIB'
             default:
                 return ''
+        }
+    }
+
+    function handleGetCountdownExpirationDate(data: any) {
+        const paymentScheme = handleGetPaymentScheme(data)
+        const paymentMethod = handleGetPaymentMethod(data)
+
+        switch(paymentScheme) {
+            case 'installment':
+                const expirationDateInstallment = data?.order?.payment?.installment[0]?.expected_payment_date
+                return expirationDateInstallment
+            case 'full_payment':
+                if (data?.order?.payment?.full_payment?.status?.flag !== 'AWAITING_PAYMENT') return null
+                const expirationDate = data?.order?.payment[paymentScheme][paymentMethod]?.expiration_date
+                return expirationDate
         }
     }
 
@@ -227,9 +178,13 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
         }
     }
 
-    // useEffect(() => {
-    //     runIntervalPaymentCountdown()
-    // }, [transactionDetail?.data])
+    function handleGetTermPlan(data: any) {
+        return data?.order?.payment?.installment?.filter((x: any) => x?.type !== 'down_payment')?.length
+    }
+
+    function handleGetPaidTermPlan(data: any) {
+        return data?.order?.payment?.installment?.filter((x: any) => x?.payment_date !== null && x?.type !== 'down_payment')?.length
+    }
     
     return (
         <Flex flex='1' backgroundColor='gray.100'>
@@ -267,49 +222,31 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
             >
                 <Stack space='10px'>
                     {
-                        showCountdown &&
-                        <Stack 
+                        isCountdown && 
+                        <HStack 
                             padding='16px' 
                             space='16px' 
                             backgroundColor='lancBackgroundLight'
+                            alignItems='center' 
+                            justifyContent='space-between'
                         >
-                            <Stack direction='row' justifyContent='space-between'>
-                                <Stack>
-                                    <Text color='lancOutlineLight'>Selesaikan Pembayaran Dalam:</Text>
-                                    {/* {
-                                        transactionDetail?.isFetching
-                                            ?   <Skeleton height='22px' width='150px' />
-                                            :   <Center 
-                                                    paddingY='4px' 
-                                                    paddingX='8px' 
-                                                    backgroundColor='orange.400' 
-                                                    width='100px' 
-                                                    rounded='full'
-                                                >
-                                                    <Text fontFamily='Poppins-SemiBold' color='white'>{paymentCountdown}</Text>
-                                                </Center>
-                                    } */}
-                                </Stack>
-                            </Stack>
-                        </Stack>
+                            <Text color='lancOutlineLight'>Selesaikan Pembayaran Dalam</Text>
+                            <Flex
+                                alignItems='center'
+                                justifyContent='center'
+                                paddingY='4px'
+                                paddingX='16px'
+                                backgroundColor='red.600'
+                                borderRadius='full'
+                            >
+                                <Text
+                                    color='white'
+                                    fontFamily='Poppins-SemiBold'
+                                    fontSize='xs'
+                                >{hours < 10 ? `0${hours}` : hours}:{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}</Text>
+                            </Flex>
+                        </HStack>
                     }
-
-                    <Stack 
-                        padding='16px' 
-                        space='16px' 
-                        backgroundColor='lancBackgroundLight'
-                    >
-                        <Stack direction='row' justifyContent='space-between'>
-                            <Stack>
-                                <Text color='lancOutlineLight'>Tanggal Transaksi</Text>
-                                {/* {
-                                    transactionDetail?.isFetching
-                                        ?   <Skeleton height='22px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>{format(new Date(transactionDetail?.data?.data?.created_at), 'EEEE, dd MMMM yyyy HH:mm', { locale: id })} WIB</Text>
-                                } */}
-                            </Stack>
-                        </Stack>
-                    </Stack>
 
                     <Stack 
                         padding='16px' 
@@ -348,115 +285,187 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                         </Stack>
                     </Stack>
 
-                    <Stack 
-                        padding='16px' 
-                        space='16px' 
-                        backgroundColor='lancBackgroundLight'
-                    >
-                        <Stack direction='row' justifyContent='space-between'>
-                            <Stack>
-                                <Text color='lancOutlineLight'>Batas Akhir Pembayaran</Text>
-                                {
-                                    transactionDetail?.isFetching
-                                        ?   <Skeleton height='21.5px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>
-                                                {handleGetExpirationDate(transactionDetail?.data?.data)}
-                                            </Text>
-                                }
-                            </Stack>
-                            <Pressable>
+                    {
+                        handleGetPaymentScheme(transactionDetail?.data?.data) === 'installment' &&
+                        <Stack 
+                            padding='16px' 
+                            space='0px' 
+                            backgroundColor='lancBackgroundLight'
+                        >
+                            <Text>Informasi Termin</Text>
+                            <Text fontSize='xs' fontFamily='Poppins-SemiBold' textTransform='uppercase'>{handleGetTermPlan(transactionDetail?.data?.data)} Termin Total</Text>
+                            {
+                                handleGetTermPlan(transactionDetail?.data?.data) !== handleGetPaidTermPlan(transactionDetail?.data?.data)
+                                    ?   <Text fontSize='xs' fontFamily='Poppins-SemiBold' textTransform='uppercase'>{handleGetPaidTermPlan(transactionDetail?.data?.data)} Termin Sudah Dibayarkan</Text>
+                                    :   <Text fontSize='xs' fontFamily='Poppins-SemiBold' textTransform='uppercase'>Termin Sudah Dibayarkan Semua</Text>
+                            }
+                            {
+                                handleGetTermPlan(transactionDetail?.data?.data) !== handleGetPaidTermPlan(transactionDetail?.data?.data) &&
+                                <Button 
+                                    size='xs' 
+                                    width='150px' 
+                                    marginTop='8px'
+                                    onPress={() => {
+                                        navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR_INSTALLMENT_PAY, { 
+                                            screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
+                                            params: {
+                                                data: transactionDetail?.data?.data,
+                                            },
+                                        })
+                                    }}
+                                >Bayar Sekarang</Button>
+                            }
 
-                            </Pressable>
-                        </Stack>
-                        <Stack direction='row' justifyContent='space-between'>
-                            <Stack>
-                                <Text color='lancOutlineLight'>Metode Pembayaran</Text>
+                            <Stack marginTop='16px' space='8px'>
+                                <Text marginBottom='-8px'>Daftar Termin</Text>
                                 {
-                                    transactionDetail?.isFetching
-                                        ?   <Skeleton height='21.5px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>
-                                                {handleGetFullPaymentMethod(transactionDetail?.data?.data)}
-                                            </Text>
+                                    transactionDetail?.data?.data?.order?.payment?.installment?.map((v: any, i: number) => {
+                                        return (
+                                            <InstallmentCard 
+                                                key={i} 
+                                                data={v} 
+                                                index={i} 
+                                            />
+                                        )
+                                    })
                                 }
                             </Stack>
                         </Stack>
-                        <Stack
-                            alignItems='center'
-                            direction='row'
-                            justifyContent='space-between'
+                    }
+
+                    {
+                        handleGetPaymentScheme(transactionDetail?.data?.data) === 'full_payment' &&
+                        <Stack 
+                            padding='16px' 
+                            space='16px' 
+                            backgroundColor='lancBackgroundLight'
                         >
-                            <Stack>
-                                <Text color='lancOutlineLight'>Total Pembayaran</Text>
-                                {
-                                    transactionDetail?.isFetching
-                                        ?   <Skeleton height='21.5px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>
-                                                Rp. {handleGetExpectedAmount(transactionDetail?.data?.data)?.toLocaleString('id')}
-                                            </Text>
-                                }
-                            </Stack>
-                            <Pressable
-                                onPress={() => onCopy(`${handleGetExpectedAmount(transactionDetail?.data?.data)}`)}
-                            >
-                                <Stack
-                                    direction='row'
-                                    alignItems='center'
-                                    space='4px'
-                                >
-                                    <Text
-                                        color='lancPrimaryLight'
-                                        fontSize='12px'
-                                        fontFamily='Poppins-SemiBold'
-                                    >Salin</Text>
-                                    <Image
-                                        alt='IC_CONTENT_COPY'
-                                        source={IC_CONTENT_COPY}
-                                        width='24px'
-                                        height='24px'
-                                        tintColor='lancPrimaryLight'
-                                    />
+                            {
+                                transactionDetail?.data?.data?.order?.status?.flag === 'AWAITING_PAYMENT' &&
+                                <Stack direction='row' justifyContent='space-between'>
+                                    <Stack>
+                                        <Text color='lancOutlineLight'>Batas Akhir Pembayaran</Text>
+                                        {
+                                            transactionDetail?.isFetching
+                                                ?   <Skeleton height='21.5px' width='150px' />
+                                                :   <Text fontFamily='Poppins-SemiBold'>
+                                                        {handleGetExpirationDate(transactionDetail?.data?.data)}
+                                                    </Text>
+                                        }
+                                    </Stack>
+                                    <Pressable>
+
+                                    </Pressable>
                                 </Stack>
-                            </Pressable>
-                        </Stack>
-                        <Stack
-                            alignItems='center'
-                            direction='row'
-                            justifyContent='space-between'
-                        >
-                            <Stack>
-                                <Text color='lancOutlineLight'>Nomor Virtual Account</Text>
-                                {
-                                    transactionDetail?.isFetching
-                                        ?   <Skeleton height='22px' width='150px' />
-                                        :   <Text fontFamily='Poppins-SemiBold'>
-                                                {handleGetAccountNumber(transactionDetail?.data?.data)}
-                                            </Text>
-                                }
-                            </Stack>
-                            <Pressable
-                                onPress={() => onCopy(`${handleGetAccountNumber(transactionDetail?.data?.data)}`)}
-                            >
-                                <Stack
-                                    direction='row'
-                                    alignItems='center'
-                                    space='4px'
-                                >
-                                    <Text
-                                        color='lancPrimaryLight'
-                                        fontSize='12px'
-                                        fontFamily='Poppins-SemiBold'
-                                    >Salin</Text>
-                                    <Image
-                                        alt='IC_CONTENT_COPY'
-                                        source={IC_CONTENT_COPY}
-                                        width='24px'
-                                        height='24px'
-                                        tintColor='lancPrimaryLight'
-                                    />
+                            }
+                            {
+                                transactionDetail?.data?.data?.order?.status?.flag === 'PAID' &&
+                                <Stack direction='row' justifyContent='space-between'>
+                                    <Stack>
+                                        <Text color='lancOutlineLight'>Tanggal Transaksi</Text>
+                                        {
+                                            transactionDetail?.isFetching
+                                                ?   <Skeleton height='21.5px' width='150px' />
+                                                :   <Text fontFamily='Poppins-SemiBold'>
+                                                        {handleGetExpirationDate(transactionDetail?.data?.data)}
+                                                    </Text>
+                                        }
+                                    </Stack>
+                                    <Pressable>
+
+                                    </Pressable>
                                 </Stack>
-                            </Pressable>
+                            }
+                            <Stack direction='row' justifyContent='space-between'>
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Metode Pembayaran</Text>
+                                    {
+                                        transactionDetail?.isFetching
+                                            ?   <Skeleton height='21.5px' width='150px' />
+                                            :   <Text fontFamily='Poppins-SemiBold'>
+                                                    {handleGetFullPaymentMethod(transactionDetail?.data?.data)}
+                                                </Text>
+                                    }
+                                </Stack>
+                            </Stack>
+                            <Stack
+                                alignItems='center'
+                                direction='row'
+                                justifyContent='space-between'
+                            >
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Total Pembayaran</Text>
+                                    {
+                                        transactionDetail?.isFetching
+                                            ?   <Skeleton height='21.5px' width='150px' />
+                                            :   <Text fontFamily='Poppins-SemiBold'>
+                                                    Rp. {handleGetExpectedAmount(transactionDetail?.data?.data)?.toLocaleString('id')}
+                                                </Text>
+                                    }
+                                </Stack>
+                                <Pressable
+                                    onPress={() => onCopy(`${handleGetExpectedAmount(transactionDetail?.data?.data)}`)}
+                                >
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        space='4px'
+                                    >
+                                        <Text
+                                            color='lancPrimaryLight'
+                                            fontSize='12px'
+                                            fontFamily='Poppins-SemiBold'
+                                        >Salin</Text>
+                                        <Image
+                                            alt='IC_CONTENT_COPY'
+                                            source={IC_CONTENT_COPY}
+                                            width='24px'
+                                            height='24px'
+                                            tintColor='lancPrimaryLight'
+                                        />
+                                    </Stack>
+                                </Pressable>
+                            </Stack>
+                            <Stack
+                                alignItems='center'
+                                direction='row'
+                                justifyContent='space-between'
+                            >
+                                <Stack>
+                                    <Text color='lancOutlineLight'>Nomor Virtual Account</Text>
+                                    {
+                                        transactionDetail?.isFetching
+                                            ?   <Skeleton height='22px' width='150px' />
+                                            :   <Text fontFamily='Poppins-SemiBold'>
+                                                    {handleGetAccountNumber(transactionDetail?.data?.data)}
+                                                </Text>
+                                    }
+                                </Stack>
+                                <Pressable
+                                    onPress={() => onCopy(`${handleGetAccountNumber(transactionDetail?.data?.data)}`)}
+                                >
+                                    <Stack
+                                        direction='row'
+                                        alignItems='center'
+                                        space='4px'
+                                    >
+                                        <Text
+                                            color='lancPrimaryLight'
+                                            fontSize='12px'
+                                            fontFamily='Poppins-SemiBold'
+                                        >Salin</Text>
+                                        <Image
+                                            alt='IC_CONTENT_COPY'
+                                            source={IC_CONTENT_COPY}
+                                            width='24px'
+                                            height='24px'
+                                            tintColor='lancPrimaryLight'
+                                        />
+                                    </Stack>
+                                </Pressable>
+                            </Stack>
                         </Stack>
-                    </Stack>
+                    }
                 </Stack>
 
                 <Stack padding='16px'>

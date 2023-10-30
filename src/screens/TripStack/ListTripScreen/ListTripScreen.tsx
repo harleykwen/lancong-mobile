@@ -5,7 +5,7 @@ import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { useQuery } from 'react-query'
 import { tripSearchApi } from '../../../apis/trip'
-import { IC_ARROW_BACK } from '../../../assets'
+import { IC_ARROW_BACK, IL_TRIP_NOT_FOUND } from '../../../assets'
 import { 
     FlatList, 
     Flex, 
@@ -79,7 +79,7 @@ const ListTripScreen = (props: IListTripScreen) => {
 
             {
                 !tripList?.isFetching &&
-                tripList?.data &&
+                tripList?.data?.data?.length > 0 &&
                 <FlatList
                     keyExtractor={(trip: any) => trip.id}
                     data={tripList?.data?.data}
@@ -103,6 +103,25 @@ const ListTripScreen = (props: IListTripScreen) => {
                         )
                     })}
                 </Stack>
+            }
+
+            {
+                !tripList?.isFetching &&
+                tripList?.data?.data?.length === 0 &&
+                <Flex 
+                    flex='1'
+                    justifyContent='center'
+                    alignItems='center'
+                >
+                    <Image
+                        marginTop='-24'
+                        alt='IL_TRIP_NOT_FOUND'
+                        source={IL_TRIP_NOT_FOUND}
+                        width='250px'
+                        height='250px'
+                    /> 
+                    <Text fontFamily='Poppins-SemiBold'>Yaah, belum ada trip tersedia di tempat ini</Text>
+                </Flex>
             }
         </Flex>
     )

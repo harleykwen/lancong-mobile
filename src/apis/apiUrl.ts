@@ -33,7 +33,8 @@ const API_URL = {
     VA: {
         BANK_LIST: '/user/payment/virtual-account/banks',
         BLUEPRINT: '/user/trip/transaction/installment/:transactionId/blueprint',
-        INSTALLMENT_CREATE: 'user/trip/transaction/installment/:transactionId/virtual-account/create',
+        INSTALLMENT_CREATE: '/user/trip/transaction/installment/:transactionId/virtual-account/create',
+        INSTALLMENT_PAY: '/user/trip/transaction/installment/:transactionId/virtual-account/pay',
     },
     MASTER: {
         FACILITIES: '/master/trip/facilities',
@@ -41,6 +42,10 @@ const API_URL = {
     },
     USER: {
         PROFILE: '/user/profile',
+    },
+    HOME: {
+        ACTIVE_PAYMENT: '/user/home/active-payment',
+        TRIP_SUGGESTION: '/user/home/trip-suggestion',
     },
 }
 

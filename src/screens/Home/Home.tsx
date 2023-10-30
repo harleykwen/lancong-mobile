@@ -1,18 +1,15 @@
-import React, { useEffect, useState } from 'react'
-import * as Icon from "react-native-unicons"
+import React from 'react'
+import TripSuggestion from './components/TripSuggestion'
+import Categories from './components/Categories'
+import ActivePayment from './components/ActivePayment'
+import { RefreshControl } from 'react-native-gesture-handler'
+import { useQuery } from 'react-query'
+import { activePaymentApi, tripSuggestionApi } from '../../apis/home'
 import { 
-    Box,
-    Center, 
     Flex, 
-    HStack, 
-    Input, 
-    InputGroup, 
-    Pressable, 
+    ScrollView, 
     Text, 
-    VStack,
 } from 'native-base'
-import { getUserData } from '../../apis/config'
-import { ROUTE_NAME } from '../../router'
 
 interface IHome {
     navigation: any
@@ -21,91 +18,43 @@ interface IHome {
 const Home = (props: IHome) => {
     const { navigation } = props
 
-    const [user, setUser] = useState<any>(null)
-    
-    async function handleGetUserData() {
-        const user = await getUserData()
-        setUser(user)
-    }
-
-    useEffect(() => {
-        handleGetUserData()
-    }, [])
+    const tripSuggestion = useQuery('trip-suggestion', tripSuggestionApi)
+    const activePayment = useQuery('active-payment', activePaymentApi)
 
     return (
-        <Flex backgroundColor='white' flex={1}>
-            <VStack padding={'20px'} backgroundColor={'#038103'} space={'10px'}>
-                <InputGroup backgroundColor={'white'} rounded={'full'} alignItems='center'>
-                    <Box marginLeft='20px'>
-                        <Icon.Search color="black" width={16} />
-                    </Box>
-                    <Input 
-                        flex={1} 
-                        placeholder={'Mau ngelancong kemana?'} 
-                        backgroundColor={'white'}
-                        outlineColor='white'
-                        borderColor='white'
-                        focusOutlineColor='white'
-                        marginRight='20px'
+        <Flex backgroundColor='#f7f7f7' flex={1}>
+            <Flex 
+                direction='row' 
+                paddingX='24px'
+                paddingY='16px' 
+                alignItems='center' 
+                justifyContent='center'
+                borderBottomWidth='1px'
+                borderBottomColor='#e5e5e5'
+                backgroundColor='#ffffff'
+            >
+                <Text 
+                    fontSize='14px' 
+                    color='#101010' 
+                    fontFamily='Poppins-SemiBold'
+                >Beranda</Text>
+            </Flex>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                refreshControl={
+                    <RefreshControl
+                        refreshing={tripSuggestion?.isFetching || activePayment?.isFetching} 
+                        onRefresh={() => {
+                            tripSuggestion?.refetch()
+                            activePayment?.refetch()
+                        }} 
                     />
-                </InputGroup>
-                <HStack space={'10px'}>
-                    <Center flex={1} padding={'5px'} backgroundColor={'white'} rounded={'md'}>
-                        <Icon.User color="black" />
-                        <Text fontSize='12px'>{user?.name??''}</Text>
-                    </Center>
-                    <Center flex={1} padding={'5px'} backgroundColor={'white'} rounded={'md'}>
-                        <Icon.Wallet color="black" />
-                        <Text fontSize='12px'>IDR 0</Text>
-                    </Center>
-                    <Center flex={1} padding={'5px'} backgroundColor={'white'} rounded={'md'}>
-                        <Icon.Package color="black" />
-                        <Text fontSize='12px'>GOLD</Text>
-                    </Center>
-                </HStack>
-            </VStack>
-            <HStack shadow='1' space={'10px'} margin={'20px'} backgroundColor={'white'} padding={'10px'} rounded={'lg'}>
-                <VStack space={'5px'} justifyContent={'center'} alignItems={'center'} flex={1}>
-                    <Pressable 
-                        alignItems='center' 
-                        justifyContent='center' 
-                        height={'50px'} 
-                        width={'50px'} 
-                        rounded={'full'} 
-                        backgroundColor={'#131391'}
-                        onPress={() => navigation.push(ROUTE_NAME.TRIP_NAVIGATOR, { screen: ROUTE_NAME.TRIP_NAVIGATOR_SEARCH_STRIP })}
-                    >
-                        <Icon.Map color="white" />
-                    </Pressable>
-                    <Text fontSize='12px'>Trip</Text>
-                </VStack>
-                <VStack space={'5px'} justifyContent={'center'} alignItems={'center'} flex={1}>
-                    <Pressable 
-                        alignItems='center' 
-                        justifyContent='center' 
-                        height={'50px'} 
-                        width={'50px'} 
-                        rounded={'full'} 
-                        backgroundColor={'#e2c403'}
-                        onPress={() => navigation.push('search-hotel')}
-                    >
-                        <Icon.Building color="white" />
-                    </Pressable>
-                    <Text fontSize='12px'>Hotel</Text>
-                </VStack>
-                <VStack space={'5px'} justifyContent={'center'} alignItems={'center'} flex={1}>
-                    <Center height={'50px'} width={'50px'} rounded={'full'} backgroundColor={'#4ffc8e'}>
-                        <Icon.Plane color="white" />
-                    </Center>
-                    <Text fontSize='12px'>Pesawat</Text>
-                </VStack>
-                <VStack space={'5px'} justifyContent={'center'} alignItems={'center'} flex={1}>
-                    <Center height={'50px'} width={'50px'} rounded={'full'} backgroundColor={'#6eaf17'}>
-                        <Icon.Subway color="white" />
-                    </Center>
-                    <Text fontSize='12px'>Kereta</Text>
-                </VStack>
-            </HStack>
+                }
+            >
+                <Categories navigation={navigation} />
+                <ActivePayment navigation={navigation} activePayment={activePayment} />
+                <TripSuggestion navigation={navigation} tripSuggestion={tripSuggestion} />
+            </ScrollView>
         </Flex>
     )
 }

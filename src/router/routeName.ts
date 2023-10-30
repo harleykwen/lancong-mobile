@@ -41,6 +41,8 @@ export const ROUTE_NAME = {
     TRANSACTION_NAVIGATOR_LIST: 'Transaction-Navigator-List',
     TRANSACTION_NAVIGATOR_LIST_DRAFT: 'Transaction-Navigator-List-Draft',
     TRANSACTION_NAVIGATOR_DETAIL: 'Transaction-Navigator-Detail',   
+    TRANSACTION_NAVIGATOR_INSTALLMENT_PAY: 'Transaction-Navigator-Installment-Pay',   
+    TRANSACTION_NAVIGATOR_INSTALLMENT_COMPLETE: 'Transaction-Navigator-Installment-Complete',   
 
     // PROFILE NAVIGATOR
     PROFILE_NAVIGATOR_MY_PROFILE: 'Profile-Navigator-My-Profile',

@@ -5,6 +5,8 @@ import {
     TransactionDetailScreen, 
     TransactionListDraftScreen, 
     TransactionListScreen, 
+    TransactionInstallmentPay,
+    TransactionInstallmentCheckoutComplete,
 } from '../../screens/TransactionStack'
 
 const TransactionNavigator: React.FC = () => {
@@ -29,6 +31,16 @@ const TransactionNavigator: React.FC = () => {
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 
                 name={ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL} 
                 component={TransactionDetailScreen} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.SlideFromRightIOS }} 
+                name={ROUTE_NAME.TRANSACTION_NAVIGATOR_INSTALLMENT_PAY} 
+                component={TransactionInstallmentPay} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.SlideFromRightIOS }} 
+                name={ROUTE_NAME.TRANSACTION_NAVIGATOR_INSTALLMENT_COMPLETE} 
+                component={TransactionInstallmentCheckoutComplete} 
             />
         </Stack.Navigator>
     )

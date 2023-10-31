@@ -10,6 +10,7 @@ import {
     Text,
 } from 'native-base'
 import { 
+    IC_CHECK_CIRCLE,
     LOGO_BCA, 
     LOGO_BJB, 
     LOGO_BNI, 
@@ -56,8 +57,6 @@ const ActionSheetPaymentMethod: React.FC<IActionSheetPaymentMethod> = (props: IA
         }
     }
 
-    console.log(data)
-
     return (
         <Actionsheet isOpen={disclosure.isOpen} onClose={disclosure.onClose}>
             <Actionsheet.Content
@@ -65,10 +64,11 @@ const ActionSheetPaymentMethod: React.FC<IActionSheetPaymentMethod> = (props: IA
                 backgroundColor='lancBackgroundLight'
                 alignItems='flex-start'
             >
-                <Text fontFamily='Poppins-SemiBold' fontSize='15px'>Pilih Metode Pembayaran</Text>
+                <Text fontFamily='Poppins-SemiBold' fontSize='14px'>Pilih Metode Pembayaran</Text>
                 <ScrollView marginTop='16px'>
                     <Stack space='0px'>
                         {data?.map((va: any, index: number) => {
+                            if (!va?.is_activated) return
                             return (
                                 <Pressable 
                                     key={index} 
@@ -80,11 +80,11 @@ const ActionSheetPaymentMethod: React.FC<IActionSheetPaymentMethod> = (props: IA
                                     <Stack
                                         direction='row' 
                                         alignItems='center'
-                                        padding='12px'
+                                        paddingY='16px'
                                         width='100%'
                                         borderBottomWidth='1px'
                                         borderBottomColor='gray.300'
-                                        backgroundColor={paymentMethodCicilan?.code === va?.code ? 'lancPrimaryLight' : 'white'}
+                                        backgroundColor='white'
                                     >
                                         <Stack 
                                             direction='row' 
@@ -99,17 +99,28 @@ const ActionSheetPaymentMethod: React.FC<IActionSheetPaymentMethod> = (props: IA
                                             />
                                             <Text 
                                                 fontSize='12px' 
-                                                fontFamily='Poppins-Medium'
-                                                color={paymentMethodCicilan?.code === va?.code ? 'white' : 'black'}
+                                                fontFamily='Poppins-Regular'
+                                                color='black'
                                             >{va.name}</Text>
                                         </Stack>
-                                        <Icon 
-                                            as={MaterialIcons} 
-                                            name='chevron-right' 
-                                            marginLeft='auto'
-                                            color={paymentMethodCicilan?.code === va?.code ? 'white' : 'gray.600'} 
-                                            size='md' 
-                                        />
+                                        {
+                                            paymentMethodCicilan?.code === va?.code
+                                                ?   <Image
+                                                        alt='IC_CHECK_CIRCLE'
+                                                        source={IC_CHECK_CIRCLE}
+                                                        width='18px'
+                                                        height='18px'
+                                                        tintColor='#38a169'
+                                                        marginLeft='auto'
+                                                    />
+                                                :   <Icon 
+                                                        as={MaterialIcons} 
+                                                        name='chevron-right' 
+                                                        marginLeft='auto'
+                                                        color='black' 
+                                                        size='md' 
+                                                    />
+                                        }
                                     </Stack>
                                 </Pressable>
                             )

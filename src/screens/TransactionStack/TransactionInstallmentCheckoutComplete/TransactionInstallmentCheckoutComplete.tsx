@@ -3,7 +3,7 @@ import useCountDown from '../../../../hooks/useCountdown'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { ROUTE_NAME } from '../../../router'
-import { IC_CONTENT_COPY, IMG_CHECKED } from '../../../assets'
+import { IC_CONTENT_COPY, IL_PLAIN_CREDIT_CARD, IMG_CHECKED } from '../../../assets'
 import { 
     Button, 
     Flex, 
@@ -60,22 +60,29 @@ const TransactionInstallmentCheckoutComplete: React.FC<ITransactionInstallmentCh
 
     return (
         <Flex flex='1' backgroundColor='lancBackgroundLight'>
-            <Stack 
-                justifyContent='center' 
+            <Flex 
+                direction='row' 
+                paddingX='24px'
+                paddingY='16px' 
                 alignItems='center' 
-                padding='16px' 
-                shadow='3' 
-                backgroundColor='lancBackgroundLight'
+                justifyContent='center'
+                borderBottomWidth='1px'
+                borderBottomColor='#e5e5e5'
+                backgroundColor='#ffffff'
             >
-                <Text fontFamily='Poppins-SemiBold'>Menunggu Pembayaran</Text>
-            </Stack>
+                <Text 
+                    fontSize='14px' 
+                    color='#101010' 
+                    fontFamily='Poppins-SemiBold'
+                >Menunggu Pembayaran</Text>
+            </Flex>
             <ScrollView>
                 <Stack padding='16px' space='16px'>
                     <Image
-                        alt='IMG_CHECKED'
-                        source={IMG_CHECKED}
-                        width='112px'
-                        height='112px'
+                        alt='IL_PLAIN_CREDIT_CARD'
+                        source={IL_PLAIN_CREDIT_CARD}
+                        width='218px'
+                        height='82px'
                         marginX='auto'
                         marginTop='16px'
                     />
@@ -85,13 +92,13 @@ const TransactionInstallmentCheckoutComplete: React.FC<ITransactionInstallmentCh
                         justifyContent='space-between'
                     >
                         <Stack width='full'>
-                            <Text color='lancOutlineLight'>Batas Akhir Pembayaran</Text>
+                            <Text color='lancOutlineLight' fontSize='12px'>Batas Akhir Pembayaran</Text>
                             <Flex
                                 direction='row'
                                 alignItems='center'
                                 justifyContent='space-between'
                             >
-                                <Text fontFamily='Poppins-SemiBold'>
+                                <Text fontFamily='Poppins-SemiBold' fontSize='12px'>
                                     {handleGetExpirationDate()}
                                 </Text>
                                 {
@@ -107,7 +114,7 @@ const TransactionInstallmentCheckoutComplete: React.FC<ITransactionInstallmentCh
                                         <Text
                                             color='white'
                                             fontFamily='Poppins-SemiBold'
-                                            fontSize='xs'
+                                            fontSize='12px'
                                         >{hours < 10 ? `0${hours}` : hours}:{minutes < 10 ? `0${minutes}` : minutes}:{seconds < 10 ? `0${seconds}` : seconds}</Text>
                                     </Flex>
                                 }
@@ -119,8 +126,8 @@ const TransactionInstallmentCheckoutComplete: React.FC<ITransactionInstallmentCh
                     </Stack>
                     <Stack direction='row' justifyContent='space-between'>
                         <Stack>
-                            <Text color='lancOutlineLight'>Metode Pembayaran</Text>
-                            <Text fontFamily='Poppins-SemiBold'>
+                            <Text color='lancOutlineLight' fontSize='12px'>Metode Pembayaran</Text>
+                            <Text fontFamily='Poppins-SemiBold' fontSize='12px'>
                                 {handleGetFullPaymentMethod()}
                             </Text>
                         </Stack>
@@ -131,8 +138,8 @@ const TransactionInstallmentCheckoutComplete: React.FC<ITransactionInstallmentCh
                         justifyContent='space-between'
                     >
                         <Stack>
-                            <Text color='lancOutlineLight'>Total Pembayaran</Text>
-                            <Text fontFamily='Poppins-SemiBold'>
+                            <Text color='lancOutlineLight' fontSize='12px'>Total Pembayaran</Text>
+                            <Text fontFamily='Poppins-SemiBold' fontSize='12px'>
                                 Rp. {handleGetExpectedAmount()?.toLocaleString('id')}
                             </Text>
                         </Stack>
@@ -165,8 +172,8 @@ const TransactionInstallmentCheckoutComplete: React.FC<ITransactionInstallmentCh
                         justifyContent='space-between'
                     >
                         <Stack>
-                            <Text color='lancOutlineLight'>Nomor Virtual Account</Text>
-                            <Text fontFamily='Poppins-SemiBold'>
+                            <Text color='lancOutlineLight' fontSize='12px'>Nomor Virtual Account</Text>
+                            <Text fontFamily='Poppins-SemiBold' fontSize='12px'>
                                 {handleGetAccountNumber()}
                             </Text>
                         </Stack>
@@ -206,7 +213,12 @@ const TransactionInstallmentCheckoutComplete: React.FC<ITransactionInstallmentCh
                 space='8px'
             >
                 <Button 
-                    variant='lancOutline'
+                    padding='16px'
+                    borderRadius='50pxpx'
+                    _text={{
+                        fontSize: '12px',
+                        fontFamily: 'Poppins-SemiBold',
+                    }}
                     onPress={() => navigation?.replace(ROUTE_NAME.MAIN_NAVIGATOR, { screen: ROUTE_NAME.MAIN_NAVIGATOR_HOME })}
                 >
                     Kembali ke Beranda

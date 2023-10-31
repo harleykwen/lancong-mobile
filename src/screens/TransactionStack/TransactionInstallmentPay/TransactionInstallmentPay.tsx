@@ -1,13 +1,14 @@
 import React, { useState } from 'react'
 import ActionSheetPaymentMethod from './components/ActionSheetPaymentMethod'
-import { IC_ARROW_BACK } from '../../../assets'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { ROUTE_NAME } from '../../../router'
 import { bankListApi, installmentPayApi } from '../../../apis/va'
 import { useMutation, useQuery } from 'react-query'
+import { IC_ARROW_BACK, IC_CHEVRON_RIGHT } from '../../../assets'
 import { 
     Button,
+    Center,
     Checkbox,
     Flex, 
     Image, 
@@ -42,37 +43,45 @@ const TransactionInstallmentPay: React.FC<ITransactionInstallmentPay> = (props: 
         return data?.order?.payment?.installment?.filter((x: any) => x?.type !== 'down_payment')
     }
 
-    console.log(data)
-
     return (
-        <Flex flex='1' backgroundColor='gray.100'>
-            <Stack 
-                paddingY='16px'
+        <Flex flex='1' backgroundColor='#f7f7f7'>
+            <Flex 
+                direction='row' 
                 paddingX='24px'
-                shadow='3' 
-                backgroundColor='lancBackgroundLight'
-                direction='row'
-                alignItems='center'
-                space='16px'
+                paddingY='16px' 
+                alignItems='center' 
+                justifyContent='center'
+                borderBottomWidth='1px'
+                borderBottomColor='#e5e5e5'
+                backgroundColor='#ffffff'
+                position='relative'
             >
                 <Pressable 
+                    position='absolute'
+                    left='16px'
                     onPress={() => navigation?.goBack()}
                 >
                     <Image
                         alt='IC_ARROW_BACK'
                         source={IC_ARROW_BACK}
-                        width='24px'
-                        height='24px'
+                        width='18px'
+                        height='18px'
                         tintColor='lancOnBackgroundLight'
                     />
                 </Pressable>
-                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Pembayaran Termin</Text>
-            </Stack>
+                <Text 
+                    fontSize='14px' 
+                    color='#101010' 
+                    fontFamily='Poppins-SemiBold'
+                >Pembayaran Termin</Text>
+            </Flex>
 
-            <Stack backgroundColor='gray.100' marginTop='16px' space='16px'>
+            <Stack 
+                backgroundColor='gray.100' 
+                marginTop='16px' 
+                space='16px'
+            >
                 {handleGetTerm()?.map((v: any, i: number) => {
-                    console.log({v})
-
                     return (
                         <Pressable
                             key={i} 
@@ -82,7 +91,6 @@ const TransactionInstallmentPay: React.FC<ITransactionInstallmentPay> = (props: 
                                 setSelectedTerm(() => {
                                     return tempSelectedTerm
                                         ?.filter((x: any) => x?.payment_date === null)
-                                        // ?.map((v: any) => v?.id)
                                 })
                             }}
                         >
@@ -102,59 +110,125 @@ const TransactionInstallmentPay: React.FC<ITransactionInstallmentPay> = (props: 
                                 >{''}</Checkbox>
                                 <Flex
                                     padding='16px' 
-                                    backgroundColor='white' 
-                                    shadow='5'
-                                    rounded='md'
+                                    backgroundColor='#ffffff'
+                                    borderWidth='1px'
+                                    borderColor='#e5e5e5'
                                     flex='1'
                                 >
-                                    <Text>{data?.order?.trip?.name} {i+1}/{handleGetTerm()?.length}</Text>
-                                    <Text marginTop='8px' color='orange.600'>
+                                    <Center 
+                                        backgroundColor={v?.status?.background??'#FFFFFF'}
+                                        padding='4px'
+                                        marginRight='auto'
+                                    >
+                                        <Text 
+                                            fontSize='10px'
+                                            fontFamily='Poppins-Regular'
+                                            color={v?.status?.color}
+                                        >
+                                            {v?.status?.text?.toUpperCase()}
+                                        </Text>
+                                    </Center>
+                                    <Text 
+                                        fontSize='12px' 
+                                        fontFamily='Poppins-Regular'
+                                        marginTop='8px'
+                                    >{data?.order?.trip?.name} {i+1}/{handleGetTerm()?.length}</Text>
+                                    <Text 
+                                        marginTop='8px' 
+                                        color='orange.600'
+                                        fontSize='12px'
+                                        fontFamily='Poppins-Regular'
+                                    >
                                         Rp. {v?.amount?.toLocaleString('id')}
                                     </Text>
-                                    <Text color='blue.600'>
-                                        {format(new Date(v?.expected_payment_date), 'dd LLLL yyyy, HH:mm', { locale: id }) + ' WIB'}
-                                    </Text>
-                                    <Text 
-                                        marginTop='8px'
-                                        color={v?.payment_date === null ? 'red.600' : 'green.600'}
-                                    >
-                                        {
-                                            v?.payment_date === null
-                                                ?   'Belum Dibayar'
-                                                :   'Lunas'
-                                        }
-                                    </Text>
+                                    {
+                                        !v?.payment_date &&
+                                        <Text 
+                                            color='gray.400'
+                                            fontSize='12px'
+                                            fontFamily='Poppins-Regular'
+                                            marginTop='8px'
+                                        >
+                                            Bayar sebelum: {format(new Date(v?.expected_payment_date), 'dd MMM yyyy, HH:mm', { locale: id }) + ' WIB'}
+                                        </Text>
+                                    }
+                                    {
+                                        v?.payment_date
+                                            ?   <Stack>
+                                                    <Text 
+                                                        marginTop='8px'
+                                                        color='gray.400'
+                                                        fontSize='12px'
+                                                        fontFamily='Poppins-Regular'
+                                                    >
+                                                        Dibayar pada:
+                                                    </Text>
+                                                    <Text 
+                                                        color='gray.400'
+                                                        fontSize='12px'
+                                                        fontFamily='Poppins-Regular'
+                                                    >
+                                                        {format(new Date(v?.payment_date), 'dd MMM yyyy, HH:mm', { locale: id }) + ' WIB'}
+                                                    </Text>
+                                                </Stack>
+                                            :   null
+                                    }
                                 </Flex>
                             </Stack>
                         </Pressable>
                     )
                 })}
 
-                <Flex
-                    padding='16px'
-                    backgroundColor='green.200'
-                    marginTop='16px'
-                    alignItems='center'
-                    flexDirection='row'
-                    justifyContent='space-between'
-                >
-                    <Text fontSize='12px' color='green.600'>Metode Pembayaran</Text>
-                    <Pressable onPress={() => actoinSheetPaymentMethodDisclosure?.onOpen()}>
-                        <Text fontSize='12px' color='gray.600'>
-                            {
-                                paymentMethod
-                                    ? paymentMethod?.name
-                                    : 'Pilih'
-                            }
-                        </Text>
-                    </Pressable>
-                </Flex>
+                {
+                    selectedTerm?.length > 0 &&
+                    <Flex
+                        padding='16px'
+                        marginTop='16px'
+                        flexDirection='row'
+                        alignItems='flex-end'
+                        justifyContent='space-between'
+                        marginX='16px'
+                        backgroundColor='#ffffff'
+                        borderWidth='1px'
+                        borderColor='#e5e5e5'
+                    >
+                        <Stack>
+                            <Text fontSize='12px' color='gray.600'>Metode Pembayaran</Text>
+                            { paymentMethod && <Text fontSize='12px' fontFamily='Poppins-SemiBold'>{paymentMethod?.name}</Text>}
+                        </Stack>
+                        <Pressable onPress={() => actoinSheetPaymentMethodDisclosure?.onOpen()}>
+                            <Stack
+                                direction='row'
+                                space='0px'
+                                alignItems='center'
+                            >
+                                <Text 
+                                    fontSize='12px' 
+                                    color='black'
+                                >
+                                    {
+                                        paymentMethod
+                                            ? 'Ganti'
+                                            : 'Pilih'
+                                    }
+                                </Text>
+                                <Image
+                                    alt='IC_CHEVRON_RIGHT'
+                                    source={IC_CHEVRON_RIGHT}
+                                    width='18px'
+                                    height='18px'
+                                    tintColor='black'
+                                />
+                            </Stack>
+                        </Pressable>
+                    </Flex>
+                }
             </Stack>
 
             <Stack 
                 direction='row' 
                 justifyContent='space-between'
-                padding='10px'
+                padding='16px'
                 backgroundColor='white'
                 alignItems='center'
                 position='absolute'
@@ -164,11 +238,11 @@ const TransactionInstallmentPay: React.FC<ITransactionInstallmentPay> = (props: 
                 shadow='5'
             >
                 <Stack>
-                    <Text fontFamily='Poppins-Light' fontSize='11px'>Total</Text>
+                    <Text fontFamily='Poppins-Regular' fontSize='12px'>Total</Text>
                     <Text 
-                        color='lancPrimaryLight' 
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='13px'
+                        color='orange.600' 
+                        fontFamily='Poppins-Regular' 
+                        fontSize='12px'
                     >
                         Rp. 
                         {
@@ -180,9 +254,14 @@ const TransactionInstallmentPay: React.FC<ITransactionInstallmentPay> = (props: 
                 </Stack>
                 <Button 
                     isDisabled={selectedTerm?.length === 0 || paymentMethod === null}
-                    size='lg'
+                    padding='12px'
+                    borderRadius='0px'
                     width='150px'
                     isLoading={pay?.isLoading}
+                    _text={{
+                        fontSize: '12px',
+                        fontFamily: 'Poppins-SemiBold'
+                    }}
                     onPress={() => {
                         pay?.mutate({
                             transaction_id: data?.id,
@@ -191,11 +270,7 @@ const TransactionInstallmentPay: React.FC<ITransactionInstallmentPay> = (props: 
                         })
                     }}
                 >
-                    <Text
-                        fontFamily='Poppins-SemiBold' 
-                        fontSize='12px'
-                        color='white'
-                    >Konfirmasi</Text>
+                    Konfirmasi
                 </Button>
             </Stack>
 

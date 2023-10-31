@@ -7,7 +7,7 @@ import { getTransactionDetailApi } from '../../../apis/transaction'
 import { id } from 'date-fns/locale'
 import { RefreshControl } from 'react-native-gesture-handler'
 import { format, isPast } from 'date-fns'
-import { IC_ARROW_BACK, IC_CONTENT_COPY } from '../../../assets'
+import { IC_ARROW_BACK, IC_CHECK_CIRCLE, IC_CONTENT_COPY, IC_INFO } from '../../../assets'
 import { 
     Button,
     Flex, 
@@ -185,29 +185,46 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
     function handleGetPaidTermPlan(data: any) {
         return data?.order?.payment?.installment?.filter((x: any) => x?.payment_date !== null && x?.type !== 'down_payment')?.length
     }
+
+    function handleGetIsWaitingPaymentExist(data: any) {
+        const waitingPayment = data?.order?.payment?.installment?.find((v: any) => v?.status?.flag === 'AWAITING_PAYMENT')
+        console.log('waiting payment: ', waitingPayment)
+        if (waitingPayment) return true
+        else return false
+    }
     
     return (
-        <Flex flex='1' backgroundColor='gray.100'>
-            <Stack 
-                paddingY='16px'
+        <Flex flex='1' backgroundColor='#f7f7f7'>
+            <Flex 
+                direction='row' 
                 paddingX='24px'
-                shadow='3' 
-                backgroundColor='lancBackgroundLight'
-                direction='row'
-                alignItems='center'
-                space='16px'
+                paddingY='16px' 
+                alignItems='center' 
+                justifyContent='center'
+                borderBottomWidth='1px'
+                borderBottomColor='#e5e5e5'
+                backgroundColor='#ffffff'
+                position='relative'
             >
-                <Pressable onPress={() => navigation?.goBack()}>
+                <Pressable 
+                    position='absolute'
+                    left='16px'
+                    onPress={() => navigation?.goBack()}
+                >
                     <Image
                         alt='IC_ARROW_BACK'
                         source={IC_ARROW_BACK}
-                        width='24px'
-                        height='24px'
+                        width='18px'
+                        height='18px'
                         tintColor='lancOnBackgroundLight'
                     />
                 </Pressable>
-                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Detail Transaksi</Text>
-            </Stack>
+                <Text 
+                    fontSize='14px' 
+                    color='#101010' 
+                    fontFamily='Poppins-SemiBold'
+                >Detail Transaksi</Text>
+            </Flex>
 
             <ScrollView
                 refreshControl={
@@ -254,31 +271,42 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                         backgroundColor='lancBackgroundLight'
                     >
                         <Stack>
-                            <Text>Tipe Transaksi</Text>
+                            <Text fontSize='12px'>Tipe Transaksi</Text>
                             {
                                 transactionDetail?.isFetching
-                                    ?   <Skeleton height='22px' width='150px' />
-                                    :   <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>
+                                    ?   <Skeleton height='18px' width='150px' />
+                                    :   <Text 
+                                            fontFamily='Poppins-SemiBold' 
+                                            textTransform='uppercase'
+                                            fontSize='12px'
+                                        >
                                             {handleGetTransactionType(transactionDetail?.data?.data)}
                                         </Text>
                             }
                         </Stack>
                         <Stack>
-                            <Text>Grup</Text>
+                            <Text fontSize='12px'>Grup</Text>
                             {
                                 transactionDetail?.isFetching
-                                    ?   <Skeleton height='20.5px' width='150px' />
-                                    :   <Text fontFamily='Poppins-SemiBold' textTransform='uppercase'>
+                                    ?   <Skeleton height='18px' width='150px' />
+                                    :   <Text 
+                                            fontFamily='Poppins-SemiBold' 
+                                            textTransform='uppercase'
+                                            fontSize='12px'
+                                        >
                                             {handleGetGroup(transactionDetail?.data?.data)}
                                         </Text>
                             }
                         </Stack>
                         <Stack>
-                            <Text>Nama Trip</Text>
+                            <Text fontSize='12px'>Nama Trip</Text>
                             {
                                 transactionDetail?.isFetching
-                                    ?   <Skeleton height='20.5px' width='150px' />
-                                    :   <Text fontFamily='Poppins-SemiBold'>
+                                    ?   <Skeleton height='18px' width='150px' />
+                                    :   <Text 
+                                            fontFamily='Poppins-SemiBold'
+                                            fontSize='12px'
+                                        >
                                             {handleGetTripName(transactionDetail?.data?.data)}
                                         </Text>
                             }
@@ -292,32 +320,53 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                             space='0px' 
                             backgroundColor='lancBackgroundLight'
                         >
-                            <Text>Informasi Termin</Text>
-                            <Text fontSize='xs' fontFamily='Poppins-SemiBold' textTransform='uppercase'>{handleGetTermPlan(transactionDetail?.data?.data)} Termin Total</Text>
-                            {
-                                handleGetTermPlan(transactionDetail?.data?.data) !== handleGetPaidTermPlan(transactionDetail?.data?.data)
-                                    ?   <Text fontSize='xs' fontFamily='Poppins-SemiBold' textTransform='uppercase'>{handleGetPaidTermPlan(transactionDetail?.data?.data)} Termin Sudah Dibayarkan</Text>
-                                    :   <Text fontSize='xs' fontFamily='Poppins-SemiBold' textTransform='uppercase'>Termin Sudah Dibayarkan Semua</Text>
-                            }
-                            {
-                                handleGetTermPlan(transactionDetail?.data?.data) !== handleGetPaidTermPlan(transactionDetail?.data?.data) &&
-                                <Button 
-                                    size='xs' 
-                                    width='150px' 
-                                    marginTop='8px'
-                                    onPress={() => {
-                                        navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR_INSTALLMENT_PAY, { 
-                                            screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
-                                            params: {
-                                                data: transactionDetail?.data?.data,
-                                            },
-                                        })
-                                    }}
-                                >Bayar Sekarang</Button>
-                            }
+                            <Stack 
+                                direction='row' 
+                                space='4px' 
+                                alignItems='center'
+                            >
+                                <Image
+                                    alt='IC_INFO'
+                                    source={IC_INFO}
+                                    width='18px'
+                                    height='18px'
+                                    tintColor='#3182ce'
+                                />
+                                <Text 
+                                    fontSize='12px' 
+                                    fontFamily='Poppins-Regular' 
+                                    textTransform='uppercase'
+                                >{handleGetTermPlan(transactionDetail?.data?.data)} Termin Total</Text>
+                            </Stack>
+                            <Stack 
+                                direction='row' 
+                                space='4px' 
+                                alignItems='center'
+                                marginTop='4px'
+                            >
+                                <Image
+                                    alt='IC_CHECK_CIRCLE'
+                                    source={IC_CHECK_CIRCLE}
+                                    width='18px'
+                                    height='18px'
+                                    tintColor='#38a169'
+                                />
+                                {
+                                    handleGetTermPlan(transactionDetail?.data?.data) !== handleGetPaidTermPlan(transactionDetail?.data?.data)
+                                        ?   <Text 
+                                                fontSize='12px' 
+                                                fontFamily='Poppins-Regular' 
+                                                textTransform='uppercase'
+                                            >{handleGetPaidTermPlan(transactionDetail?.data?.data)} Termin Sudah Dibayarkan</Text>
+                                        :   <Text 
+                                                fontSize='12px' 
+                                                fontFamily='Poppins-Regular' 
+                                                textTransform='uppercase'
+                                            >Termin Sudah Dibayarkan Semua</Text>
+                                }
+                            </Stack>
 
                             <Stack marginTop='16px' space='8px'>
-                                <Text marginBottom='-8px'>Daftar Termin</Text>
                                 {
                                     transactionDetail?.data?.data?.order?.payment?.installment?.map((v: any, i: number) => {
                                         return (
@@ -330,6 +379,29 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                     })
                                 }
                             </Stack>
+
+                            {
+                                handleGetTermPlan(transactionDetail?.data?.data) !== handleGetPaidTermPlan(transactionDetail?.data?.data) &&
+                                handleGetIsWaitingPaymentExist(transactionDetail?.data?.data) === false
+                                    ?   <Button 
+                                            padding='16px'
+                                            marginTop='16px'
+                                            borderRadius='0px'
+                                            _text={{
+                                                fontSize: '12px',
+                                                fontFamily: 'Poppins-SemiBold'
+                                            }}
+                                            onPress={() => {
+                                                navigation.navigate(ROUTE_NAME.TRANSACTION_NAVIGATOR_INSTALLMENT_PAY, { 
+                                                    screen: ROUTE_NAME.TRANSACTION_NAVIGATOR_DETAIL,
+                                                    params: {
+                                                        data: transactionDetail?.data?.data,
+                                                    },
+                                                })
+                                            }}
+                                        >Bayar Sekarang</Button>
+                                    :   null
+                            }
                         </Stack>
                     }
 
@@ -468,9 +540,12 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                     }
                 </Stack>
 
-                <Stack padding='16px'>
-                    {showButtonCancelVa() && <Button colorScheme='lancError' onPress={cancelTransactionDisclosure?.onOpen}>Batalkan Pesanan</Button>}
-                </Stack>
+                {showButtonCancelVa()
+                    ?   <Stack padding='16px'>
+                            <Button colorScheme='lancError' onPress={cancelTransactionDisclosure?.onOpen}>Batalkan Pesanan</Button>
+                        </Stack>
+                    :   null
+                }
             </ScrollView>
 
             <ActionSheetCancelTransaction 

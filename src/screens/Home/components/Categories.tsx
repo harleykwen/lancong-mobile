@@ -44,12 +44,12 @@ const Categories: React.FC<TCategories> = (props: TCategories) => {
             onPress: () => null,
         },
         {
-            label: 'Kereta',
+            label: 'Pesawat',
             icon: <Icon.Plane color="#006e01" />,
             onPress: () => null,
         },
         {
-            label: 'Pesawat',
+            label: 'Kereta',
             icon: <Icon.Subway color="#006e01" />,
             onPress: () => null,
         },

@@ -51,7 +51,7 @@ const TripSuggestion: React.FC<TTripSuggestion> = (props: TTripSuggestion) => {
                                     >
                                         <Skeleton height={PLACE_WIDTH * 1.5} width={PLACE_WIDTH} />
                                         <Skeleton 
-                                            height='12px' 
+                                            height='18px' 
                                             width={PLACE_WIDTH / 3} 
                                             margin='8px' 
                                         />

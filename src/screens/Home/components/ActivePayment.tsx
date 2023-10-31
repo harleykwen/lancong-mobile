@@ -19,7 +19,7 @@ const ActivePayment: React.FC<TActivePayment> = (props: TActivePayment) => {
     const { hours, minutes, seconds, start: startCountdown, isCountdown } = useCountDown()
 
     useEffect(() => {
-        startCountdown(activePayment?.data.data?.expiration_date)
+        startCountdown(activePayment?.data?.data?.expiration_date)
     }, [activePayment])
 
     if (!activePayment?.isFetching && activePayment?.data?.data && isCountdown) return (

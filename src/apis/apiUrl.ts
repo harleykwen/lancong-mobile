@@ -29,6 +29,7 @@ const API_URL = {
         GET_ALL_DRAFT: '/user/transaction/draft',
         DRAFT_DETAIL: '/user/transaction/draft/:transactionId',
         VA_CANCEL: '/user/transaction/:transactionId/payment/virtual-account/cancel',
+        RENEWAL_FULL_PAYMENT_VA: '/user/transaction/:transactionId/full-payment/virtual-account/renew'
     },
     VA: {
         BANK_LIST: '/user/payment/virtual-account/banks',

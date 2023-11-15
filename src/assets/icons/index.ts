@@ -32,6 +32,7 @@ const IC_INFO = require('./ic_info.png')
 const IC_THREE_DOTS_VERTICAL = require('./ic_three_dots_vertical.png')
 const IC_CONFIRMATION_NUMBER = require('./ic_confirmation_number.png')
 const IC_CHECK_CIRCLE = require('./check_circle.png')
+const IC_VERIFIED = require('./ic_verified.png')
 
 export {
     IC_EMAIL,
@@ -68,4 +69,5 @@ export {
     IC_THREE_DOTS_VERTICAL,
     IC_CONFIRMATION_NUMBER,
     IC_CHECK_CIRCLE,
+    IC_VERIFIED,
 }

@@ -41,11 +41,11 @@ const MainNavigator: React.FC = () => {
                 component={ECardScreen} 
                 options={{ tabBarLabel: 'E Card', tabBarIcon: IC_CONFIRMATION_NUMBER }}
             />
-            <Tab.Screen 
+            {/* <Tab.Screen 
                 name={ROUTE_NAME.MAIN_NAVIGATOR_CHAT} 
                 component={Chat} 
                 options={{ tabBarLabel: `${t('common:bottom_tabs_chat')}`, tabBarIcon: IC_CHAT }}
-            />
+            /> */}
             <Tab.Screen 
                 name={ROUTE_NAME.MAIN_NAVIGATOR_PROFILE} 
                 component={ProfileScreen} 

@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
-import { IC_CONTENT_COPY } from '../../../../assets'
+import { IC_CHEVRON_RIGHT, IC_CONTENT_COPY } from '../../../../assets'
 import { 
     Actionsheet, 
+    Button, 
     Flex, 
     HStack, 
     Image, 
@@ -13,18 +14,41 @@ import {
     useClipboard, 
     useDisclose, 
 } from 'native-base'
+import { useMutation, useQuery } from 'react-query'
+import { bankListApi } from '../../../../apis/va'
+import ActionSheetPaymentMethod from './ActionSheetPaymentMethod'
+import { renewalFullPaymentVaApi } from '../../../../apis/transaction'
+import { ROUTE_NAME } from '../../../../router'
 
 type TInstallmentCard = {
     data: any
     index: number
+    navigation: any
 }
 
 const InstallmentCard: React.FC<TInstallmentCard> = (props: TInstallmentCard) => {
-    const { data, index } = props
+    const { 
+        data, 
+        index, 
+        navigation, 
+    } = props
 
     const actionSheetDetail = useDisclose()
+    const actoinSheetPaymentMethodDisclosure = useDisclose()
     const { onCopy } = useClipboard()
 
+    const [isGoingRenewal, setIsGoingRenewal] = useState<boolean>(false)
+    const [paymentMethod, setPaymentMethod] = useState<any>(null)
+
+    const vas = useQuery('list-va', bankListApi)
+    const renewal = useMutation(renewalFullPaymentVaApi, {
+        onSuccess: (resp: any) => {
+            navigation?.replace(ROUTE_NAME.TRANSACTION_NAVIGATOR_INSTALLMENT_COMPLETE, { transaction: resp })
+        }
+    })
+
+    console.log({data})
+    
     return (
         <Pressable
             onPress={() => {
@@ -59,7 +83,7 @@ const InstallmentCard: React.FC<TInstallmentCard> = (props: TInstallmentCard) =>
                     fontFamily='Poppins-Regular' 
                     color='orange.600' 
                     fontSize='12px'
-                >Rp. {data?.amount?.toLocaleString('id')}</Text>
+                >Rp. {data?.total_amount?.toLocaleString('id')}</Text>
             </Flex>
 
             <Actionsheet isOpen={actionSheetDetail?.isOpen} onClose={actionSheetDetail?.onClose}>
@@ -111,7 +135,8 @@ const InstallmentCard: React.FC<TInstallmentCard> = (props: TInstallmentCard) =>
                         </Stack>
 
                         {
-                            data?.status?.flag !== 'PAID' &&
+                            data?.status?.flag !== 'PAID' ||
+                            data?.status?.flag?.toUpperCase() !== 'EXPIRED' &&
                             <Stack width='full'>
                                 <Text fontSize='12px' color='lancOutlineLight'>Nomor Virtual Account</Text>
                                 <HStack alignItems='center' justifyContent='space-between'>
@@ -170,9 +195,85 @@ const InstallmentCard: React.FC<TInstallmentCard> = (props: TInstallmentCard) =>
                                 </Text>
                             </Stack>
                         }
+
+                        {
+                            data?.status?.flag?.toUpperCase() === 'EXPIRED' &&
+                            isGoingRenewal 
+                                ?   <Flex
+                                        padding='16px'
+                                        flexDirection='row'
+                                        alignItems='flex-end'
+                                        justifyContent='space-between'
+                                        backgroundColor='#ffffff'
+                                        borderWidth='1px'
+                                        borderColor='#e5e5e5'
+                                    >
+                                        <Stack>
+                                            <Text fontSize='12px' color='gray.600'>Metode Pembayaran</Text>
+                                            { paymentMethod && <Text fontSize='12px' fontFamily='Poppins-SemiBold'>{paymentMethod?.name}</Text>}
+                                        </Stack>
+                                        <Pressable onPress={() => actoinSheetPaymentMethodDisclosure?.onOpen()}>
+                                            <Stack
+                                                direction='row'
+                                                space='0px'
+                                                alignItems='center'
+                                            >
+                                                <Text 
+                                                    fontSize='12px' 
+                                                    color='black'
+                                                >
+                                                    {
+                                                        paymentMethod
+                                                            ? 'Ganti'
+                                                            : 'Pilih'
+                                                    }
+                                                </Text>
+                                                <Image
+                                                    alt='IC_CHEVRON_RIGHT'
+                                                    source={IC_CHEVRON_RIGHT}
+                                                    width='18px'
+                                                    height='18px'
+                                                    tintColor='black'
+                                                />
+                                            </Stack>
+                                        </Pressable>
+                                    </Flex>
+                                :   null
+                        }
+
+                        {
+                            data?.status?.flag?.toUpperCase() === 'EXPIRED'
+                                ?   <Button 
+                                        size='lg' 
+                                        _text={{ fontSize: '12px' }}
+                                        isDisabled={isGoingRenewal && !paymentMethod}
+                                        isLoading={renewal?.isLoading}
+                                        onPress={() => {
+                                            if (isGoingRenewal) {
+                                                // renewal?.mutate({
+                                                //     full_payment_id: data?.payment_id,
+                                                //     payment_id: data?.payment_id,
+                                                //     bank_code: paymentMethod?.code,
+                                                // })
+                                            } else {
+                                                setIsGoingRenewal(true)
+                                            }
+                                        }}
+                                    >
+                                        {isGoingRenewal ? 'Perbarui Sekarang' : 'Perbarui'}
+                                    </Button>
+                                :   null
+                        }
                     </Stack>
                 </Actionsheet.Content>
             </Actionsheet>
+
+            <ActionSheetPaymentMethod
+                disclosure={actoinSheetPaymentMethodDisclosure}
+                data={vas?.data?.data}
+                paymentMethodCicilan={paymentMethod}
+                setPaymentMethodCicilan={setPaymentMethod}
+            />
         </Pressable>
     )
 }

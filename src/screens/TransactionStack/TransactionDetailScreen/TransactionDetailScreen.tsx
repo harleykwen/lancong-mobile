@@ -1,13 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import ActionSheetCancelTransaction from './components/ActionSheetCancelTransaction'
 import useCountDown from '../../../../hooks/useCountdown'
 import { ROUTE_NAME } from '../../../router'
-import { useQuery } from 'react-query'
-import { getTransactionDetailApi } from '../../../apis/transaction'
+import { useMutation, useQuery } from 'react-query'
+import { getTransactionDetailApi, renewalFullPaymentVaApi } from '../../../apis/transaction'
 import { id } from 'date-fns/locale'
 import { RefreshControl } from 'react-native-gesture-handler'
 import { format, isPast } from 'date-fns'
-import { IC_ARROW_BACK, IC_CHECK_CIRCLE, IC_CONTENT_COPY, IC_INFO } from '../../../assets'
+import { IC_ARROW_BACK, IC_CHECK_CIRCLE, IC_CHEVRON_RIGHT, IC_CONTENT_COPY, IC_INFO } from '../../../assets'
 import { 
     Button,
     Flex, 
@@ -22,6 +22,8 @@ import {
     useDisclose, 
 } from 'native-base'
 import InstallmentCard from './components/InstallmentCard'
+import { bankListApi } from '../../../apis/va'
+import ActionSheetPaymentMethod from './components/ActionSheetPaymentMethod'
 
 interface ITransactionDetailScreen {
     navigation?: any
@@ -34,15 +36,28 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
 
     const { onCopy } = useClipboard()
     const cancelTransactionDisclosure = useDisclose()
+    const actoinSheetPaymentMethodDisclosure = useDisclose()
     const { hours, minutes, seconds, start: startCountdown, isCountdown } = useCountDown()
 
-    const transactionDetail = useQuery(`transaction-detail-${transactionId}`, () => getTransactionDetailApi({ id: transactionId }), {
+    const [isGoingRenewal, setIsGoingRenewal] = useState<boolean>(false)
+    const [paymentMethod, setPaymentMethod] = useState<any>(null)
+
+    const renewal = useMutation(renewalFullPaymentVaApi, {
+        onSuccess: (resp: any) => {
+            navigation.push(ROUTE_NAME.TRIP_NAVIGATOR, {
+                screen: ROUTE_NAME.TRIP_NAVIGATOR_CHECKOUT_COMPLETE,
+                params: { transaction: resp }
+            })
+        }
+    })
+    const transactionDetail: any = useQuery(`transaction-detail-${transactionId}`, () => getTransactionDetailApi({ id: transactionId }), {
         onSuccess: (resp: any) => {
             console.log(resp?.data?.order)
             if (resp?.data?.order?.payment?.scheme === 'installment') return
             startCountdown(handleGetCountdownExpirationDate(resp?.data))
         }
     })
+    const vas = useQuery('list-va', bankListApi)
 
     function showButtonCancelVa() {
         if (!transactionDetail?.data) return false
@@ -374,6 +389,7 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                                 key={i} 
                                                 data={v} 
                                                 index={i} 
+                                                navigation={navigation}
                                             />
                                         )
                                     })
@@ -498,51 +514,126 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                                     </Stack>
                                 </Pressable>
                             </Stack>
-                            <Stack
-                                alignItems='center'
-                                direction='row'
-                                justifyContent='space-between'
-                            >
-                                <Stack>
-                                    <Text color='lancOutlineLight'>Nomor Virtual Account</Text>
-                                    {
-                                        transactionDetail?.isFetching
-                                            ?   <Skeleton height='22px' width='150px' />
-                                            :   <Text fontFamily='Poppins-SemiBold'>
-                                                    {handleGetAccountNumber(transactionDetail?.data?.data)}
-                                                </Text>
-                                    }
-                                </Stack>
-                                <Pressable
-                                    onPress={() => onCopy(`${handleGetAccountNumber(transactionDetail?.data?.data)}`)}
-                                >
-                                    <Stack
-                                        direction='row'
-                                        alignItems='center'
-                                        space='4px'
-                                    >
-                                        <Text
-                                            color='lancPrimaryLight'
-                                            fontSize='12px'
-                                            fontFamily='Poppins-SemiBold'
-                                        >Salin</Text>
-                                        <Image
-                                            alt='IC_CONTENT_COPY'
-                                            source={IC_CONTENT_COPY}
-                                            width='24px'
-                                            height='24px'
-                                            tintColor='lancPrimaryLight'
-                                        />
-                                    </Stack>
-                                </Pressable>
-                            </Stack>
+                            
+                            {
+                                transactionDetail?.data?.data?.order?.status?.flag?.toUpperCase() !== 'EXPIRED'
+                                    ?   <Stack
+                                            alignItems='center'
+                                            direction='row'
+                                            justifyContent='space-between'
+                                        >
+                                            <Stack>
+                                                <Text color='lancOutlineLight'>Nomor Virtual Account</Text>
+                                                {
+                                                    transactionDetail?.isFetching
+                                                        ?   <Skeleton height='22px' width='150px' />
+                                                        :   <Text fontFamily='Poppins-SemiBold'>
+                                                                {handleGetAccountNumber(transactionDetail?.data?.data)}
+                                                            </Text>
+                                                }
+                                            </Stack>
+                                            <Pressable
+                                                onPress={() => onCopy(`${handleGetAccountNumber(transactionDetail?.data?.data)}`)}
+                                            >
+                                                <Stack
+                                                    direction='row'
+                                                    alignItems='center'
+                                                    space='4px'
+                                                >
+                                                    <Text
+                                                        color='lancPrimaryLight'
+                                                        fontSize='12px'
+                                                        fontFamily='Poppins-SemiBold'
+                                                    >Salin</Text>
+                                                    <Image
+                                                        alt='IC_CONTENT_COPY'
+                                                        source={IC_CONTENT_COPY}
+                                                        width='24px'
+                                                        height='24px'
+                                                        tintColor='lancPrimaryLight'
+                                                    />
+                                                </Stack>
+                                            </Pressable>
+                                        </Stack>
+                                    :   null
+                            }
                         </Stack>
                     }
                 </Stack>
 
+                {
+                    transactionDetail?.data?.data?.order?.status?.flag?.toUpperCase() === 'EXPIRED' &&
+                    isGoingRenewal 
+                        ?   <Flex
+                                padding='16px'
+                                flexDirection='row'
+                                marginTop='10px'
+                                alignItems='flex-end'
+                                justifyContent='space-between'
+                                backgroundColor='#ffffff'
+                            >
+                                <Stack>
+                                    <Text fontSize='12px' color='gray.600'>Metode Pembayaran</Text>
+                                    { paymentMethod && <Text fontSize='12px' fontFamily='Poppins-SemiBold'>{paymentMethod?.name}</Text>}
+                                </Stack>
+                                <Pressable onPress={() => actoinSheetPaymentMethodDisclosure?.onOpen()}>
+                                    <Stack
+                                        direction='row'
+                                        space='0px'
+                                        alignItems='center'
+                                    >
+                                        <Text 
+                                            fontSize='12px' 
+                                            color='black'
+                                        >
+                                            {
+                                                paymentMethod
+                                                    ? 'Ganti'
+                                                    : 'Pilih'
+                                            }
+                                        </Text>
+                                        <Image
+                                            alt='IC_CHEVRON_RIGHT'
+                                            source={IC_CHEVRON_RIGHT}
+                                            width='18px'
+                                            height='18px'
+                                            tintColor='black'
+                                        />
+                                    </Stack>
+                                </Pressable>
+                            </Flex>
+                        :   null
+                }
+
                 {showButtonCancelVa()
                     ?   <Stack padding='16px'>
                             <Button colorScheme='lancError' onPress={cancelTransactionDisclosure?.onOpen}>Batalkan Pesanan</Button>
+                        </Stack>
+                    :   null
+                }
+
+                {transactionDetail?.data?.data?.order?.status?.flag?.toUpperCase() === 'EXPIRED'
+                    ?   <Stack padding='16px'>
+                            <Button
+                                size='lg' 
+                                _text={{ fontSize: '12px' }}
+                                isDisabled={isGoingRenewal && !paymentMethod}
+                                isLoading={renewal?.isLoading}
+                                onPress={() => {
+                                    if (isGoingRenewal) {
+                                        renewal?.mutate({
+                                            full_payment_id: transactionDetail?.data?.data?.order?.payment?.full_payment?.id,
+                                            payment_id: transactionDetail?.data?.data?.order?.payment?.id,
+                                            bank_code: paymentMethod?.code,
+                                            transaction_id: transactionDetail?.data?.data?.id
+                                        })
+                                    } else {
+                                        setIsGoingRenewal(true)
+                                    }
+                                }}
+                            >
+                                {isGoingRenewal ? 'Perbarui Sekarang' : 'Perbarui'}
+                            </Button>
                         </Stack>
                     :   null
                 }
@@ -553,6 +644,13 @@ const TransactionDetailScreen: React.FC<ITransactionDetailScreen> = (props: ITra
                 onClose={cancelTransactionDisclosure?.onClose} 
                 navigation={navigation} 
                 transactionId={transactionDetail?.data?.data?.id}
+            />
+
+            <ActionSheetPaymentMethod
+                disclosure={actoinSheetPaymentMethodDisclosure}
+                data={vas?.data?.data}
+                paymentMethodCicilan={paymentMethod}
+                setPaymentMethodCicilan={setPaymentMethod}
             />
         </Flex>
     )

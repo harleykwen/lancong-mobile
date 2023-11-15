@@ -3,7 +3,7 @@ import useCountDown from '../../../../hooks/useCountdown'
 import { format } from 'date-fns'
 import { id } from 'date-fns/locale'
 import { ROUTE_NAME } from '../../../router'
-import { IC_CONTENT_COPY, IMG_CHECKED } from '../../../assets'
+import { IC_CONTENT_COPY, IL_PLAIN_CREDIT_CARD, IMG_CHECKED } from '../../../assets'
 import { 
     Button, 
     Flex, 
@@ -138,10 +138,10 @@ const TripCheckoutComplete: React.FC<ITripCheckoutComplete> = (props: ITripCheck
             <ScrollView>
                 <Stack padding='16px' space='16px'>
                     <Image
-                        alt='IMG_CHECKED'
-                        source={IMG_CHECKED}
-                        width='112px'
-                        height='112px'
+                        alt='IL_PLAIN_CREDIT_CARD'
+                        source={IL_PLAIN_CREDIT_CARD}
+                        width='218px'
+                        height='82px'
                         marginX='auto'
                         marginTop='16px'
                     />

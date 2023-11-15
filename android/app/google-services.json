@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "593483962135",
+    "project_id": "lancong-4f3ec",
+    "storage_bucket": "lancong-4f3ec.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:593483962135:android:6830797ccd712749494952",
+        "android_client_info": {
+          "package_name": "com.lancong"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "593483962135-dmuirecaggk21qovtb3gd57oi9oa1dh4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.lancong",
+            "certificate_hash": "5e8f16062ea3cd2c4a0d547876baa6f38cabf625"
+          }
+        },
+        {
+          "client_id": "593483962135-61uomgv159hndliouvqmoo43o7aeq41c.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAsv12M276bMMtZAv6NSO4HxRc731X1WI8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "593483962135-61uomgv159hndliouvqmoo43o7aeq41c.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

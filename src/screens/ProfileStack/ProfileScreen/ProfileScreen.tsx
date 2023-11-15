@@ -11,7 +11,8 @@ import {
     IC_EDIT, 
     IC_GROUP, 
     IC_LANGUAGE, 
-    IC_LOGOUT, } 
+    IC_LOGOUT,
+    IC_VERIFIED, } 
 from '../../../assets'
 import { 
     Avatar,
@@ -89,11 +90,20 @@ const ProfileScreen = (props: IProfileScreen) => {
                         fontSize='14px' 
                         fontFamily='Poppins-Regular'
                     >{profile?.data?.data?.name}</Text>
-                    <Text 
-                        color='lancBackgroundLight' 
-                        fontSize='14px' 
-                        fontFamily='Poppins-SemiBold'
-                    >{profile?.data?.data?.email}</Text>
+                    <Stack direction='row' alignItems='center' space='4px'>
+                        <Text 
+                            color='lancBackgroundLight' 
+                            fontSize='14px' 
+                            fontFamily='Poppins-SemiBold'
+                        >{profile?.data?.data?.email}</Text>
+                        <Image
+                            alt='IC_VERIFIED'
+                            source={IC_VERIFIED}
+                            width='18px'
+                            height='18px'
+                            tintColor='#0095f6'
+                        />
+                    </Stack>
                 </Stack>
                 <Pressable marginLeft='auto'>
                     <Image 

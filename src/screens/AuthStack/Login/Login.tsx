@@ -1,9 +1,10 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { ROUTE_NAME } from '../../../router'
 import { useTranslation } from 'react-i18next'
 import { useMutation } from 'react-query'
 import { loginApi } from '../../../apis/auth'
 import { ASYNC_STORAGE_NAME, asyncStorageSaveitem } from '../../../asyncStorage'
+import { GoogleSignin, statusCodes } from '@react-native-google-signin/google-signin'
 import { 
     IC_EMAIL, 
     IC_ERROR, 
@@ -85,6 +86,33 @@ const Login: React.FC<ILogin> = (props: ILogin) => {
             })
         }
     }
+
+    async function googleAuth() {
+        try {
+            await GoogleSignin.signOut()
+            await GoogleSignin.hasPlayServices();
+            const userInfo = await GoogleSignin.signIn();
+            console.log(userInfo?.idToken); // User details including credentials
+        } catch (error: any) {
+            console.log({GOOGLE_AUTH_ERROR: error})
+            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
+                console.log('User cancelled the login flow');
+            } else if (error.code === statusCodes.IN_PROGRESS) {
+                console.log('Operation (e.g., sign in) is in progress already');
+            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
+                console.log('Play Services not available or outdated');
+            } else {
+                console.log('Something went wrong:', error);
+            }
+        }
+    };
+
+    useEffect(() => {
+        GoogleSignin.configure({
+            webClientId: '593483962135-61uomgv159hndliouvqmoo43o7aeq41c.apps.googleusercontent.com',
+            offlineAccess: true,
+        });
+    }, []);
 
     return (
         <Stack 
@@ -255,6 +283,7 @@ const Login: React.FC<ILogin> = (props: ILogin) => {
                     />
                 }
                 isDisabled={login?.isLoading}
+                onPress={googleAuth}
             >
                 {t('common:signin_button_google')}
             </Button>

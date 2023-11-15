@@ -2,7 +2,9 @@ import React, { memo, useMemo } from 'react'
 import * as Icon from 'react-native-unicons'
 import { Dimensions } from 'react-native'
 import { ROUTE_NAME } from '../../../router'
+import { IL_COMING_SOON } from '../../../assets'
 import { 
+    Image,
     Pressable, 
     Stack, 
     Text, 
@@ -16,6 +18,7 @@ type TCategory = {
     label: string
     icon: React.ReactElement
     onPress: () => void
+    isUnderDevelop: boolean
 }
 
 const Categories: React.FC<TCategories> = (props: TCategories) => {
@@ -37,21 +40,25 @@ const Categories: React.FC<TCategories> = (props: TCategories) => {
                     place: '',
                 },
             }),
+            isUnderDevelop: false,
         },
         {
             label: 'Hotel',
             icon: <Icon.Building color="#006e01" />,
             onPress: () => null,
+            isUnderDevelop: true,
         },
         {
             label: 'Pesawat',
             icon: <Icon.Plane color="#006e01" />,
             onPress: () => null,
+            isUnderDevelop: true,
         },
         {
             label: 'Kereta',
             icon: <Icon.Subway color="#006e01" />,
             onPress: () => null,
+            isUnderDevelop: true,
         },
     ], [])
 
@@ -75,6 +82,7 @@ const Categories: React.FC<TCategories> = (props: TCategories) => {
                                 onPress={category?.onPress && category?.onPress}
                             >
                                 <Stack
+                                    position='relative'
                                     space='4px'
                                     marginTop='8px'
                                     backgroundColor='#ffffff'
@@ -93,6 +101,19 @@ const Categories: React.FC<TCategories> = (props: TCategories) => {
                                         color='#101010'
                                         fontFamily='Poppins-Regular'
                                     >{category?.label}</Text>
+                                    {
+                                        category?.isUnderDevelop
+                                        ?   <Image 
+                                                position='absolute'
+                                                left='0px'
+                                                top='0px'
+                                                source={IL_COMING_SOON} 
+                                                alt='coming soon' 
+                                                height='50px'
+                                                width='50px'
+                                            />
+                                        :   null
+                                    }
                                 </Stack>
                             </Pressable>
                         )

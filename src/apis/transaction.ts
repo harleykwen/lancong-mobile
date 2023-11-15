@@ -14,6 +14,13 @@ interface ICancelVaTransactionApi {
     transactionId: string
 }
 
+interface IRenewalFullPaymentVaApi {
+    payment_id: string
+    full_payment_id: string
+    bank_code: string
+    transaction_id: string
+}
+
 export async function getTransactionListApi() {
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRANSACTION.GET_ALL)
@@ -65,5 +72,21 @@ export async function cancelVaTransactionApi(payload: ICancelVaTransactionApi) {
         return response?.data
     } catch (error: any) {
         throw error?.data?.message??'Cancel VA Transaction Error'
+    }
+}
+
+export async function renewalFullPaymentVaApi(payload: IRenewalFullPaymentVaApi) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).put(API_URL.TRANSACTION.RENEWAL_FULL_PAYMENT_VA?.replace(':transactionId', payload?.transaction_id), payload, 
+            { 
+                headers: { 
+                    'Content-Type': 'application/json' 
+                } 
+            }
+        )
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Full Payment Virtual Account Renewal Error'
     }
 }

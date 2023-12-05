@@ -9,6 +9,7 @@ import DataPelancongScreen from './DataPelancongScreen/DataPelancongScreen'
 import PaymentTypeScreen from './PaymentTypeScreen/PaymentTypeScreen'
 import SpecialRequestScreen from './SpecialRequestScreen/SpecialRequestScreen'
 import TripCheckoutComplete from './TripCheckoutComplete/TripCheckoutComplete'
+import FullPaymentSummary from './FullPaymentSummary/FullPaymentSummary'
 
 export {
     SearchTripScreen,
@@ -22,4 +23,5 @@ export {
     PaymentTypeScreen,
     SpecialRequestScreen,
     TripCheckoutComplete,
+    FullPaymentSummary,
 }

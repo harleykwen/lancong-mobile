@@ -35,6 +35,10 @@ interface ITripDetailApi {
     packages: string
 }
 
+interface GetFullPaymentSummaryApiProps {
+    transactionId: string
+}
+
 export async function tripTypesApi() {
     try {
         const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRIP.TYPES)
@@ -110,5 +114,15 @@ export async function tripDetailApi(payload: ITripDetailApi) {
         return response?.data
     } catch (error: any) {
         throw error?.data?.message??'Get trip detail error'
+    }
+}
+
+export async function getFullPaymentSummaryApiProps(payload: GetFullPaymentSummaryApiProps) {
+    try {
+        const response: AxiosResponse = await http({ useAuth: true }).get(API_URL.TRIP.FULL_PAYMENT_SUMMARY?.replace(':transactionId', payload?.transactionId))
+        if (response?.data?.error) throw response
+        return response?.data
+    } catch (error: any) {
+        throw error?.data?.message??'Get trip full payment summary'
     }
 }

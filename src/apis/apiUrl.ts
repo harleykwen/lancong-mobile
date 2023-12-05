@@ -16,6 +16,7 @@ const API_URL = {
         UPDATE_TRANSACTION: '/user/trip/transaction/:transactionId/update',
         CHECKOUT: '/user/trip/transaction/full-payment/virtual-account/checkout',
         DETAIL: '/user/trip/:id',
+        FULL_PAYMENT_SUMMARY: '/user/trip/transaction/full-payment/:transactionId/summary',
     },
     PELANCONG: {
         CREATE: '/user/pelancong/create',
@@ -29,7 +30,7 @@ const API_URL = {
         GET_ALL_DRAFT: '/user/transaction/draft',
         DRAFT_DETAIL: '/user/transaction/draft/:transactionId',
         VA_CANCEL: '/user/transaction/:transactionId/payment/virtual-account/cancel',
-        RENEWAL_FULL_PAYMENT_VA: '/user/transaction/:transactionId/full-payment/virtual-account/renew'
+        RENEWAL_FULL_PAYMENT_VA: '/user/transaction/:transactionId/full-payment/virtual-account/renew',
     },
     VA: {
         BANK_LIST: '/user/payment/virtual-account/banks',

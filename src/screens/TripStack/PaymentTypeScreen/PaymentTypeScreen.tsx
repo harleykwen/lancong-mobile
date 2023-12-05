@@ -124,7 +124,7 @@ const PaymentTypeScreen = (props: IPayment) => {
                         tintColor='lancOnBackgroundLight'
                     />
                 </Pressable>
-                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Ringkasan Pesanan</Text>
+                <Text fontFamily='Poppins-SemiBold' fontSize='20px'>Pilih Pembayaran</Text>
             </Stack>
 
             <ScrollView>
@@ -457,9 +457,14 @@ const PaymentTypeScreen = (props: IPayment) => {
                                     bank_code: paymentMethodCicilan?.code,
                                 })
                             } else {
-                                checkout.mutate({
-                                    transaction_id: transaction?.id,
-                                    bank_code: selectedPaymentMethod,
+                                // checkout.mutate({
+                                //     transaction_id: transaction?.id,
+                                //     bank_code: selectedPaymentMethod,
+                                // })
+
+                                navigation?.navigate(ROUTE_NAME.TRIP_NAVIGATOR_FULL_PAYMENT_SUMMARY, { 
+                                    selectedPaymentMethod,
+                                    transaction, 
                                 })
                             }
                         }}

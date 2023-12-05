@@ -5,6 +5,7 @@ import {
     CheckoutPackageScreen,
     CompleteDataScreen,
     DataPelancongScreen,
+    FullPaymentSummary,
     ListTripScreen, 
     PackageTripDetailScreen, 
     PaymentTypeScreen, 
@@ -77,6 +78,11 @@ const TripNavigator: React.FC = () => {
                 options={{ ...TransitionPresets.SlideFromRightIOS }} 
                 name={ROUTE_NAME.TRIP_NAVIGATOR_CHECKOUT_COMPLETE} 
                 component={TripCheckoutComplete} 
+            />
+            <Stack.Screen 
+                options={{ ...TransitionPresets.SlideFromRightIOS }} 
+                name={ROUTE_NAME.TRIP_NAVIGATOR_FULL_PAYMENT_SUMMARY} 
+                component={FullPaymentSummary} 
             />
         </Stack.Navigator>
     )

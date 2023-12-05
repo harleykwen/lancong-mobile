@@ -92,7 +92,10 @@ const Login: React.FC<ILogin> = (props: ILogin) => {
             await GoogleSignin.signOut()
             await GoogleSignin.hasPlayServices();
             const userInfo = await GoogleSignin.signIn();
-            console.log(userInfo?.idToken); // User details including credentials
+            const token = await GoogleSignin.getTokens();
+            console.log({userInfo}); // User details including credentials
+            console.log({token}); // User details including credentials
+            console.log(userInfo.idToken)
         } catch (error: any) {
             console.log({GOOGLE_AUTH_ERROR: error})
             if (error.code === statusCodes.SIGN_IN_CANCELLED) {
